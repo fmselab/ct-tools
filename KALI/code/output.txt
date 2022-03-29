@@ -1,0 +1,2 @@
+./examples/ctcomp/MCA_0.ctw;1450;17829;true;AS_DECLARED;8;SMTINTERPOL
+./examples/ctcomp/MCA_0.ctw;1443;17117;true;AS_DECLARED;8;SMTINTERPOL

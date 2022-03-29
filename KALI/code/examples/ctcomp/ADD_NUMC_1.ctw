@@ -1,0 +1,16 @@
+Model ADD_NUMC_1
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2: {PAR2_0,PAR2_1,PAR2_2,PAR2_3,PAR2_4}
+Par3 : Boolean
+Par4: [-65 .. 22]
+Par5: {PAR5_0,PAR5_1,PAR5_2,PAR5_3,PAR5_4,PAR5_5}
+Par6: [-44 .. -2]
+Par7: {PAR7_0,PAR7_1,PAR7_2,PAR7_3,PAR7_4,PAR7_5,PAR7_6,PAR7_7,PAR7_8,PAR7_9,PAR7_10,PAR7_11,PAR7_12,PAR7_13,PAR7_14,PAR7_15,PAR7_16,PAR7_17,PAR7_18,PAR7_19,PAR7_20,PAR7_21,PAR7_22,PAR7_23,PAR7_24,PAR7_25,PAR7_26,PAR7_27,PAR7_28,PAR7_29,PAR7_30,PAR7_31,PAR7_32,PAR7_33,PAR7_34,PAR7_35,PAR7_36,PAR7_37,PAR7_38}
+Par8 : Boolean
+Par9 : Boolean
+
+Constraints:
+# (((not (Par3 != true)) <=> Par5 != PAR5_1) AND ((not (Par8 = false)) OR (not (Par0 != true)))) #
+# (((not (Par6 <= -23)) OR (not (Par5 != PAR5_1))) <=> ((not (Par8 = false)) OR Par5 != PAR5_2)) #
