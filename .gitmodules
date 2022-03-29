@@ -7,3 +7,6 @@
 [submodule "MEDICI"]
 	path = MEDICI
 	url = https://github.com/garganti/medici.git
+[submodule "CTWedge"]
+	path = CTWedge
+	url = https://github.com/fmselab/ctwedge.git
