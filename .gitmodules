@@ -1,3 +1,6 @@
 [submodule "CombinatorialSequenceTesting"]
 	path = CombinatorialSequenceTesting
 	url = https://github.com/fmselab/FiniteStateMachineCombinatorial.git
+[submodule "CIT_Benchmark_Generator"]
+	path = CIT_Benchmark_Generator
+	url = https://github.com/fmselab/CIT_Benchmark_Generator.git
