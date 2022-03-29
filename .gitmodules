@@ -10,3 +10,6 @@
 [submodule "CTWedge"]
 	path = CTWedge
 	url = https://github.com/fmselab/ctwedge.git
+[submodule "pMEDICI"]
+	path = pMEDICI
+	url = https://github.com/fmselab/pMedici.git
