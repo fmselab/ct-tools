@@ -1,0 +1,3 @@
+[submodule "CombinatorialSequenceTesting"]
+	path = CombinatorialSequenceTesting
+	url = https://github.com/fmselab/FiniteStateMachineCombinatorial.git
