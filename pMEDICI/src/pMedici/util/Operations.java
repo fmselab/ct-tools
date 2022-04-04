@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
 import java.util.Vector;
@@ -250,7 +251,8 @@ public class Operations {
 	public static int[] getPathInMDD(int node, MDDManager manager, int[] test) {
 		int totVars = manager.getAllVariables().length;
 		int[] res = new int[totVars];
-
+		
+		
 		for (int i = 0; i < totVars; i++) {
 			assert (getCardinality(node, manager) > 0);
 			int[] children = manager.getChildren(node);
@@ -259,7 +261,7 @@ public class Operations {
 			if (children != null && children.length > 0) {
 				for (int child : children) {
 					if (leadsToTrue(child, manager)) {
-						res[i] = childCound;
+						res[i] = childCound;					
 						node = child;
 						break;
 					}
@@ -342,7 +344,7 @@ public class Operations {
 		}
 
 		// Print the results
-		System.out.println(csv_out);
+		Arrays.stream(csv_out.split("\n")).distinct().forEach(x -> System.out.println(x));
 	}
 
 	/**
