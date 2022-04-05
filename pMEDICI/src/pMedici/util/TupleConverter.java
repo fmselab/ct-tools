@@ -1,6 +1,7 @@
 package pMedici.util;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Vector;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.MDDVariable;
@@ -13,7 +14,7 @@ import pMedici.safeelements.ExtendedSemaphore;
 public class TupleConverter {
 	
 	MDDManager manager;
-	
+
 	public TupleConverter(MDDManager manager) {
 		this.manager = manager;
 	}	
@@ -36,7 +37,6 @@ public class TupleConverter {
 		for (Pair<Integer, Integer> p : tuple) {
 			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
 			newMDD = vars[p.getFirst()].getNode(getChildrenList(vars[p.getFirst()].nbval, p.getSecond(), newMDD));
-			
 			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
 		}
 		
