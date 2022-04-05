@@ -1,5 +1,4 @@
 package pMedici.util;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -37,6 +36,7 @@ public class TupleConverter {
 		for (Pair<Integer, Integer> p : tuple) {
 			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
 			newMDD = vars[p.getFirst()].getNode(getChildrenList(vars[p.getFirst()].nbval, p.getSecond(), newMDD));
+			
 			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
 		}
 		

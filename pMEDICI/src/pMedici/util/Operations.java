@@ -251,26 +251,41 @@ public class Operations {
 	public static int[] getPathInMDD(int node, MDDManager manager, int[] test) {
 		int totVars = manager.getAllVariables().length;
 		int[] res = new int[totVars];
-		
-		
+
 		for (int i = 0; i < totVars; i++) {
 			assert (getCardinality(node, manager) > 0);
 			int[] children = manager.getChildren(node);
-			int childCound = 0;
 
 			if (children != null && children.length > 0) {
 				for (int child : children) {
 					if (leadsToTrue(child, manager)) {
-						res[i] = childCound;					
+						res[i] = getValueFromNode(manager, node, child, i);
+						
 						node = child;
 						break;
 					}
-					childCound++;
 				}
 			}
 		}
 
 		return res;
+	}
+
+	/**
+	 * Returns the value corresponding to a node ID
+	 * 
+	 * @param manager:  the MDD Manager
+	 * @param node:     the MDD node
+	 * @param child:    the MDD node to be reached
+	 * @param indexVar: the index of the variable
+	 * @return the value corresponding to a node ID
+	 */
+	public static int getValueFromNode(MDDManager manager, int node, int child, int indexVar) {
+		for (int i = 0; i < manager.getAllVariables()[indexVar].nbval; i++)
+			if (manager.getChild(node, i) == child)
+				return i;
+
+		return -1;
 	}
 
 	/**

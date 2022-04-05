@@ -14,6 +14,7 @@ import pMedici.util.TupleConverter;
 public class TestContext {
 	
 	public static int UNDEF = -1;
+	public static boolean IN_TEST = false;
 	
 	/**
 	 * The (partial) test containing the values already set
@@ -72,7 +73,8 @@ public class TestContext {
 	 */
 	public boolean isCoverable(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Checks using the test vector
 		for (Pair<Integer, Integer> t : tuple) {
@@ -103,7 +105,8 @@ public class TestContext {
 	 */
 	private boolean isCompatible(Vector<Pair<Integer, Integer>> tuple, boolean skipFirstStep) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// First phase - Check without the MDD
 		if (!skipFirstStep) {
@@ -134,7 +137,8 @@ public class TestContext {
 	 */
 	public boolean isCompatiblePartialCheck(Vector<Pair<Integer, Integer>> tuple) {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		for (Pair<Integer, Integer> t : tuple) {
 			int valueInTest = test[t.getFirst()];
@@ -158,7 +162,8 @@ public class TestContext {
 	 */
 	private boolean verifyWithMDD(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 				
 		// Create an MDD representing the tuple
 		TupleConverter tc = new TupleConverter(manager);
@@ -195,7 +200,8 @@ public class TestContext {
 	 */
 	public boolean isImplied(Vector<Pair<Integer, Integer>> tuple) {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Check if it is implied
 		for (Pair<Integer, Integer> t : tuple) {
@@ -218,7 +224,8 @@ public class TestContext {
 	 */
 	public void addTuple(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Add the tuple to the partial test
 		for (Pair<Integer, Integer> t : tuple) {
@@ -242,7 +249,8 @@ public class TestContext {
 	 */
 	private void updateMdd(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 				
 		// Create an MDD representing the tuple
 		TupleConverter tc = new TupleConverter(manager);
