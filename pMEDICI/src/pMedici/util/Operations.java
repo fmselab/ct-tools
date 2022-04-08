@@ -251,17 +251,21 @@ public class Operations {
 	public static int[] getPathInMDD(int node, MDDManager manager, int[] test) {
 		int totVars = manager.getAllVariables().length;
 		int[] res = new int[totVars];
-
+		
 		for (int i = 0; i < totVars; i++) {
-			assert (getCardinality(node, manager) > 0);
+			assert (getCardinality(node, manager) > 0) : "Variable " + (i+1) + " of " + totVars;
 			int[] children = manager.getChildren(node);
 
 			if (children != null && children.length > 0) {
 				for (int child : children) {
 					if (leadsToTrue(child, manager)) {
 						res[i] = getValueFromNode(manager, node, child, i);
-						
-						node = child;
+//						if (res[i] == -1 && test[i] != -1) {
+//							res[i] = test[i];
+//							node = manager.getChild(node, res[i]);
+//						} else {
+							node = child;
+//						}
 						break;
 					}
 				}

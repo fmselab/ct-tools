@@ -38,7 +38,7 @@ public class PMediciMDDTest {
 	    PrintStream stream = new PrintStream(file);
 	    System.setOut(stream);
 	    // Read the model
-	    String filename = "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\MCAC_0.ctw";
+	    String filename = "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\MCAC_4.ctw";
 	    CitModel model = Utility.loadModelFromPath(filename);
 	    PMedici.main(new String[] {"2", filename});
 	    
@@ -50,6 +50,7 @@ public class PMediciMDDTest {
 	    sc.nextLine();
 	    while (sc.hasNextLine())
 	    	csvModel += sc.nextLine() + "\n";
+	    sc.close();
 	    
 	    // Produced test suite
 	    TestSuite ts = new TestSuite(csvModel, model); 
@@ -62,8 +63,6 @@ public class PMediciMDDTest {
 		SMTTestSuiteValidator tsv = new SMTTestSuiteValidator();
 		tsv.setTestSuite(ts);
 				
-		// Save the number of tests
-		int numTest = ts.getTests().size();
 		// Save the number of covered tuples
 		int covTuples = tsv.howManyTuplesCovers();
 				
