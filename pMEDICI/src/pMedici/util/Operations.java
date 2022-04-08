@@ -253,7 +253,7 @@ public class Operations {
 		int[] res = new int[totVars];
 		
 		for (int i = 0; i < totVars; i++) {
-			assert (getCardinality(node, manager) > 0) : "Variable " + (i+1) + " of " + totVars;
+			assert (getCardinality(node, manager) > 0) : "Error on variable " + (i+1) + " of " + totVars;
 			int[] children = manager.getChildren(node);
 
 			if (children != null && children.length > 0) {
