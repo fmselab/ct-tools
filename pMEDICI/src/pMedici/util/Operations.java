@@ -249,30 +249,35 @@ public class Operations {
 	 * @return the first available path in the MDD
 	 */
 	public static int[] getPathInMDD(int node, MDDManager manager, int[] test) {
-		int totVars = manager.getAllVariables().length;
-		int[] res = new int[totVars];
+		PathSearcher searcher = new PathSearcher(manager,1);
+		searcher.setNode(node);
+		searcher.countPaths();
+		return searcher.getPath();
 		
-		for (int i = 0; i < totVars; i++) {
-			assert (getCardinality(node, manager) > 0) : "Error on variable " + (i+1) + " of " + totVars;
-			int[] children = manager.getChildren(node);
-
-			if (children != null && children.length > 0) {
-				for (int child : children) {
-					if (leadsToTrue(child, manager)) {
-						res[i] = getValueFromNode(manager, node, child, i);
-//						if (res[i] == -1 && test[i] != -1) {
-//							res[i] = test[i];
-//							node = manager.getChild(node, res[i]);
-//						} else {
-							node = child;
-//						}
-						break;
-					}
-				}
-			}
-		}
-
-		return res;
+//		int totVars = manager.getAllVariables().length;
+//		int[] res = new int[totVars];
+//		
+//		for (int i = 0; i < totVars; i++) {
+//			assert (getCardinality(node, manager) > 0) : "Error on variable " + (i+1) + " of " + totVars;
+//			int[] children = manager.getChildren(node);
+//
+//			if (children != null && children.length > 0) {
+//				for (int child : children) {
+//					if (leadsToTrue(child, manager)) {
+//						res[i] = getValueFromNode(manager, node, child, i);
+////						if (res[i] == -1 && test[i] != -1) {
+////							res[i] = test[i];
+////							node = manager.getChild(node, res[i]);
+////						} else {
+//							node = child;
+////						}
+//						break;
+//					}
+//				}
+//			}
+//		}
+//
+//		return res;
 	}
 
 	/**
@@ -356,7 +361,7 @@ public class Operations {
 				} else {
 					val = previousCount + Integer.parseInt(values[i]);
 				}
-				csv_out += valToInt.convertInt(val).getValue() + ";";
+				csv_out += valToInt.convertInt(val).getSecond() + ";";
 			}
 			csv_out = csv_out.substring(0, csv_out.length() - 1);
 			csv_out += "\n";

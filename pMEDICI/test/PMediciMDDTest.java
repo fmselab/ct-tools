@@ -29,16 +29,46 @@ public class PMediciMDDTest {
 		PMedici.main(new String[] {"2", "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\UNIFORM_ALL_18.ctw"});
 	}
 	
+	
+	@Test
+	public void test2() throws IOException, InterruptedException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici.main(new String[] {"2", "examples/BOOLC_4_Simple.ctw"});
+	}
+	
+	
+	
 	@Test
 	public void testValidity() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	    // Read the model
+	    String filename = "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\MCAC_4.ctw";
+		generateAndCheck(filename);
+	}
+
+	@Test
+	public void testValidity2() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	    // Read the model
+	    String filename = "examples/BOOLC_4_Simple.ctw";
+		generateAndCheck(filename);
+	}
+
+	@Test
+	public void testValidity3() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	    // Read the model
+	    String filename = "examples/BOOLC_4.ctw";
+		generateAndCheck(filename);
+	}
+	
+
+	private void generateAndCheck(String filename) throws FileNotFoundException, IOException, InterruptedException,
+			SolverException, InvalidConfigurationException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
 		// Change the output
 	    File file = new File("ts_out.txt");
 	    PrintStream stream = new PrintStream(file);
 	    System.setOut(stream);
-	    // Read the model
-	    String filename = "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\MCAC_4.ctw";
 	    CitModel model = Utility.loadModelFromPath(filename);
 	    PMedici.main(new String[] {"2", filename});
 	    
