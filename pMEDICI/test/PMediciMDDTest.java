@@ -85,6 +85,7 @@ public class PMediciMDDTest {
 	    // Produced test suite
 	    TestSuite ts = new TestSuite(csvModel, model); 
 	    ts.populateTestSuite();
+	    ts.setStrength(2);
 	    PrintStream consoleStream = new PrintStream(new FileOutputStream(FileDescriptor.out));
 	    System.setOut(consoleStream);
 	    System.out.println(ts.toString());
