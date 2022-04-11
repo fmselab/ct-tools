@@ -7,6 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import org.junit.Test;
@@ -29,15 +32,12 @@ public class PMediciMDDTest {
 		PMedici.main(new String[] {"2", "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\UNIFORM_ALL_18.ctw"});
 	}
 	
-	
 	@Test
 	public void test2() throws IOException, InterruptedException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
 		PMedici.main(new String[] {"2", "examples/BOOLC_4_Simple.ctw"});
 	}
-	
-	
 	
 	@Test
 	public void testValidity() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
@@ -60,6 +60,19 @@ public class PMediciMDDTest {
 		generateAndCheck(filename);
 	}
 	
+	@Test
+	public void testAllFileInCTComp() throws IOException {
+		Path path = Paths.get("examples/CTComp/");
+		Files.walk(path).filter(Files::isRegularFile).map(Path::toFile).filter(x -> x.getName().endsWith(".ctw"))
+				.forEach(x -> {
+					try {
+						generateAndCheck(x.getAbsolutePath());
+					} catch (IOException | InterruptedException | SolverException | InvalidConfigurationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				});
+	}
 
 	private void generateAndCheck(String filename) throws FileNotFoundException, IOException, InterruptedException,
 			SolverException, InvalidConfigurationException {
