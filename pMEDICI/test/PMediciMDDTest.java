@@ -61,10 +61,11 @@ public class PMediciMDDTest {
 	}
 	
 	@Test
-	public void testAllFileInCTComp() throws IOException {
+	public void testAllFilesInCTComp() throws IOException {
 		Path path = Paths.get("examples/CTComp/");
 		Files.walk(path).filter(Files::isRegularFile).map(Path::toFile).filter(x -> x.getName().endsWith(".ctw"))
 				.forEach(x -> {
+					System.err.println(x.getAbsolutePath());
 					try {
 						generateAndCheck(x.getAbsolutePath());
 					} catch (IOException | InterruptedException | SolverException | InvalidConfigurationException e) {
