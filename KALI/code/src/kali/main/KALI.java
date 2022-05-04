@@ -19,6 +19,8 @@ import org.kohsuke.args4j.Option;
 import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
+import ctwedge.ctWedge.Parameter;
+import ctwedge.generator.util.ParameterSize;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
@@ -36,6 +38,8 @@ public class KALI {
 	 * The file in which the output should be saved
 	 */
 	static String OUTPUT_TXT = "output.txt";
+	
+	public static Boolean PRINT_DEBUG = false;
 
 	/**
 	 * The number of threads to be used
@@ -119,7 +123,8 @@ public class KALI {
 		// Start all the TestBuilder threads
 		if (nThreads == -1) {
 			nThreads = Runtime.getRuntime().availableProcessors();
-			System.out.println("using " + nThreads + " threads");
+			if (KALI.PRINT_DEBUG)
+				System.out.println("using " + nThreads + " threads");
 		}
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
@@ -138,6 +143,15 @@ public class KALI {
 		}
 
 		// Compute the summary values
+		System.out.println("-----TEST SUITE-----");
+		
+		// First row -> parameter names
+		String header = "";
+		for (Parameter param : m.getParameters()) {
+			header += param.getName() + ";";
+		}
+		System.out.println(header.substring(0, header.length()-1));
+		
 		for (TestContext tc : tcList) {
 			nCovered += tc.getNCovered();
 			try {

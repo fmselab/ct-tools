@@ -330,11 +330,11 @@ public class TestContext {
 	 */
 	public String getTest(boolean printVector) throws InterruptedException, SolverException {
 		String res = "";
-		res = "[ ";
+		//res = "[ ";
 		
 		if (printVector || !useConstraints || isComplete()) {
 			for (Object i : test)
-				res += i.toString() + " ";
+				res += i.toString() + ";";
 		} else {
 			// Print the assignments given by the SMT Context
 			ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_MODELS);
@@ -366,7 +366,7 @@ public class TestContext {
 				});
 				
 				for (TestCase va : filteredFinalTest) {
-					res += va.getValue() + " ";
+					res += va.getValue() + ";";
 				}
 			}
 			else {
@@ -374,9 +374,9 @@ public class TestContext {
 			}
 		}
 		
-		res += " --> T]";
+		//res += " --> T]";
 		
-		return res;
+		return res.substring(0, res.length()-1);
 	}
 	
 	/**
