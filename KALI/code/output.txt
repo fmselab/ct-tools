@@ -1,2 +1,7 @@
 ./examples/ctcomp/MCA_0.ctw;1450;17829;true;AS_DECLARED;8;SMTINTERPOL
 ./examples/ctcomp/MCA_0.ctw;1443;17117;true;AS_DECLARED;8;SMTINTERPOL
+./examples/ctcomp/MCA_0.ctw;1441;17803;true;AS_DECLARED;8;SMTINTERPOL
+./examples/ctcomp/MCA_0.ctw;1443;16630;true;AS_DECLARED;8;SMTINTERPOL
+./examples/ctcomp/MCA_0.ctw;1436;18099;true;AS_DECLARED;8;SMTINTERPOL
+./examples/ctcomp/MCA_0.ctw;1446;16722;true;AS_DECLARED;8;SMTINTERPOL
+./examples/ctcomp/MCA_0.ctw;1450;17654;true;AS_DECLARED;8;SMTINTERPOL
