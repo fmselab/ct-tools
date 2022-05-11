@@ -92,4 +92,30 @@ public class TestModel {
 		this.strength = strength;		
 	}
 	
+	/**
+	 * Clones the model
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		TestModel m = new TestModel(nParams, bounds, strength, useConstraints, constraintList);
+		m.constraintList = new ArrayList<Constraint>();
+		
+		for (Constraint c : constraintList) {
+			Constraint c_new = new Constraint();
+			
+			for (ConstraintElement ce : c.constraint) {
+				ConstraintElement ce_new = new ConstraintElement();
+				if (ce.isOperator())
+					ce_new.operator = ce.operator;
+				else
+					ce_new.value = ce.value;
+				c_new.addElement(ce_new);
+			}
+			
+			m.constraintList.add(c_new);
+		}
+		
+		return m;
+	}
+	
 }

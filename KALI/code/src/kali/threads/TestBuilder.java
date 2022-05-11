@@ -12,6 +12,7 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.util.Pair;
+import kali.main.KALI;
 import kali.safeelements.ExtendedSemaphore;
 import kali.safeelements.SafeQueue;
 import kali.safeelements.TestContext;
@@ -172,7 +173,8 @@ public class TestBuilder implements Runnable {
 				// If a tuple has been extracted
 				// Try to find a TestContext which implies this tuple
 				if (findImplied(tuple)) {
-					System.out.println("The tuple " + Operations.printTuple(tuple) + " is already implied");
+					if (KALI.PRINT_DEBUG)
+						System.out.println("The tuple " + Operations.printTuple(tuple) + " is already implied");
 					continue;
 				}
 
@@ -207,8 +209,9 @@ public class TestBuilder implements Runnable {
 				// Find if an already existing test context can cover the tuple
 				try {
 					if (findCompatible(tuple, orderedTcList, completenessGrades)) {
-						System.out.println("The tuple " + Operations.printTuple(tuple)
-								+ " has been covered by an already existing test context");
+						if (KALI.PRINT_DEBUG)
+							System.out.println("The tuple " + Operations.printTuple(tuple)
+									+ " has been covered by an already existing test context");
 						continue;
 					}
 				} catch (InterruptedException e1) {
@@ -232,8 +235,9 @@ public class TestBuilder implements Runnable {
 						if (tc.isCoverable(tuple)) {
 							tc.addTuple(tuple);
 							tc.testMutex.release();
-							System.out.println("The tuple " + Operations.printTuple(tuple)
-									+ " has been covered by a new test context");
+							if (KALI.PRINT_DEBUG)
+								System.out.println("The tuple " + Operations.printTuple(tuple)
+										+ " has been covered by a new test context");
 							// Add the new test context to the list
 							this.testContextMutex.acquire();
 							tcList.add(tc);
@@ -241,7 +245,8 @@ public class TestBuilder implements Runnable {
 							// empty is no longer empty
 							empty = null;
 						} else {
-							System.out.println("The tuple " + Operations.printTuple(tuple) + " is not coverable");
+							if (KALI.PRINT_DEBUG)
+								System.out.println("The tuple " + Operations.printTuple(tuple) + " is not coverable");
 							nUncoverable++;
 							// the empty is now valid 
 							empty = tc;

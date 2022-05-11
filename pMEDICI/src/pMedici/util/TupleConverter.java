@@ -1,5 +1,4 @@
 package pMedici.util;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -14,7 +13,7 @@ import pMedici.safeelements.ExtendedSemaphore;
 public class TupleConverter {
 	
 	MDDManager manager;
-	
+
 	public TupleConverter(MDDManager manager) {
 		this.manager = manager;
 	}	
