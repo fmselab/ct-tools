@@ -3,7 +3,7 @@ import pandas as pd
 
 # This python script aggregates the data coming from the CT-Competition evaluator
 if __name__ == "__main__":
-    input_file_path = "data/_best.csv"
+    input_file_path = "best_results.csv"
     df_input = pd.read_csv(input_file_path, delimiter=",")
     df_output = pd.DataFrame(columns=["ModelName","TimeKali","SizeKali","TimePMedici", "SizePMedici", "TimeActs", "SizeActs"])
     df_output_no_timeouts = pd.DataFrame(columns=["ModelName","TimeKali","SizeKali","TimePMedici", "SizePMedici", "TimeActs", "SizeActs"])
@@ -66,5 +66,5 @@ if __name__ == "__main__":
                 "SizeActs": size_acts
             }, ignore_index=True)
 
-    df_output.to_csv("data/aggregated_best.csv", index = False)
-    df_output_no_timeouts.to_csv("data/aggregated_best_no_timeouts.csv", index = False)
+    df_output.to_csv("aggregated_best.csv", index = False)
+    df_output_no_timeouts.to_csv("aggregated_best_no_timeouts.csv", index = False)
