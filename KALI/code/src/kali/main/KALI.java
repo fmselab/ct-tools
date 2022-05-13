@@ -52,7 +52,7 @@ public class KALI {
 	private boolean verbose = false;
 
 	public static boolean SORT = true;
-	public static Order ORDER = Order.IN_ORDER_SIZE_ASC;
+	public static Order ORDER = Order.IN_ORDER_SIZE_DESC;
 
 	// receives other command line parameters than options
 	@Argument
