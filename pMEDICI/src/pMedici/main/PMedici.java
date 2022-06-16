@@ -34,7 +34,11 @@ public class PMedici {
 		CitModel model = null;
 		boolean verb = false;
 		
+		// 1)
 		// Read the test model from arguments
+		// args[0] = t-wise strength
+		// args[1] = file name (path) to CTWedge model
+		// args[2] = boolean true/false for verb
 		if (args.length >= 2) {
 			strength = Integer.parseInt(args[0]);
 			fileName = args[1];
@@ -44,35 +48,45 @@ public class PMedici {
 			throw new RuntimeException("You must specify the strength and the model file name for generating a test suite");
 		}
 		
+		// 2)
 		// Convert the model from CTWedge to Medici format
+		// and write the converted Medici format in "model.txt" file
 		if (!fileName.equals("")) {
-			model = Utility.loadModelFromPath(fileName);
+			model = Utility.loadModelFromPath(fileName); // importing CTWedge model to "CitModel model"
 			MediciCITGenerator gen = new MediciCITGenerator();
 			MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
-			String mediciModel = gen.translateModel(model, false);
+			String mediciModel = gen.translateModel(model, false); // translating CIT model to medici model
 			File modelFile = new File("model.txt");
 			FileWriter wf = new FileWriter(modelFile);
-			wf.write(mediciModel);
+			wf.write(mediciModel); // writing the translated medici model to "model.txt"
 			wf.close();
-			fileName = "model.txt";
+			fileName = "model.txt"; // saving the name of the written model in the String variable "fileName"
 		}
 		
-		// Read the combinatorial model and get the MDD representing the model without constraints		
-		TestModel m = Operations.readFile(fileName);
+		// 3)
+		// Read the combinatorial model		
+		TestModel m = Operations.readFile(fileName); // TestModel = model with constraints
 		
 		// Set the strength
+		// in the previous line m is created with strength=0
+		// here we set the current desired value of strength
 		m.setStrength(strength);
 		
+		
+		// 4)
+		// Get the MDD representing the model without constraints
 		ModelToMDDConverter mc = new ModelToMDDConverter(m);
-		MDDManager manager = mc.getMDD();
-		int baseMDD = mc.getStartingNode();
+		MDDManager manager = mc.getMDD(); // MDD with no constraints
+		int baseMDD = mc.getStartingNode(); // starting node of the mdd
 		int nCovered = 0;
 		int totTuples = 0;
 		
 		// Get current time
 		long start = System.currentTimeMillis();
 		
+		// 5)
 		// Add to the baseNode the constraints
+		// notice: the constraints are added to the basenode (starting node)
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
 		
 		// Shared object between producer and consumer
