@@ -333,6 +333,8 @@ public class Operations {
 	 */
 	public static void translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
 		String csv_out = "";
+		// creating an array of integers with size equal to the number of the parameters of CitModel
+		// in each position we will have the size of the corresponding parameter
 		int[] sizes = new int[model.getParameters().size()];
 		int count = 0;
 
@@ -347,6 +349,8 @@ public class Operations {
 		csv_out += "\n";
 
 		// Other rows -> parameter values
+		// 1) Questo crea un oggetto che permette di mappare i parametri del
+		//    modello a numeri interi
 		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
 		for (String s : testCases) {
 			String[] values = s.split(" ");
@@ -361,6 +365,9 @@ public class Operations {
 				} else {
 					val = previousCount + Integer.parseInt(values[i]);
 				}
+				// 2) Questo permette, da un valore intero, di ottenere
+				//    il valore della stringa ad esso corrispondente e lo
+				//    aggiunge a csv_out
 				csv_out += valToInt.convertInt(val).getSecond() + ";";
 			}
 			csv_out = csv_out.substring(0, csv_out.length() - 1);

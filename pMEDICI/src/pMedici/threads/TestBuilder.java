@@ -92,7 +92,7 @@ public class TestBuilder implements Runnable {
 	private boolean findImplied(Vector<Pair<Integer, Integer>> tuple) { 
 		boolean found = false;
 		for (int i=0; i<this.tcList.size(); i++) {
-			// Try to acquire the mytex
+			// Try to acquire the mutex
 			if (tcList.get(i).testMutex.tryAcquire()) {
 				assert(tcList.get(i).testMutex.lockedByCaller());
 				// Check the predicate
@@ -140,6 +140,8 @@ public class TestBuilder implements Runnable {
 	public void run() {
 		// Extract all the values
 		while (!safeQueue.finished()) {
+			// I take a tuple (in a safe shared way and in order) and i manage
+			// it with the current TestBuilder thread
 			Vector<Pair<Integer, Integer>> tuple = safeQueue.get();
 			if (tuple != null) {
 				// If a tuple has been extracted
@@ -194,17 +196,20 @@ public class TestBuilder implements Runnable {
 				
 				// Incompatible or not implied for every test context
 				// 	-> Not implied and not coverable: build a new test context
+				// Creating a new text context tc
 				TestContext tc = new TestContext(baseMDD, nParam, useConstraints, manager);
 				try {
 					tc.testMutex.acquire();
 					// Check if it is coverable by a new test context
 					if (tc.isCoverable(tuple)) {
+						// adding the tuple which is coverable to the newly created tc
 						tc.addTuple(tuple);
 						tc.testMutex.release();
 						if (PMedici.PRINT_DEBUG)
 							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
 						// Add the new test context to the list
 						this.testContextMutex.acquire();
+						// adding the new text context to the tcList
 						tcList.add(tc);
 						this.testContextMutex.release();
 					} else {
