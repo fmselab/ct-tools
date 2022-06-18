@@ -251,16 +251,7 @@ public class TestContext {
 
 		// Update the MDD, if constraints are available
 		if (useConstraints) {
-		
-			/* Debug code */
-			if(PMediciPlus.PRINT_DEBUG)
-			System.out.println("Old mdd: "+this.mdd);
-			
 			updateMdd(tuple);
-			
-			/* Debug code */
-			if(PMediciPlus.PRINT_DEBUG)
-			System.out.println("New mdd: "+this.mdd);
 		}
 		else {
 			nCovered++;
