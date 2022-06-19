@@ -27,7 +27,6 @@ import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
 import pMedici.threads.TestBuilder;
 import pMedici.threads.TestEarlyFiller;
-import pMedici.threads.TestImporter;
 import pMedici.threads.TupleFiller;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
@@ -38,24 +37,24 @@ import pMedici.combinations.TupleGenerator;
 import pMedici.importer.CSVImporter;
 
 public class PMediciPlusMT {
-	
-	public static boolean PRINT_DEBUG = true;
+
+	public static boolean PRINT_DEBUG = false;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 
-		String evolvedModelPath="";
-		String oldTestSuiteFilePath="";
-		
+		String evolvedModelPath = "";
+		String oldTestSuiteFilePath = "";
+
 		int strength = 2;
 		CitModel model = null;
 		boolean verb = false;
-		
-		 // 1)
-		 // Read the test model from arguments
-		 // args[0] = t-wise strength
-		 // args[1] = file name (path) to CTWedge evolved model
-		 // args[2] = file name (path) to the test suite (.csv) of the old model
-		 // args[3] = boolean true/false for verb
+
+		// 1)
+		// Read the test model from arguments
+		// args[0] = t-wise strength
+		// args[1] = file name (path) to CTWedge evolved model
+		// args[2] = file name (path) to the test suite (.csv) of the old model
+		// args[3] = boolean true/false for verb
 		if (args.length >= 3) {
 			strength = Integer.parseInt(args[0]);
 			evolvedModelPath = args[1];
@@ -63,42 +62,13 @@ public class PMediciPlusMT {
 			if (args.length > 3)
 				verb = Boolean.parseBoolean(args[3]);
 		} else {
-			throw new RuntimeException("You must specify the strength, the new model file path and the old test suite file path for generating a test suite");
+			throw new RuntimeException(
+					"You must specify the strength, the new model file path and the old test suite file path for generating a test suite");
 		}
-		
-		// Importing the tests
-		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
-		
-		// Get current time
-				long start = System.currentTimeMillis();
-				
-				
-		// Converting the oldTest vector in a safe queue
-		ExtendedSemaphore oldTestsMutex = new ExtendedSemaphore();
-		ConcurrentLinkedQueue<Map<String, String>> sharedOldTestsQueue = new ConcurrentLinkedQueue<Map<String, String>>();
-		
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		ArrayList<Thread> testImporterThreads = new ArrayList<Thread>();
-		for (int i=0; i<nThreads; i++) {
-			Thread TestImporter = new Thread(new TestImporter(sharedOldTestsQueue, oldTestsMutex, oldTests));
-			testImporterThreads.add(TestImporter);
-			TestImporter.start();
-		}
-		
-		// Join all the test importer threads
-		for (int i=0; i<nThreads; i++) {
-			testImporterThreads.get(i).join();
 
-		}
-				
-//		// Printing the queue
-//		for(Map<String, String> oldTest : sharedOldTestsQueue) { 
-//			oldTest.forEach((name, value) -> {
-//				System.out.print(name + ":" + value + ", ");
-//			}); System.out.println(); } 
-//			}
-		
-		
+		// Get current time
+		long start = System.currentTimeMillis();
+
 		// Convert the CTWedge model to Medici format (exported in "model.txt" file)
 		if (!evolvedModelPath.equals("")) {
 			model = Utility.loadModelFromPath(evolvedModelPath);
@@ -126,55 +96,47 @@ public class PMediciPlusMT {
 		// Adding the constraints to the baseNode (baseMDD)
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
 
+		// Importing the old test suite
+		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
+
 		// Creating the list of Text Context (partial test cases)
-		// This is eventually filled by the comparision of the evolved model
-		// with the old test suite. Then it is completed by the normal medici algorithm.
+		// This is eventually filled at first by the comparision of the evolved model
+		// with the old test suite.
 		Vector<TestContext> tcList = new Vector<TestContext>();
-		
-		
+
+		// Semaphore for managing concurrency during the comparision with the old test
+		// suite
+		ExtendedSemaphore oldTestsMutex = new ExtendedSemaphore();
+		ExtendedSemaphore tcListMutex = new ExtendedSemaphore();
+
+		int nThreads = Runtime.getRuntime().availableProcessors();
 		nThreads = Runtime.getRuntime().availableProcessors();
 		ArrayList<Thread> testEarlyFillerThreads = new ArrayList<Thread>();
-		for (int i=0; i<nThreads; i++) {
-			Thread testEarlyFiller = new Thread(new TestEarlyFiller(sharedOldTestsQueue, oldTestsMutex, tcList, model, m, manager, baseMDD));
+		for (int i = 0; i < nThreads; i++) {
+			Thread testEarlyFiller = new Thread(
+					new TestEarlyFiller(oldTests, oldTestsMutex, tcList, tcListMutex, model, m, manager, baseMDD));
 			testEarlyFillerThreads.add(testEarlyFiller);
 			testEarlyFiller.start();
 		}
-		
+
 		// Join all the test importer threads
-		for (int i=0; i<nThreads; i++) {
+		for (int i = 0; i < nThreads; i++) {
 			testEarlyFillerThreads.get(i).join();
 		}
-		
+
 		// Save the tests
 		ArrayList<String> testCases = new ArrayList<String>();
 		for (TestContext tc : tcList) {
-	//		nCovered += tc.getNCovered();
+			// nCovered += tc.getNCovered();
 			testCases.add(tc.getTest(false));
 		}
-				
+
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
 		Operations.translateOutput(testCases, model);
-		
 
 		System.out.println("Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 //		int nCovered = 0;
 //		int totTuples = 0;
 //

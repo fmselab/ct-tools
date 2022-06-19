@@ -35,7 +35,7 @@ import pMedici.importer.CSVImporter;
 
 public class PMediciPlus {
 	
-	public static boolean PRINT_DEBUG = true;
+	public static boolean PRINT_DEBUG = false;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 
