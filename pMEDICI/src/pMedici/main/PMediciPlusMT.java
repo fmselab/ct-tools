@@ -7,21 +7,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.colomoto.mddlib.MDDManager;
-import org.colomoto.mddlib.PathSearcher;
-import org.colomoto.mddlib.operators.MDDBaseOperators;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.medici.MediciCITGenerator;
-import ctwedge.generator.util.ParameterSize;
 import ctwedge.generator.util.Utility;
-import ctwedge.util.ParameterValuesToInt;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -32,7 +24,6 @@ import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
 import pMedici.util.TestModel;
-import pMedici.util.TupleConverter;
 import pMedici.combinations.TupleGenerator;
 import pMedici.importer.CSVImporter;
 
@@ -49,7 +40,6 @@ public class PMediciPlusMT {
 		CitModel model = null;
 		boolean verb = false;
 
-		// 1)
 		// Read the test model from arguments
 		// args[0] = t-wise strength
 		// args[1] = file name (path) to CTWedge evolved model
@@ -96,6 +86,8 @@ public class PMediciPlusMT {
 		// Adding the constraints to the baseNode (baseMDD)
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
 
+		/* pMEDICIplusMT algorithm */
+
 		// Importing the old test suite
 		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
 
@@ -119,15 +111,54 @@ public class PMediciPlusMT {
 			testEarlyFiller.start();
 		}
 
-		// Join all the test importer threads
+		// Join all the test filler threads
 		for (int i = 0; i < nThreads; i++) {
 			testEarlyFillerThreads.get(i).join();
+		}
+
+		System.out.println("Time required for *pMediciPLUSMT* algorithm: " + (System.currentTimeMillis() - start) + " ms");
+
+		// Now tcList may contain some initial partial test cases
+		// taken from the old test suite. The normal pMedici algorithm
+		// is now applied starting using this tcList.
+		
+		/* pMEDICI algorithm */
+
+		int nCovered = 0;
+		int totTuples = 0;
+
+		// Shared object between producer and consumer
+		SafeQueue tuples = new SafeQueue();
+
+		// Combination generator
+		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(m);
+
+		// Start the filler thread
+		TupleFiller tFiller = new TupleFiller(tg, tuples);
+		Thread tFillerThread = new Thread(tFiller);
+		tFillerThread.start();
+
+		// Start all the TestBuilder threads
+		nThreads = Runtime.getRuntime().availableProcessors();
+		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
+		boolean sort = false;
+		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
+		for (int i = 0; i < nThreads; i++) {
+			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, m.getnParams(),
+					m.getUseConstraints(), manager, testContextsMutex));
+			testBuilderThreads.add(tBuilder);
+			tBuilder.start();
+		}
+
+		// Join all the test builder threads
+		for (int i = 0; i < nThreads; i++) {
+			testBuilderThreads.get(i).join();
 		}
 
 		// Save the tests
 		ArrayList<String> testCases = new ArrayList<String>();
 		for (TestContext tc : tcList) {
-			// nCovered += tc.getNCovered();
+			nCovered += tc.getNCovered();
 			testCases.add(tc.getTest(false));
 		}
 
@@ -135,79 +166,20 @@ public class PMediciPlusMT {
 		System.out.println("-----TEST SUITE-----");
 		Operations.translateOutput(testCases, model);
 
-		System.out.println("Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
+		if (verb) {
+			totTuples = tuples.getNTuples();
+			System.out.println("Covered: " + nCovered + " tuples");
+			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
+			System.out.println("Total number of tuples: " + totTuples + " tuples");
+			System.out.println(
+					"Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
+			System.out.println("Generated " + tcList.size() + " tests");
+		}
 
-//		int nCovered = 0;
-//		int totTuples = 0;
-//
-//		TestContext tc = new TestContext(baseMDD, m.getnParams(), m.getUseConstraints(), manager);
-//
-//		for (Parameter param : model.getParameters())
-//			System.out.println(param.getName());
-//
-//		Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>();
-//		tuple.add(new Pair<Integer, Integer>(0, 1)); // Boeing = true
-//		tuple.add(new Pair<Integer, Integer>(1, 1)); // SeatsConfiguration = true
-//		tuple.add(new Pair<Integer, Integer>(2, 1)); // Rows3Passengres210 = true
-//		tuple.add(new Pair<Integer, Integer>(3, 1)); // FuelCapacity = true
-//		tuple.add(new Pair<Integer, Integer>(4, 1)); // Liters126920 = true
-//
-//		System.out.println(tc.verifyWithMDD(tuple)); // dovrebbe essere true, ma stampa false
-//
-//		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
-//		System.out.println(valToInt.convertInt(1).getFirst().getName());
-
-//	System.out.println( valToInt.get("Boeing"));
-//	System.out.println( valToInt.get("SeatsConfiguration"));
-//	System.out.println( valToInt.get("Rows3Passengers210"));
-//	System.out.println( valToInt.get("FuelCapacity"));
-//	System.out.println( valToInt.get("Liters126920"));
-
-//	Vector<TestContext> tcList = new Vector<TestContext>();
-//		tc.addTuple(tuple);
-//	
-//		ArrayList<String> testCases = new ArrayList<String>();
-//		testCases.add(tc.getTest(false));
-//	
-//	System.out.println("-----TEST SUITE-----");
-//		Operations.translateOutput(testCases, model);
-
-//	// ritorna il numero di valori che può assumere ciascun parametro
-//	// essendo booleani: stampa per tutte i parametri 5
-//	for (Parameter param : model.getParameters())
-//		System.out.println(ParameterSize.eInstance.doSwitch(param));
-//	
-//	// stampa il numero totale di parametri
-//	System.out.println(model.getParameters().size());
-
-		// CONVERSIONI: da numero a valore
-//	ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
-//	int val=5;
-//	// numero val -> nome del parametro
-//	csv_out += valToInt.convertInt(val).getFirst().getName() + ";";
-//	// numero val -> valore associato a val 
-//	csv_out += valToInt.convertInt(val).getSecond() + ";";
-//	// nome parametro -> primo numero val associato ad esso
-//	csv_out += valToInt.get("Rows3Passengers210")+" ";
-//	csv_out += valToInt.get("Liters126920");
-//	System.out.println(csv_out);
-
-		// verifyWithMDD(Vector<Pair<Integer, Integer>> tuple)
-
-//			// Create an MDD representing the tuple
-//			TupleConverter tc = new TupleConverter(manager);
-//			int tupleMdd = tc.getMDDFromTuple(tuple);
-//			// Try computing the intersection (AND) 
-//			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-//			int intersection = MDDBaseOperators.AND.combine(manager, this.mdd, tupleMdd);
-//			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-//			// If the intersection is empty, then the tuple is not compatible, otherwise it is
-//			PathSearcher searcher = new PathSearcher(manager, 1);
-//			searcher.setNode(intersection);
-//			int nPaths = searcher.countPaths();
-//			return nPaths > 0;		
-
-//		System.out.println();
+		// Join the tuple filler thread
+		tFillerThread.join();
+		
+		System.out.println("Time required for the whole algorithm: " + (System.currentTimeMillis() - start) + " ms");
 
 	}
 
