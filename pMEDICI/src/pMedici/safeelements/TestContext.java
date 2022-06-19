@@ -7,7 +7,6 @@ import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
 
-import pMedici.main.PMediciPlus;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
 import pMedici.util.TupleConverter;
@@ -63,11 +62,7 @@ public class TestContext {
 		this.manager = manager;
 		this.testMutex = new ExtendedSemaphore();
 		Arrays.fill(this.test, UNDEF);		
-		// this.test = array with the parameters and their value in this specific test
-		// this.mdd = the current mdd updated with the value of the parameters
 	}
-	
-	
 	
 	/**
 	 * Checks whether the tuple given as parameter is coverable or not by the current MDD
@@ -78,21 +73,11 @@ public class TestContext {
 	 */
 	public boolean isCoverable(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		// this is a text context which can be used by different TestBuilders
-		// for this reason we need to be sure that no other TestBuilder is using this
 		if (!IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Checks using the test vector
-		// the method takes a tuple which is passed to the method from the current TestBuilder
-		// the tuple is a vector of pair where each pair is (parameter,value) of the current tuple
 		for (Pair<Integer, Integer> t : tuple) {
-			// we take the number of the parameter in the current tuple and we check
-			// if the value associated to that parameter in the "test" array is -1 (=UNDEF) or not
-			// 	- if it is -1 then we can go on and check if it is compatible with the MDD
-			//  - if it is not -1, the value it's already assign -> we check if the value
-			//    is equal to the one which has already been set -> if it is different, then
-			//    we return false because the tuple is not coverable with this current test context
 			int valueInTest = test[t.getFirst()];
 			if (valueInTest != UNDEF) {
 				// If the value is not undef, and differs from that in the tuple
@@ -102,8 +87,6 @@ public class TestContext {
 			}
 		}
 		
-		// then we check wheter the tuple is compatible the MDD associated to the current
-		// test context or not
 		// If the tuple is not compatible, then obviously is not coverable by the current TestContext
 		if (!isCompatible(tuple, true)) {
 			return false;

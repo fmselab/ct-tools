@@ -28,41 +28,44 @@ import pMedici.combinations.TupleGenerator;
 import pMedici.importer.CSVImporter;
 
 public class PMediciPlus {
-	
+
 	public static boolean PRINT_DEBUG = false;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 
-		String evolvedModelPath="";
-		String oldTestSuiteFilePath="";
-		
+		String evolvedModelPath = "";
+		String oldTestSuiteFilePath = "";
+		String exportFilePath = "";
+
 		int strength = 2;
 		CitModel model = null;
 		boolean verb = false;
-		
-		 // Read the test model from arguments
-		 // args[0] = t-wise strength
-		 // args[1] = file name (path) to CTWedge evolved model
-		 // args[2] = file name (path) to the test suite (.csv) of the old model
-		 // args[3] = boolean true/false for verb
-		if (args.length >= 3) {
+
+		// Read the test model from arguments
+		// args[0] = t-wise strength
+		// args[1] = file name (path) to CTWedge evolved model
+		// args[2] = file name (path) to the test suite (.csv) of the old model
+		// args[3] = file name (path) to the file where to export the test suite (.csv)
+		// args[4] = boolean true/false for verb
+		if (args.length >= 4) {
 			strength = Integer.parseInt(args[0]);
 			evolvedModelPath = args[1];
 			oldTestSuiteFilePath = args[2];
-			if (args.length > 3)
-				verb = Boolean.parseBoolean(args[3]);
+			exportFilePath = args[3];
+			if (args.length > 4)
+				verb = Boolean.parseBoolean(args[4]);
 		} else {
-			throw new RuntimeException("You must specify the strength, the new model file path and the old test suite file path for generating a test suite");
+			throw new RuntimeException(
+					"You must specify 1) the strength, 2) the new model file path, 3) the old test suite file path and 4) the file path for the test suite export file");
 		}
-		
-		
+
 		// Get current time
 		long start = System.currentTimeMillis();
-		
+
 		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
-		
+
 		// Convert the CTWedge model to Medici format (exported in "model.txt" file)
-			if (!evolvedModelPath.equals("")) {
+		if (!evolvedModelPath.equals("")) {
 			model = Utility.loadModelFromPath(evolvedModelPath);
 			MediciCITGenerator gen = new MediciCITGenerator();
 			MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
@@ -89,68 +92,73 @@ public class PMediciPlus {
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
 
 		/* pMEDICIplus algorithm */
-		
+
 		// Creating the list of Text Context (partial test cases)
 		// This is eventually filled by the comparision of the evolved model
 		// with the old test suite. Then it is completed by the normal medici algorithm.
 		Vector<TestContext> tcList = new Vector<TestContext>();
-		
-		// For each for each test case of the old test suite, we check if for each parameter
-		// of the evolved model (following the order used in the CitModel which is also the
-		// order used in the tuple by Medici) the value of the current iteration parameter
+
+		// For each for each test case of the old test suite, we check if for each
+		// parameter
+		// of the evolved model (following the order used in the CitModel which is also
+		// the
+		// order used in the tuple by Medici) the value of the current iteration
+		// parameter
 		// is present or not in the old test suite. If it is, then we add the parameter
 		// value in the tuple of the current iteration.
 		for (Map<String, String> oldTest : oldTests) {
-					
+
 			// Creating the tuple related to the current iteration
 			Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>();
-			int tupleIndex=0;
-			
+			int tupleIndex = 0;
+
 			for (Parameter param : model.getParameters()) {
-				
+
 				// if the parameter of the new model is in the old test suite,
 				// its value is added in the corresponding position in the current tuple
 				String testParamValue;
-				if( ( testParamValue=oldTest.get(param.getName()) ) !=null) {
-					// since we imposed that values must be all boolean, we have only 0="false" or 1="true"
-					tuple.add(new Pair<Integer, Integer>(tupleIndex, testParamValue.equals("true") ? 1 : 0 ));
+				if ((testParamValue = oldTest.get(param.getName())) != null) {
+					// since we imposed that values must be all boolean, we have only 0="false" or
+					// 1="true"
+					tuple.add(new Pair<Integer, Integer>(tupleIndex, testParamValue.equals("true") ? 1 : 0));
 				}
-				
+
 				tupleIndex++;
 			}
-			
+
 			// If we added at least one parameter test value to the tuple, then
 			// we check if the created tuple is valid with the model constraints
-			if(!tuple.isEmpty()) {
+			if (!tuple.isEmpty()) {
 				TestContext tc = new TestContext(baseMDD, m.getnParams(), m.getUseConstraints(), manager);
 
 				// If the tuple is compatible with the constraints, then we add the
 				// add the tuple to the current test context and then we add the
 				// current test context to the list of all the test context from
 				// which the algorithm of medici will start executing
-						
-				if(tc.verifyWithMDD(tuple)) {
-								
+
+				if (tc.verifyWithMDD(tuple)) {
+
 					// Adding the tuple to the current test context
 					// Notice: this method also update the mdd of the text context
 					tc.addTuple(tuple);
-					
+
 					// Adding the tc to the list of all the test context tcList
 					tcList.add(tc);
-					
+
 				}
 			}
-			
+
 		}
-			
-		System.out.println("Time required for *pMediciPLUS* algorithm: " + (System.currentTimeMillis() - start) + " ms");
+
+		System.out
+				.println("Time required for *pMediciPLUS* algorithm: " + (System.currentTimeMillis() - start) + " ms");
 
 		// Now tcList may contain some initial partial test cases
 		// taken from the old test suite. The normal pMedici algorithm
 		// is now applied starting using this tcList.
-		
-		/* pMEDICI algorithm */
 
+		/* pMEDICI algorithm */
+		
 		int nCovered = 0;
 		int totTuples = 0;
 
@@ -165,6 +173,7 @@ public class PMediciPlus {
 		Thread tFillerThread = new Thread(tFiller);
 		tFillerThread.start();
 
+		
 		// Start all the TestBuilder threads
 		int nThreads = Runtime.getRuntime().availableProcessors();
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
@@ -191,7 +200,8 @@ public class PMediciPlus {
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
-		Operations.translateOutput(testCases, model);
+		String testSuite = Operations.translateOutputToString(testCases, model);
+		System.out.println(testSuite);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();
@@ -205,8 +215,11 @@ public class PMediciPlus {
 
 		// Join the tuple filler thread
 		tFillerThread.join();
-		
+
 		System.out.println("Time required for the whole algorithm: " + (System.currentTimeMillis() - start) + " ms");
+
+		// Export the test suite
+		pMedici.exporter.CSVExporter.export(testSuite, exportFilePath);
 
 	}
 
