@@ -29,7 +29,7 @@ import pMedici.importer.CSVImporter;
 
 public class PMediciPlus {
 
-	public static boolean PRINT_DEBUG = false;
+	public static boolean PRINT_DEBUG = true;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -199,9 +199,22 @@ public class PMediciPlus {
 		}
 
 		// Print test suite
-		System.out.println("-----TEST SUITE-----");
 		String testSuite = Operations.translateOutputToString(testCases, model);
-		System.out.println(testSuite);
+		
+		// Deleting eventually duplicated tests
+		String reducedTestSuite = Operations.deleteDuplicates(testSuite);
+		
+		if (PRINT_DEBUG) {
+			System.out.println("----- FINAL TEST SUITE -----");
+			System.out.print(testSuite);
+			System.out.println("SIZE: "+ (testSuite.split("\n").length-1) );
+			System.out.println();
+			
+			System.out.println("----- FINAL TEST SUITE REDUCED -----");
+			System.out.print(reducedTestSuite);
+			System.out.println("SIZE: "+ (reducedTestSuite.split("\n").length-1) );
+			System.out.println();
+		}
 
 		if (verb) {
 			totTuples = tuples.getNTuples();
