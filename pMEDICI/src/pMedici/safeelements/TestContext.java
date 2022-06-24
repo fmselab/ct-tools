@@ -160,7 +160,7 @@ public class TestContext {
 	 * @return true if the tuple is compatible, false otherwise
 	 * @throws InterruptedException 
 	 */
-	private boolean verifyWithMDD(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
+	public boolean verifyWithMDD(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
 		if (!IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);

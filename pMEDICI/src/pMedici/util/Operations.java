@@ -333,6 +333,8 @@ public class Operations {
 	 */
 	public static void translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
 		String csv_out = "";
+		// creating an array of integers with size equal to the number of the parameters of CitModel
+		// in each position we will have the size of the corresponding parameter
 		int[] sizes = new int[model.getParameters().size()];
 		int count = 0;
 
@@ -347,6 +349,8 @@ public class Operations {
 		csv_out += "\n";
 
 		// Other rows -> parameter values
+		// 1) Questo crea un oggetto che permette di mappare i parametri del
+		//    modello a numeri interi
 		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
 		for (String s : testCases) {
 			String[] values = s.split(" ");
@@ -361,6 +365,9 @@ public class Operations {
 				} else {
 					val = previousCount + Integer.parseInt(values[i]);
 				}
+				// 2) Questo permette, da un valore intero, di ottenere
+				//    il valore della stringa ad esso corrispondente e lo
+				//    aggiunge a csv_out
 				csv_out += valToInt.convertInt(val).getSecond() + ";";
 			}
 			csv_out = csv_out.substring(0, csv_out.length() - 1);
@@ -369,6 +376,62 @@ public class Operations {
 
 		// Print the results
 		Arrays.stream(csv_out.split("\n")).distinct().forEach(x -> System.out.println(x));
+	}
+	
+	/**
+	 * Translates the output from MEDICI format to a CSV one and returns it as a String
+	 * 
+	 * @param testCases: the test cases list
+	 * @param model:     the CIT Model
+	 * 
+	 * @return a {@link String} containing the test suite in a CSV format
+	 * @throws IOException
+	 */
+	public static String translateOutputToString(ArrayList<String> testCases, CitModel model) throws IOException {
+		String csv_out = "";
+		// creating an array of integers with size equal to the number of the parameters of CitModel
+		// in each position we will have the size of the corresponding parameter
+		int[] sizes = new int[model.getParameters().size()];
+		int count = 0;
+
+		// First row -> parameter names
+		for (Parameter param : model.getParameters()) {
+			sizes[count] = ParameterSize.eInstance.doSwitch(param);
+			csv_out += param.getName() + ";";
+			count++;
+		}
+
+		csv_out = csv_out.substring(0, csv_out.length() - 1);
+		csv_out += "\n";
+
+		// Other rows -> parameter values
+		// 1) Questo crea un oggetto che permette di mappare i parametri del
+		//    modello a numeri interi
+		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
+		for (String s : testCases) {
+			String[] values = s.split(" ");
+			for (int i = 0; i < values.length; i++) {
+				int previousCount = 0;
+				int val = 0;
+				for (int j = 0; j < i; j++) {
+					previousCount += sizes[j];
+				}
+				if (Integer.parseInt(values[i]) == -1) {
+					val = randInt(previousCount, previousCount + sizes[i] - 1);
+				} else {
+					val = previousCount + Integer.parseInt(values[i]);
+				}
+				// 2) Questo permette, da un valore intero, di ottenere
+				//    il valore della stringa ad esso corrispondente e lo
+				//    aggiunge a csv_out
+				csv_out += valToInt.convertInt(val).getSecond() + ";";
+			}
+			csv_out = csv_out.substring(0, csv_out.length() - 1);
+			csv_out += "\n";
+		}
+
+		return csv_out;		
+		
 	}
 
 	/**
@@ -383,4 +446,27 @@ public class Operations {
 		int randomNum = rand.nextInt((max - min) + 1) + min;
 		return randomNum;
 	}
+	
+	public static String deleteDuplicates(String testSuite) {
+		ArrayList<String> tests = new ArrayList<String>();
+		tests.addAll(Arrays.asList(testSuite.split("\n")));
+		
+		ArrayList<String> reducedTests = new ArrayList<String>();
+				
+		for (String element : tests) {
+            // If this element is not present in reducedTests we add it
+            if (!reducedTests.contains(element)) {
+            	reducedTests.add(element);
+            }
+        }
+		
+		String reducedTestSuite = "";
+		for (String element : reducedTests) {
+			reducedTestSuite+=element+"\n";
+		}
+		
+		return reducedTestSuite;
+		
+	}
+	
 }
