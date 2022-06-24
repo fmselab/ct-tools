@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.colomoto.mddlib.MDDManager;
+import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
@@ -107,22 +108,26 @@ public class TestEarlyFiller implements Runnable {
 						}
 
 						// Creating the tuple related to the current iteration
+						// we need to create a tuple because the method that verify
+						// the constraints accepts only the type Vector<Pair<Integer, Integer>>
 						Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>();
-						int tupleIndex = 0;
 
-						for (Parameter param : model.getParameters()) {
-
+						EList<Parameter> parameters = model.getParameters();
+						for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
+							Parameter param = parameters.get(tupleIndex);
 							// if the parameter of the new model is in the old test suite,
 							// its value is added in the corresponding position in the current tuple
 							String testParamValue;
 							if ((testParamValue = oldTest.get(param.getName())) != null) {
+								
 								// since we imposed that values must be all boolean, we have only 0="false" or
 								// 1="true"
+								assert ( testParamValue.equals("true") || testParamValue.equals("false") ) : "model parameters must be boolean";
+								
 								tuple.add(
 										new Pair<Integer, Integer>(tupleIndex, testParamValue.equals("true") ? 1 : 0));
 							}
 
-							tupleIndex++;
 						}
 
 						// If we added at least one parameter test value to the tuple, then
