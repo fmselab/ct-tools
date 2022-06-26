@@ -43,7 +43,7 @@ public class PMediciPlusMT {
 
 		// Read the test model from arguments
 		// args[0] = t-wise strength
-		// args[1] = file name (path) to CTWedge evolved model
+		// args[1] = file name (path) to the CTWedge evolved model
 		// args[2] = file name (path) to the test suite (.csv) of the old model
 		// args[3] = file name (path) to the file where to export the test suite (.csv)
 		// args[4] = boolean true/false for verb
