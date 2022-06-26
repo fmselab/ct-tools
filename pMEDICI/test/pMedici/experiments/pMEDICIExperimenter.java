@@ -107,6 +107,7 @@ public class pMEDICIExperimenter {
 
 		System.out.println();
 		System.out.println("-- REAL TEST GENERATION --");
+		System.out.println("Number of threads utilized: "+PMedici.threadsNum);
 
 		/* REAL EXPERIMENT 1000 TEST GENERATIONS */
 		for (int i = 0; i < 1000; i++) {
@@ -143,7 +144,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -162,7 +163,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -186,7 +187,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -205,7 +206,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -224,7 +225,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -248,7 +249,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -267,7 +268,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -286,7 +287,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -310,7 +311,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -329,7 +330,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -348,7 +349,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -367,7 +368,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -391,7 +392,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -410,7 +411,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -429,7 +430,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -453,7 +454,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -472,7 +473,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -491,7 +492,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -510,7 +511,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -529,7 +530,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -553,7 +554,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -572,7 +573,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -591,7 +592,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -610,7 +611,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -629,7 +630,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -648,7 +649,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -667,7 +668,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -686,7 +687,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -705,7 +706,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -729,7 +730,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -748,7 +749,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			// ------------------------------------------------------------------
@@ -772,7 +773,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			
@@ -791,7 +792,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 
@@ -814,7 +815,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			
@@ -833,7 +834,7 @@ public class pMEDICIExperimenter {
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
 
-			// printing the time on the sheet2
+			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
 			

@@ -27,9 +27,30 @@ import pMedici.util.TestModel;
 import pMedici.combinations.TupleGenerator;
 import pMedici.importer.CSVImporter;
 
+/**
+ * Multithread version of pMEDICI+
+ */
 public class PMediciPlusMT {
 
-	public static boolean PRINT_DEBUG = true;
+	public static boolean PRINT_DEBUG = false;
+
+	/**
+	 * Variable used to share the size of the generated test suite with the class
+	 * {@link pMEDICIPlusMTExperimenter}
+	 */
+	public static int testSuiteSize = -1;
+
+	/**
+	 * Variable used to share the size of the reduced generated test suite (no
+	 * duplicated tests) with the class {@link pMEDICIPlusMTExperimenter}
+	 */
+	public static int reducedTestSuiteSize = -1;
+
+	/**
+	 * Variable used to share the number of thread used in generation with the class
+	 * {@link pMEDICIPlusMTExperimenter}
+	 */
+	public static int threadsNum = -1;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -119,9 +140,6 @@ public class PMediciPlusMT {
 			testEarlyFillerThreads.get(i).join();
 		}
 
-		System.out.println(
-				"Time required for *pMediciPLUSMT* algorithm: " + (System.currentTimeMillis() - start) + " ms");
-
 		if (PRINT_DEBUG) {
 			System.out.println("----- INITIAL TEST SUITE (tcList before pMedici normal algorithm execution) -----");
 			ArrayList<String> testCases = new ArrayList<String>();
@@ -140,10 +158,10 @@ public class PMediciPlusMT {
 
 		int nCovered = 0;
 		int totTuples = 0;
-		
+
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
-		
+
 		// Combination generator
 		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(m);
 
@@ -154,6 +172,7 @@ public class PMediciPlusMT {
 
 		// Start all the TestBuilder threads
 		nThreads = Runtime.getRuntime().availableProcessors();
+		threadsNum = nThreads;
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		boolean sort = false;
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
@@ -178,19 +197,21 @@ public class PMediciPlusMT {
 
 		// Print test suite
 		String testSuite = Operations.translateOutputToString(testCases, model);
-		
+		testSuiteSize = (testSuite.split("\n").length - 1);
+
 		// Deleting eventually duplicated tests
 		String reducedTestSuite = Operations.deleteDuplicates(testSuite);
-		
+		reducedTestSuiteSize = (reducedTestSuite.split("\n").length - 1);;
+
 		if (PRINT_DEBUG) {
 			System.out.println("----- FINAL TEST SUITE -----");
 			System.out.print(testSuite);
-			System.out.println("SIZE: "+ (testSuite.split("\n").length-1) );
+			System.out.println("SIZE: " + (testSuite.split("\n").length - 1));
 			System.out.println();
-			
+
 			System.out.println("----- FINAL TEST SUITE REDUCED -----");
 			System.out.print(reducedTestSuite);
-			System.out.println("SIZE: "+ (reducedTestSuite.split("\n").length-1) );
+			System.out.println("SIZE: " + (reducedTestSuite.split("\n").length - 1));
 			System.out.println();
 		}
 
@@ -207,10 +228,9 @@ public class PMediciPlusMT {
 		// Join the tuple filler thread
 		tFillerThread.join();
 
-		System.out.println("Time required for the whole algorithm: " + (System.currentTimeMillis() - start) + " ms");
-
 		// Export the test suite
-		pMedici.exporter.CSVExporter.export(reducedTestSuite, exportFilePath);
+		// ** Commented because we don't want to include this time in the data generation **
+		// pMedici.exporter.CSVExporter.export(reducedTestSuite, exportFilePath);
 
 	}
 

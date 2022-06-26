@@ -27,6 +27,9 @@ import pMedici.util.TestModel;
 import pMedici.combinations.TupleGenerator;
 import pMedici.importer.CSVImporter;
 
+/**
+ * Non-multithread version of pMEDICI+
+ */
 public class PMediciPlus {
 
 	public static boolean PRINT_DEBUG = true;
