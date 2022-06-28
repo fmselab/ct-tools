@@ -29,6 +29,9 @@ import pMedici.importer.CSVImporter;
 
 /**
  * Multithread version of pMEDICI+
+ * 
+ * @author Luca Parimbelli
+ * 
  */
 public class PMediciPlusMT {
 
@@ -52,8 +55,21 @@ public class PMediciPlusMT {
 	 */
 	public static int threadsNum = -1;
 
-	public static void main(String[] args) throws IOException, InterruptedException {
+	/**
+	 * Variable used to share the size of tcList after the initialization with the
+	 * TestEarlyFiller threads with the class {@link pMEDICIPlusMTExperimenter}
+	 */
+	public static int tcListInitialSize = -1;
 
+	/**
+	 * Variable used to share with the class {@link pMEDICIPlusMTExperimenter} the
+	 * time required for the first part of the algorithm. This is the time required
+	 * for filling the initial tcList with the old valid test cases.
+	 */
+	public static long timeForOldTSFilling = -1;
+
+	public static void main(String[] args) throws IOException, InterruptedException {
+		
 		String evolvedModelPath = "";
 		String oldTestSuiteFilePath = "";
 		String exportFilePath = "";
@@ -80,7 +96,7 @@ public class PMediciPlusMT {
 					"You must specify 1) the strength, 2) the new model file path, 3) the old test suite file path and 4) the file path for the test suite export file");
 		}
 
-		// Get current time
+		// Get current time (required for calculations when verb==true)
 		long start = System.currentTimeMillis();
 
 		// Convert the CTWedge model to Medici format (exported in "model.txt" file)
@@ -111,7 +127,9 @@ public class PMediciPlusMT {
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
 
 		/* pMEDICIplusMT algorithm */
-
+		
+		long fillingTime = System.currentTimeMillis();
+		
 		// Importing the old test suite
 		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
 
@@ -124,9 +142,10 @@ public class PMediciPlusMT {
 		// suite
 		ExtendedSemaphore oldTestsMutex = new ExtendedSemaphore();
 		ExtendedSemaphore tcListMutex = new ExtendedSemaphore();
-
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		nThreads = Runtime.getRuntime().availableProcessors();
+	
+//		int nThreads = Runtime.getRuntime().availableProcessors();
+		int nThreads = 2;
+		threadsNum = nThreads;
 		ArrayList<Thread> testEarlyFillerThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
 			Thread testEarlyFiller = new Thread(
@@ -139,6 +158,8 @@ public class PMediciPlusMT {
 		for (int i = 0; i < nThreads; i++) {
 			testEarlyFillerThreads.get(i).join();
 		}
+		
+		timeForOldTSFilling = System.currentTimeMillis()-fillingTime;
 
 		if (PRINT_DEBUG) {
 			System.out.println("----- INITIAL TEST SUITE (tcList before pMedici normal algorithm execution) -----");
@@ -149,6 +170,10 @@ public class PMediciPlusMT {
 			Operations.translateOutput(testCases, model);
 			System.out.println();
 		}
+
+		// saving the number of test cases from the previous test suite
+		// that has been kept (only for experimental purposes)
+		tcListInitialSize = tcList.size();
 
 		// Now tcList may contain some initial partial test cases
 		// taken from the old test suite. The normal pMedici algorithm
@@ -172,7 +197,6 @@ public class PMediciPlusMT {
 
 		// Start all the TestBuilder threads
 		nThreads = Runtime.getRuntime().availableProcessors();
-		threadsNum = nThreads;
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		boolean sort = false;
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
@@ -201,7 +225,7 @@ public class PMediciPlusMT {
 
 		// Deleting eventually duplicated tests
 		String reducedTestSuite = Operations.deleteDuplicates(testSuite);
-		reducedTestSuiteSize = (reducedTestSuite.split("\n").length - 1);;
+		reducedTestSuiteSize = (reducedTestSuite.split("\n").length - 1);
 
 		if (PRINT_DEBUG) {
 			System.out.println("----- FINAL TEST SUITE -----");
@@ -210,8 +234,8 @@ public class PMediciPlusMT {
 			System.out.println();
 
 			System.out.println("----- FINAL TEST SUITE REDUCED -----");
-			System.out.print(reducedTestSuite);
-			System.out.println("SIZE: " + (reducedTestSuite.split("\n").length - 1));
+//			System.out.print(reducedTestSuite);
+//			System.out.println("SIZE: " + (reducedTestSuite.split("\n").length - 1));
 			System.out.println();
 		}
 
@@ -229,7 +253,8 @@ public class PMediciPlusMT {
 		tFillerThread.join();
 
 		// Export the test suite
-		// ** Commented because we don't want to include this time in the data generation **
+		// ** Commented because we don't want to include this time in the data
+		// generation (just like in the classic pMEDICI algorithm) **
 		// pMedici.exporter.CSVExporter.export(reducedTestSuite, exportFilePath);
 
 	}

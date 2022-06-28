@@ -36,6 +36,12 @@ public class PMedici {
 	public static int testSuiteSize = -1;
 	
 	/**
+	 * Variable used to share the size of the reduced generated test suite (no
+	 * duplicated tests) with the class {@link pMEDICIPlusMTExperimenter}
+	 */
+	public static int reducedTestSuiteSize = -1;
+	
+	/**
 	 * Variable used to share the number of thread used in generation with the class
 	 * {@link pMEDICIExperimenter}
 	 */
@@ -136,6 +142,10 @@ public class PMedici {
 		String testSuite = Operations.translateOutputToString(testCases, model);
 		System.out.println(testSuite);
 		testSuiteSize = (testSuite.split("\n").length - 1);
+		
+		// Deleting eventually duplicated tests
+		String reducedTestSuite = Operations.deleteDuplicates(testSuite);
+		reducedTestSuiteSize = (reducedTestSuite.split("\n").length - 1);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();

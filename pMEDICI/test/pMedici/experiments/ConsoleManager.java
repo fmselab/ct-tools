@@ -3,6 +3,12 @@ package pMedici.experiments;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+/**
+ * Allows to enable/disable the printing to console
+ * 
+ * @author Luca Parimbelli
+ *
+ */
 public class ConsoleManager {
 
 	PrintStream originStream;

@@ -10,9 +10,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import pMedici.main.PMedici;
 import pMedici.main.PMediciPlusMT;
 
+/**
+ * Class used to get experimental data from pMEDICI+
+ * 
+ * @author Luca Parimbelli
+ *
+ */
 public class pMEDICIPlusMTExperimenter {
 	private static final String EVOLUTION_MODELS_INPUT_FOLDER = "../pMEDICI/evolutionModels/";
 	private static final String EVOLUTION_MODELS_OLDTESTS_INPUT_FOLDER = "../pMEDICI/evolutionModels_TestsCSV/";
@@ -27,10 +32,13 @@ public class pMEDICIPlusMTExperimenter {
 		// (it may containts duplicate tests)
 		// Sheet3 = sheetSizeReduced = it containts the size of the reduced generated TS
 		// (no duplicates)
+		// Sheet4 = sheetInitialTime = it containts the time required by the
+		// first part of the algorithm of pMEDICI+ (filling the initial test suite)
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheetTime = workbook.createSheet("TIME (ms) for generating TS");
 		XSSFSheet sheetSize = workbook.createSheet("SIZE of the generated TS");
 		XSSFSheet sheetReducedSize = workbook.createSheet("REDUCED SIZE of the TS");
+		XSSFSheet sheetInitialTime = workbook.createSheet("TIME (ms) early filling");
 
 		// Creating arrays with the name of all the models
 		String[] AmbientAssistedLiving = new String[] { "AmbientAssistedLivingv2" };
@@ -76,6 +84,12 @@ public class pMEDICIPlusMTExperimenter {
 		Row rowReducedSize = sheetReducedSize.createRow(++rowReducedSizeCount);
 		Cell cellReducedSize;
 
+		// Variable set up for managing sheetInitialTime
+		int rowInitialTimeCount = 0;
+		int columnInitialTimeCount = 0;
+		Row rowInitialTime = sheetInitialTime.createRow(++rowInitialTimeCount);
+		Cell cellInitialTime;
+
 		// First line .xlsx -> model name
 		// Printing the name on both the sheets
 		for (String name : evolutionModels) {
@@ -84,9 +98,12 @@ public class pMEDICIPlusMTExperimenter {
 
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(name);
-
+			
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(name);
+
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(name);
 		}
 
 		// Other lines -> time required by TS generations
@@ -114,7 +131,7 @@ public class pMEDICIPlusMTExperimenter {
 
 		/* INITIAL GENERATIONS FOR ENVIRONMENT SET UP */
 		System.out.println("------------------- **ENVIRONMENT SET UP GENERATIONS** -------------------");
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 200; i++) {
 			ModelSubFolder = "AmbientAssistedLiving";
 
 			/* old test suite = v1, new model = v2 */
@@ -131,7 +148,7 @@ public class pMEDICIPlusMTExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
 
 		}
 		System.out.println();
@@ -139,9 +156,12 @@ public class pMEDICIPlusMTExperimenter {
 
 		System.out.println();
 		System.out.println("-- REAL TEST GENERATION --");
-		System.out.println("Number of threads utilized: " + PMediciPlusMT.threadsNum);
 
 		for (int i = 0; i < 1000; i++) {
+			System.out.println();
+			System.out.println("ITERATION NUMBER : " + (i + 1) + "/1000");
+			System.out.println();
+
 			// going to a new row on .xlsx file sheetTime
 			rowTime = sheetTime.createRow(++rowTimeCount);
 			// reset columnTimeCount on the current row
@@ -156,6 +176,11 @@ public class pMEDICIPlusMTExperimenter {
 			rowReducedSize = sheetReducedSize.createRow(++rowReducedSizeCount);
 			// reset columnSizeCount on the current row
 			columnReducedSizeCount = 0;
+
+			// going to a new row on .xlsx file sheetInitialTime
+			rowInitialTime = sheetInitialTime.createRow(++rowInitialTimeCount);
+			// reset columnSizeCount on the current row
+			columnInitialTimeCount = 0;
 
 			/* INCREMENTAL generation: AmbientAssistedLiving */
 			// ------------------------------------------------------------------
@@ -177,8 +202,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -190,6 +215,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			// ------------------------------------------------------------------
 
@@ -212,8 +241,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -225,6 +254,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v2, new model = v3 */
 			oldTestSuite = "CSVTest_AutomotiveMultimediav2.csv";
@@ -241,8 +274,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -254,6 +287,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 			/* INCREMENTAL generation: Boeing */
@@ -275,8 +312,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -288,6 +325,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v2, new model = v3 */
 			oldTestSuite = "CSVTest_Boeingv2.csv";
@@ -304,8 +345,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -317,6 +358,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 			/* INCREMENTAL generation: CarBody */
@@ -338,8 +383,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -351,6 +396,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v2, new model = v3 */
 			oldTestSuite = "CSVTest_CarBodyv2.csv";
@@ -367,8 +416,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -380,6 +429,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v3, new model = v4 */
 			oldTestSuite = "CSVTest_CarBodyv3.csv";
@@ -396,8 +449,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -409,6 +462,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			// ------------------------------------------------------------------
 
@@ -431,8 +488,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -444,6 +501,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v2, new model = v3 */
 			oldTestSuite = "CSVTest_LinuxKernelv2.csv";
@@ -460,8 +521,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -473,6 +534,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 			/* INCREMENTAL generation: ParkingAssistant */
@@ -494,8 +559,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -508,6 +573,10 @@ public class pMEDICIPlusMTExperimenter {
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
 
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
+			
 			/* old test suite = v2, new model = v3 */
 			oldTestSuite = "CSVTest_ParkingAssistantv2.csv";
 			ModelName = "ParkingAssistantv3_ctwedge.ctw";
@@ -523,8 +592,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -536,6 +605,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v3, new model = v4 */
 			oldTestSuite = "CSVTest_ParkingAssistantv3.csv";
@@ -552,8 +625,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -565,6 +638,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v4, new model = v5 */
 			oldTestSuite = "CSVTest_ParkingAssistantv4.csv";
@@ -581,8 +658,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -594,6 +671,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 			/* INCREMENTAL generation: PPU */
@@ -615,8 +696,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -628,6 +709,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v2, new model = v3 */
 			oldTestSuite = "CSVTest_PPUv2.csv";
@@ -644,8 +729,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -657,6 +742,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v3, new model = v4 */
 			oldTestSuite = "CSVTest_PPUv3.csv";
@@ -673,8 +762,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -686,6 +775,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v4, new model = v5 */
 			oldTestSuite = "CSVTest_PPUv4.csv";
@@ -702,8 +795,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -715,6 +808,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v5, new model = v6 */
 			oldTestSuite = "CSVTest_PPUv5.csv";
@@ -731,8 +828,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -744,6 +841,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v6, new model = v7 */
 			oldTestSuite = "CSVTest_PPUv6.csv";
@@ -760,8 +861,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -773,6 +874,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v7, new model = v8 */
 			oldTestSuite = "CSVTest_PPUv7.csv";
@@ -789,8 +894,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -802,6 +907,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 
 			/* old test suite = v8, new model = v9 */
 			oldTestSuite = "CSVTest_PPUv8.csv";
@@ -818,8 +927,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -831,6 +940,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 			/* INCREMENTAL generation: SmartHotel */
@@ -852,8 +965,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -865,6 +978,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 			/* INCREMENTAL generation: SmartWatch */
@@ -886,8 +1003,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -899,6 +1016,10 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 			/* INCREMENTAL generation: WeatherStation */
@@ -920,8 +1041,8 @@ public class pMEDICIPlusMTExperimenter {
 			consoleManger.consolePrintingOn();
 			System.out.println(
 					"\n ** " + newTestSuite + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize not reduced:"
-							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize);
-
+							+ PMediciPlusMT.testSuiteSize + "\nSize reduced:" + PMediciPlusMT.reducedTestSuiteSize +"\nTime testEarlyFillerThread: "+PMediciPlusMT.timeForOldTSFilling);
+			
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -933,12 +1054,21 @@ public class pMEDICIPlusMTExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMediciPlusMT.reducedTestSuiteSize);
+			
+			// printing the reduced size on the sheet4
+			cellInitialTime = rowInitialTime.createCell(++columnInitialTimeCount);
+			cellInitialTime.setCellValue(PMediciPlusMT.timeForOldTSFilling);
 			// ------------------------------------------------------------------
 
 		}
 
+		System.out.println();
+		System.out.println("**Test generation completed**");
+		System.out.println("Number of threads utilized: " + PMediciPlusMT.threadsNum);
+
 		// Exporting the data to the .xlsx file
-		FileOutputStream outputStream = new FileOutputStream("experimentData/pMEDICIMT_Incremental_Generation_8Threads.xlsx");
+		FileOutputStream outputStream = new FileOutputStream(
+				"experimentData/pMEDICIMT_Incremental_Generation_2Threads_noMergeDuplicatedTests3.xlsx");
 		workbook.write(outputStream);
 
 		workbook.close();

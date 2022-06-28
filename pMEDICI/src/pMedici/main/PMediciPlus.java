@@ -29,6 +29,9 @@ import pMedici.importer.CSVImporter;
 
 /**
  * Non-multithread version of pMEDICI+
+ * 
+ * @author Luca Parimbelli
+ *
  */
 public class PMediciPlus {
 
