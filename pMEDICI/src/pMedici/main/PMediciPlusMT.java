@@ -60,6 +60,12 @@ public class PMediciPlusMT {
 	 * TestEarlyFiller threads with the class {@link pMEDICIPlusMTExperimenter}
 	 */
 	public static int tcListInitialSize = -1;
+	
+//	/**
+//	 * Variable used to share the tcList after the initialization with the
+//	 * TestEarlyFiller threads with the class {@link pMEDICIPlusMTExperimenter}
+//	 */
+//	public static String tcListInitial = "";
 
 	/**
 	 * Variable used to share with the class {@link pMEDICIPlusMTExperimenter} the
@@ -234,8 +240,8 @@ public class PMediciPlusMT {
 			System.out.println();
 
 			System.out.println("----- FINAL TEST SUITE REDUCED -----");
-//			System.out.print(reducedTestSuite);
-//			System.out.println("SIZE: " + (reducedTestSuite.split("\n").length - 1));
+			System.out.print(reducedTestSuite);
+			System.out.println("SIZE: " + (reducedTestSuite.split("\n").length - 1));
 			System.out.println();
 		}
 
@@ -253,9 +259,9 @@ public class PMediciPlusMT {
 		tFillerThread.join();
 
 		// Export the test suite
-		// ** Commented because we don't want to include this time in the data
-		// generation (just like in the classic pMEDICI algorithm) **
-		// pMedici.exporter.CSVExporter.export(reducedTestSuite, exportFilePath);
+		// ** To be commented during experiments because  because we don't want to include this time in the data
+		// sgeneration (just like in the classic pMEDICI algorithm) **
+		pMedici.exporter.CSVExporter.export(reducedTestSuite, exportFilePath);
 
 	}
 
