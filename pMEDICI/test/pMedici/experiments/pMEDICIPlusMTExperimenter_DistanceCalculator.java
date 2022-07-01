@@ -91,7 +91,7 @@ public class pMEDICIPlusMTExperimenter_DistanceCalculator {
 		float distance;
 		
 		ConsoleManager consoleManger = new ConsoleManager(System.out);
-n
+
 		for (int i = 0; i < 1000; i++) {
 			System.out.println();
 			System.out.println("ITERATION NUMBER : " + (i + 1) + "/1000");
