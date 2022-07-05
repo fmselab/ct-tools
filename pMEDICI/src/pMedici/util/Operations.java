@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import java.util.Vector;
@@ -13,6 +14,7 @@ import java.util.Vector;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
+import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
@@ -45,6 +47,13 @@ public class Operations {
 	 * @throws IOException
 	 */
 	public static TestModel readFile(String path) throws IOException {
+		// Open the model file
+		File modelFile = new File(path);
+		BufferedReader reader = new BufferedReader(new FileReader(modelFile));
+		return readModelFromReader(reader);
+	}
+
+	public static TestModel readModelFromReader(BufferedReader reader) throws IOException {
 		int nParams = 0;
 		int strength = 0;
 		int[] bounds;
@@ -52,9 +61,6 @@ public class Operations {
 		String tempStr;
 		ArrayList<Constraint> constraintList = new ArrayList<Constraint>();
 
-		// Open the model file
-		File modelFile = new File(path);
-		BufferedReader reader = new BufferedReader(new FileReader(modelFile));
 
 		// The first line contains the strength
 		strength = Integer.parseInt(reader.readLine());
@@ -329,30 +335,32 @@ public class Operations {
 	 * 
 	 * @param testCases: the test cases list
 	 * @param model:     the CIT Model
+	 * @return a list of strings, one for each row (test) and header as first row
 	 * @throws IOException
 	 */
-	public static void translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
-		String csv_out = "";
+	public static List<String> translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
+		List<String> csv_out = new ArrayList<>();
 		// creating an array of integers with size equal to the number of the parameters of CitModel
 		// in each position we will have the size of the corresponding parameter
 		int[] sizes = new int[model.getParameters().size()];
 		int count = 0;
-
+		String header = "";
 		// First row -> parameter names
 		for (Parameter param : model.getParameters()) {
 			sizes[count] = ParameterSize.eInstance.doSwitch(param);
-			csv_out += param.getName() + ";";
+			header += param.getName() + ";";
 			count++;
 		}
-
-		csv_out = csv_out.substring(0, csv_out.length() - 1);
-		csv_out += "\n";
+		// remove 
+		header = header.substring(0, header.length() - 1);
+		csv_out.add(header);
 
 		// Other rows -> parameter values
 		// 1) Questo crea un oggetto che permette di mappare i parametri del
 		//    modello a numeri interi
 		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
 		for (String s : testCases) {
+			String row = "";
 			String[] values = s.split(" ");
 			for (int i = 0; i < values.length; i++) {
 				int previousCount = 0;
@@ -368,15 +376,14 @@ public class Operations {
 				// 2) Questo permette, da un valore intero, di ottenere
 				//    il valore della stringa ad esso corrispondente e lo
 				//    aggiunge a csv_out
-				csv_out += valToInt.convertInt(val).getValue() + ";";
+				row += valToInt.convertInt(val).getValue() + ";";
 			}
-			csv_out = csv_out.substring(0, csv_out.length() - 1);
-			csv_out += "\n";
+			row = row.substring(0, row.length() - 1);
+			csv_out.add(row);
 		}
-
-		// Print the results
-		Arrays.stream(csv_out.split("\n")).distinct().forEach(x -> System.out.println(x));
+		return csv_out;
 	}
+	/// TODO unire con il precedente
 	
 	/**
 	 * Translates the output from MEDICI format to a CSV one and returns it as a String
@@ -392,13 +399,11 @@ public class Operations {
 		// creating an array of integers with size equal to the number of the parameters of CitModel
 		// in each position we will have the size of the corresponding parameter
 		int[] sizes = new int[model.getParameters().size()];
-		int count = 0;
-
-		// First row -> parameter names
-		for (Parameter param : model.getParameters()) {
-			sizes[count] = ParameterSize.eInstance.doSwitch(param);
-			csv_out += param.getName() + ";";
-			count++;
+		EList<Parameter> parameters = model.getParameters();
+		for (int i = 0; i < parameters.size(); i++) {
+			Parameter param = parameters.get(i);
+			sizes[i] = ParameterSize.eInstance.doSwitch(param);
+			csv_out += param.getName() + (i < parameters.size() -1 ? ";" : "");
 		}
 
 		csv_out = csv_out.substring(0, csv_out.length() - 1);

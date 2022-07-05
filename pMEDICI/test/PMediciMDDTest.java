@@ -10,8 +10,14 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.api.SolverException;
@@ -29,37 +35,40 @@ public class PMediciMDDTest {
 	public void test() throws IOException, InterruptedException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
-		PMedici.main(new String[] {"2", "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\UNIFORM_ALL_18.ctw"});
+		PMedici.main(new String[] { "2", "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\UNIFORM_ALL_18.ctw" });
 	}
-	
+
 	@Test
 	public void test2() throws IOException, InterruptedException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
-		PMedici.main(new String[] {"2", "examples/BOOLC_4_Simple.ctw"});
-	}
-	
-	@Test
-	public void testValidity() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-	    // Read the model
-	    String filename = "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\MCAC_4.ctw";
-		generateAndCheck(filename);
+		PMedici.main(new String[] { "2", "examples/BOOLC_4_Simple.ctw" });
 	}
 
 	@Test
-	public void testValidity2() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-	    // Read the model
-	    String filename = "examples/BOOLC_4_Simple.ctw";
-		generateAndCheck(filename);
+	public void testValidity()
+			throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// Read the model
+		String filename = "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\MCAC_4.ctw";
+		generateAndCheck(filename, false);
 	}
 
 	@Test
-	public void testValidity3() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-	    // Read the model
-	    String filename = "examples/BOOLC_4.ctw";
-		generateAndCheck(filename);
+	public void testValidity2()
+			throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// Read the model
+		String filename = "examples/BOOLC_4_Simple.ctw";
+		generateAndCheck(filename, false);
 	}
-	
+
+	@Test
+	public void testValidity3()
+			throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// Read the model
+		String filename = "examples/BOOLC_4.ctw";
+		generateAndCheck(filename, false);
+	}
+
 	@Test
 	public void testAllFilesInCTComp() throws IOException {
 		Path path = Paths.get("examples/CTComp/");
@@ -67,7 +76,7 @@ public class PMediciMDDTest {
 				.forEach(x -> {
 					System.err.println(x.getAbsolutePath());
 					try {
-						generateAndCheck(x.getAbsolutePath());
+						generateAndCheck(x.getAbsolutePath(), false);
 					} catch (IOException | InterruptedException | SolverException | InvalidConfigurationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -75,42 +84,59 @@ public class PMediciMDDTest {
 				});
 	}
 
-	private void generateAndCheck(String filename) throws FileNotFoundException, IOException, InterruptedException,
+	@Test
+	public void testOption() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		Logger.getLogger(SMTTestSuiteValidator.class).setLevel(Level.DEBUG);
+		int nrun = 5;
+		// Read the model
+		String filename = "examples/CTComp/BOOLC_4.ctw";
+		int[] sizes = new int[nrun];
+		long start2 = System.currentTimeMillis();
+		for (int i = 0; i < nrun; i++) {
+			TestSuite ts = generateAndCheck(filename, true);
+			sizes[i] = ts.getTests().size();
+		}
+		long end2 = System.currentTimeMillis();
+		System.out.println("Elapsed Time in milli seconds: " + (end2 - start2));
+		System.out.println(Arrays.toString(sizes));
+		System.out.println(Arrays.stream(sizes).sum()/(double)nrun);
+
+	}
+	/**
+	 * 
+	 * @param filename: file containing the model (ctwedge or medici)
+	 * @param saveandprint: print the test suite
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SolverException
+	 * @throws InvalidConfigurationException
+	 */
+	private TestSuite generateAndCheck(String filename, boolean saveandprint) throws FileNotFoundException, IOException, InterruptedException,
 			SolverException, InvalidConfigurationException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
-		// Change the output
-	    File file = new File("ts_out.txt");
-	    PrintStream stream = new PrintStream(file);
-	    System.setOut(stream);
-	    CitModel model = Utility.loadModelFromPath(filename);
-	    PMedici.main(new String[] {"2", filename});
-	    
-	    // Read the file containig the test suite
-	    File file2 = new File("ts_out.txt");
-	    String csvModel = "";
-	    Scanner sc = new Scanner(file2);
-	    // Skip the first line
-	    sc.nextLine();
-	    while (sc.hasNextLine())
-	    	csvModel += sc.nextLine() + "\n";
-	    sc.close();
-	    
-	    // Produced test suite
-	    TestSuite ts = new TestSuite(csvModel, model); 
-	    ts.populateTestSuite();
-	    ts.setStrength(2);
-	    PrintStream consoleStream = new PrintStream(new FileOutputStream(FileDescriptor.out));
-	    System.setOut(consoleStream);
-	    System.out.println(ts.toString());
-	    
+		CitModel model = Utility.loadModelFromPath(filename);
+		// generate the tests (as lines in a csv format)
+		List<String> testsuite = PMedici.extracted(model,2, true);
+		// Read the file containig the test suite
+		String csvModel = testsuite.stream().collect(Collectors.joining("\n"));
+		// Produced test suite
+		TestSuite ts = new TestSuite(csvModel, model);
+		ts.populateTestSuite();
+		ts.setStrength(2);
+		if (saveandprint) {
+			PrintStream consoleStream = new PrintStream(new FileOutputStream(FileDescriptor.out));
+			System.setOut(consoleStream);
+			System.out.println(ts.toString());
+		}
 		// Define the validator
 		SMTTestSuiteValidator tsv = new SMTTestSuiteValidator();
 		tsv.setTestSuite(ts);
-				
 		// Save the number of covered tuples
 		int covTuples = tsv.howManyTuplesCovers();
-				
+
 		// The test suite must be valid and complete
 		if (tsv.isValid()) {
 			assertTrue(tsv.howManyTestAreValid() == ts.getTests().size());
@@ -122,11 +148,11 @@ public class PMediciMDDTest {
 			while (ts.getTests().size() > 0) {
 				ts.getTests().remove(0);
 				tsv.setTestSuite(ts);
-					
+
 				if (tsv.howManyTuplesCovers() < covTuples)
 					break;
 			}
-				
+
 			// If we still have tests
 			if (ts.getTests().size() > 0 && tsv.isValid()) {
 				// Check all the tests are valid
@@ -137,6 +163,7 @@ public class PMediciMDDTest {
 		} else {
 			fail("Not complete test suite");
 		}
+		return ts;
 	}
-	
+
 }

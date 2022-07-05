@@ -138,8 +138,7 @@ public class TestContext {
 	public boolean isCompatiblePartialCheck(Vector<Pair<Integer, Integer>> tuple) {
 		// We must use a test context in a mutex mode
 		if (!IN_TEST)
-			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-		
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);	
 		for (Pair<Integer, Integer> t : tuple) {
 			int valueInTest = test[t.getFirst()];
 			if (valueInTest != UNDEF) {
