@@ -24,10 +24,12 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.util.Utility;
+import ctwedge.util.ModelUtils;
 import ctwedge.util.TestSuite;
 import ctwedge.util.validator.SMTTestSuiteValidator;
 import pMedici.main.PMedici;
 import pMedici.safeelements.TestContext;
+import pMedici.threads.TestBuilder;
 
 public class PMediciMDDTest {
 
@@ -86,21 +88,30 @@ public class PMediciMDDTest {
 
 	@Test
 	public void testOption() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		for(int i = 1; i < 10; i++) {
+			TestBuilder.RecycleUnusedTestContexts = false;
+			executeGenaration();
+			TestBuilder.RecycleUnusedTestContexts = true;
+			executeGenaration();
+		}
+	}
+
+	private void executeGenaration() throws FileNotFoundException, IOException, InterruptedException, SolverException,
+			InvalidConfigurationException {
 		Logger.getLogger(SMTTestSuiteValidator.class).setLevel(Level.DEBUG);
-		int nrun = 5;
+		int nrun = 50;
 		// Read the model
 		String filename = "examples/CTComp/BOOLC_4.ctw";
 		int[] sizes = new int[nrun];
 		long start2 = System.currentTimeMillis();
 		for (int i = 0; i < nrun; i++) {
-			TestSuite ts = generateAndCheck(filename, true);
+			TestSuite ts = generateAndCheck(filename, false);
 			sizes[i] = ts.getTests().size();
 		}
 		long end2 = System.currentTimeMillis();
 		System.out.println("Elapsed Time in milli seconds: " + (end2 - start2));
 		System.out.println(Arrays.toString(sizes));
 		System.out.println(Arrays.stream(sizes).sum()/(double)nrun);
-
 	}
 	/**
 	 * 
@@ -119,7 +130,7 @@ public class PMediciMDDTest {
 		TestContext.IN_TEST = true;
 		CitModel model = Utility.loadModelFromPath(filename);
 		// generate the tests (as lines in a csv format)
-		List<String> testsuite = PMedici.extracted(model,2, true);
+		List<String> testsuite = PMedici.executePMedici(model,2, saveandprint);
 		// Read the file containig the test suite
 		String csvModel = testsuite.stream().collect(Collectors.joining("\n"));
 		// Produced test suite
@@ -136,7 +147,7 @@ public class PMediciMDDTest {
 		tsv.setTestSuite(ts);
 		// Save the number of covered tuples
 		int covTuples = tsv.howManyTuplesCovers();
-
+		//
 		// The test suite must be valid and complete
 		if (tsv.isValid()) {
 			assertTrue(tsv.howManyTestAreValid() == ts.getTests().size());

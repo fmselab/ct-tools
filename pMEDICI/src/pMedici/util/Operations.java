@@ -376,7 +376,7 @@ public class Operations {
 				// 2) Questo permette, da un valore intero, di ottenere
 				//    il valore della stringa ad esso corrispondente e lo
 				//    aggiunge a csv_out
-				row += valToInt.convertInt(val).getValue() + ";";
+				row += valToInt.convertInt(val).getSecond() + ";";
 			}
 			row = row.substring(0, row.length() - 1);
 			csv_out.add(row);
@@ -429,7 +429,7 @@ public class Operations {
 				// 2) Questo permette, da un valore intero, di ottenere
 				//    il valore della stringa ad esso corrispondente e lo
 				//    aggiunge a csv_out
-				csv_out += valToInt.convertInt(val).getValue() + ";";
+				csv_out += valToInt.convertInt(val).getSecond() + ";";
 			}
 			csv_out = csv_out.substring(0, csv_out.length() - 1);
 			csv_out += "\n";

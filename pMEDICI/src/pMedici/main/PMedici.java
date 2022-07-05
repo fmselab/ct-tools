@@ -17,6 +17,7 @@ import org.colomoto.mddlib.MDDManager;
 import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
+import ctwedge.util.ModelUtils;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -52,7 +53,7 @@ public class PMedici {
 
 		// Convert the model from CTWedge to Medici format
 		CitModel model = Utility.loadModelFromPath(fileName);
-		extracted(model, strength, verb);
+		executePMedici(model, strength, verb);
 	}
 
 	/**
@@ -64,7 +65,7 @@ public class PMedici {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public static List<String> extracted(CitModel model, int strength, boolean verb)
+	public static List<String> executePMedici(CitModel model, int strength, boolean verb)
 			throws IOException, InterruptedException {
 		// convert to medici
 		MediciCITGenerator gen = new MediciCITGenerator();

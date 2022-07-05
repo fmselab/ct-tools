@@ -13,6 +13,11 @@ import pMedici.util.Operations;
 import pMedici.util.Pair;
 
 public class TestBuilder implements Runnable {
+	
+	// if true, when a test context is created but not filled, then it can be reused the next time
+	public static boolean RecycleUnusedTestContexts = true;
+	
+	TestContext empty = null;
 
 	/**
 	 * The base MDD containing the constraints
@@ -194,7 +199,13 @@ public class TestBuilder implements Runnable {
 				
 				// Incompatible or not implied for every test context
 				// 	-> Not implied and not coverable: build a new test context
-				TestContext tc = new TestContext(baseMDD, nParam, useConstraints, manager);
+				TestContext tc;
+				if (empty != null && RecycleUnusedTestContexts) {
+					tc = empty;
+				} else {
+					tc = new TestContext(baseMDD, nParam, useConstraints, manager);
+				}
+				
 				try {
 					tc.testMutex.acquire();
 					// Check if it is coverable by a new test context
@@ -207,10 +218,13 @@ public class TestBuilder implements Runnable {
 						this.testContextMutex.acquire();
 						tcList.add(tc);
 						this.testContextMutex.release();
+						empty = null; // empty is no longer empty
 					} else {
 						if (PMedici.PRINT_DEBUG)
 							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " is not coverable");
 						nUncoverable++;
+						empty = tc; // empty is usable if needed
+						tc.testMutex.release();
 					}
 				} catch (InterruptedException e) {
 					System.out.println(e.getMessage());
