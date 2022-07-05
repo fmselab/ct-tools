@@ -13,7 +13,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import pMedici.main.PMediciPlusMT;
 
 /**
- * Class used to get experimental data from pMEDICI+
+ * Class used to get experimental data from pMEDICI+. It gets:
+ * <ul>
+ * <li> the time required for the whole generation </li>
+ * <li> the time required for the filling of the initial list of test contexts </li>
+ * <li> the size of the generated test suite (without reduction technique) </li>
+ * <li> the size of the generated and reduced test suite </li>
+ * </ul>
  * 
  * @author Luca Parimbelli
  *

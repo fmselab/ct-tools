@@ -13,7 +13,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import pMedici.main.PMedici;
 
 /**
- * Class used to get experimental data from pMEDICI
+ * Class used to get experimental data from pMEDICI. It gets:
+ * <ul>
+ * <li> the time required for the generation </li>
+ * <li> the size of the generated test suite (without reduction technique) </li>
+ * <li> the size of the generated and reduced test suite </li>
+ * </ul>
  * 
  * @author Luca Parimbelli
  *
@@ -116,7 +121,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			// consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 		}
 		System.out.println();
 		System.out.println("------------------- **END OF ENVIRONMENT SET UP GENERATIONS** -------------------");
@@ -158,7 +163,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -181,8 +186,8 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
-			
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
+
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -190,11 +195,11 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
-			
+
 			// ------------------------------------------------------------------
 
 			/* EVOLUTION MODEL: AutomotiveMultimedia */
@@ -210,7 +215,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -219,7 +224,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -233,7 +238,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -242,7 +247,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -256,7 +261,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -265,7 +270,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -284,7 +289,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -297,7 +302,7 @@ public class pMEDICIExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
-			
+
 			/* v2 */
 			FMName = "Boeingv2";
 			FMPath = "../pMEDICI/evolutionModels/Boeing/Boeingv2_ctwedge.ctw";
@@ -307,7 +312,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -316,7 +321,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -330,7 +335,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -339,7 +344,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -358,7 +363,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -367,7 +372,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -381,7 +386,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -390,7 +395,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -404,7 +409,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -413,7 +418,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -427,7 +432,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -436,7 +441,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -455,7 +460,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -464,7 +469,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -478,8 +483,8 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
-			
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
+
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -487,7 +492,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -501,7 +506,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -510,7 +515,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -529,7 +534,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -538,7 +543,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -552,7 +557,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -561,7 +566,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -575,8 +580,8 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
-			
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
+
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -584,7 +589,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -598,7 +603,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -607,7 +612,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -621,8 +626,8 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
-			
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
+
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
 			cellTime.setCellValue(endTime);
@@ -630,7 +635,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -649,7 +654,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -658,7 +663,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -672,7 +677,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -685,7 +690,7 @@ public class pMEDICIExperimenter {
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
-			
+
 			/* v3 */
 			FMName = "PPUv3";
 			FMPath = "../pMEDICI/evolutionModels/PPU/PPUv3_ctwedge.ctw";
@@ -695,7 +700,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -704,7 +709,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -718,7 +723,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -727,7 +732,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -741,7 +746,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -750,7 +755,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -764,7 +769,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -773,7 +778,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -787,7 +792,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -796,7 +801,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -810,7 +815,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -819,7 +824,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -833,7 +838,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -842,7 +847,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -861,7 +866,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -870,7 +875,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -884,7 +889,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -893,7 +898,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -912,7 +917,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -921,7 +926,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -935,7 +940,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -944,7 +949,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -962,7 +967,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -971,7 +976,7 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
@@ -985,7 +990,7 @@ public class pMEDICIExperimenter {
 			endTime = System.currentTimeMillis() - startTime;
 			consoleManger.consolePrintingOn();
 			System.out.println("\n ** " + FMName + "**\n" + "Elapsed time: " + endTime + " ms" + "\nSize:"
-					+ PMedici.testSuiteSize +"\nSize reduced:" + PMedici.reducedTestSuiteSize);
+					+ PMedici.testSuiteSize + "\nSize reduced:" + PMedici.reducedTestSuiteSize);
 
 			// printing the time on the sheet1
 			cellTime = rowTime.createCell(++columnTimeCount);
@@ -994,19 +999,20 @@ public class pMEDICIExperimenter {
 			// printing the size on the sheet2
 			cellSize = rowSize.createCell(++columnSizeCount);
 			cellSize.setCellValue(PMedici.testSuiteSize);
-			
+
 			// printing the reduced size on the sheet3
 			cellReducedSize = rowReducedSize.createCell(++columnReducedSizeCount);
 			cellReducedSize.setCellValue(PMedici.reducedTestSuiteSize);
 
 		}
-		
+
 		System.out.println();
 		System.out.println("**Tests generation completed**");
 		System.out.println("Number of threads utilized: " + PMedici.threadsNum);
 
 		// Exporting the data to the .xlsx file
-		FileOutputStream outputStream = new FileOutputStream("experimentData/pMEDICI_Generation_from_scratch_noMergeDuplicatedTests.xlsx");
+		FileOutputStream outputStream = new FileOutputStream(
+				"experimentData/pMEDICI_Generation_from_scratch_noMergeDuplicatedTests.xlsx");
 		workbook.write(outputStream);
 
 		workbook.close();
