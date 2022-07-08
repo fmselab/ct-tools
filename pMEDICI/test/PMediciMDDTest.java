@@ -88,9 +88,25 @@ public class PMediciMDDTest {
 
 	@Test
 	public void testOption() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		for(int i = 1; i < 10; i++) {
+		int nExec = 10;
+		
+		TestBuilder.LockTCOnlyOnWriting = false;		
+		for(int i = 1; i <= nExec; i++) {
+			System.out.println("RecycleUnusedTestContexts = false && LockTCOnlyOnWriting = false");
+			TestBuilder.LockTCOnlyOnWriting = false;
 			TestBuilder.RecycleUnusedTestContexts = false;
 			executeGenaration();
+			System.out.println("RecycleUnusedTestContexts = true && LockTCOnlyOnWriting = false");
+			TestBuilder.LockTCOnlyOnWriting = false;
+			TestBuilder.RecycleUnusedTestContexts = true;
+			executeGenaration();
+			
+			System.out.println("RecycleUnusedTestContexts = false && LockTCOnlyOnWriting = true");
+			TestBuilder.LockTCOnlyOnWriting = true;
+			TestBuilder.RecycleUnusedTestContexts = false;
+			executeGenaration();
+			System.out.println("RecycleUnusedTestContexts = true && LockTCOnlyOnWriting = true");
+			TestBuilder.LockTCOnlyOnWriting = true;
 			TestBuilder.RecycleUnusedTestContexts = true;
 			executeGenaration();
 		}
@@ -174,6 +190,9 @@ public class PMediciMDDTest {
 		} else {
 			fail("Not complete test suite");
 		}
+		
+		// Force the garbage collector
+		System.gc();
 		return ts;
 	}
 

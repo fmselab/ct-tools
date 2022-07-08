@@ -17,6 +17,9 @@ public class TestBuilder implements Runnable {
 	// if true, when a test context is created but not filled, then it can be reused the next time
 	public static boolean RecycleUnusedTestContexts = true;
 	
+	// if true, a test context is locked only when writing
+	public static boolean LockTCOnlyOnWriting = true;
+	
 	TestContext empty = null;
 
 	/**
@@ -97,16 +100,23 @@ public class TestBuilder implements Runnable {
 	private boolean findImplied(Vector<Pair<Integer, Integer>> tuple) { 
 		boolean found = false;
 		for (int i=0; i<this.tcList.size(); i++) {
-			// Try to acquire the mutex
-			if (tcList.get(i).testMutex.tryAcquire()) {
-				assert(tcList.get(i).testMutex.lockedByCaller());
-				// Check the predicate
-				if (tcList.get(i).isImplied(tuple)) {
-					found = true;
-				}
-				// In any case free this context
-				tcList.get(i).testMutex.release();
+			// Try to acquire the mutex if the lock even during reading is required
+			if (!LockTCOnlyOnWriting)
+				if (!tcList.get(i).testMutex.tryAcquire())
+					continue;
+				else 
+					// If the lock has been acquired, check if it is locked by the caller
+					assert(tcList.get(i).testMutex.lockedByCaller());
+			
+			// Check the predicate
+			if (tcList.get(i).isImplied(tuple)) {
+				found = true;
 			}
+			
+			// In any case free this context if the lock has been acquired
+			if (!LockTCOnlyOnWriting)
+				tcList.get(i).testMutex.release();
+			
 			if (found)
 				break;
 		}

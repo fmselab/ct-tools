@@ -7,6 +7,7 @@ import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
 
+import pMedici.threads.TestBuilder;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
 import pMedici.util.TupleConverter;
@@ -199,7 +200,7 @@ public class TestContext {
 	 */
 	public boolean isImplied(Vector<Pair<Integer, Integer>> tuple) {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST)
+		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Check if it is implied
