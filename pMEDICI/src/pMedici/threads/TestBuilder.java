@@ -134,17 +134,24 @@ public class TestBuilder implements Runnable {
 	private boolean findCompatible(Vector<Pair<Integer, Integer>> tuple, Vector<TestContext> orderedList) throws InterruptedException {
 		boolean found = false;
 		for (int i=0; i<orderedList.size(); i++) {
-			// Try to acquire the mytex
-			if (orderedList.get(i).testMutex.tryAcquire()) {
-				assert(orderedList.get(i).testMutex.lockedByCaller());
-				// Check the predicate
-				if (orderedList.get(i).isCoverable(tuple)) {
-					orderedList.get(i).addTuple(tuple);
-					found = true;
-				}
-				// In any case free this context
-				orderedList.get(i).testMutex.release();
+			
+			// Try to acquire the mutex if it is needed
+			if (!LockTCOnlyOnWriting)
+				if (orderedList.get(i).testMutex.tryAcquire()) 
+					assert(orderedList.get(i).testMutex.lockedByCaller());
+				else
+					continue;
+			
+			// Check the predicate
+			if (orderedList.get(i).isCoverable(tuple)) {
+				found = orderedList.get(i).addTuple(tuple);
 			}
+			
+			// If the context has been locked, free it
+			if (!LockTCOnlyOnWriting)
+				orderedList.get(i).testMutex.release();
+			
+			// If the tuple has been added, stop the iteration
 			if (found)
 				break;
 		}
@@ -220,7 +227,9 @@ public class TestBuilder implements Runnable {
 					tc.testMutex.acquire();
 					// Check if it is coverable by a new test context
 					if (tc.isCoverable(tuple)) {
-						tc.addTuple(tuple);
+						boolean added = tc.addTuple(tuple);
+						if (!added)
+							safeQueue.insert(tuple);
 						tc.testMutex.release();
 						if (PMedici.PRINT_DEBUG)
 							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
