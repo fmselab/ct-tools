@@ -20,7 +20,6 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterSize;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
@@ -78,7 +77,7 @@ public class KALI {
 				strength = Integer.parseInt(arguments.get(0));
 				if (strength < 2)
 					throw new CmdLineException(parser, "strength cannot be less than 2");
-				// TODO: we should check that the strength is lower than the number of parameters of the model
+				// TODO: We should check that the strength is lower than the number of parameters of the model
 			} catch (NumberFormatException nf) {
 				throw new CmdLineException(parser, "strength must be a number >= 2 " + nf.getLocalizedMessage());
 			}
@@ -126,6 +125,7 @@ public class KALI {
 			if (KALI.PRINT_DEBUG)
 				System.out.println("using " + nThreads + " threads");
 		}
+		
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		int nParams = m.getParameters().size();

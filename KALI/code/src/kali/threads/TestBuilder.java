@@ -65,9 +65,16 @@ public class TestBuilder implements Runnable {
 	 */
 	CitModel model;
 	
-	// empty test context : if null there no empty test context that can be used otherwise
-	// reuse this.
+	/**
+	 *  empty test context : if null there no empty test context that can be used otherwise
+	 *  reuse this.
+	 */
 	TestContext empty = null;
+	
+	/**
+	 * Set the optimization: LockTCOnlyOnWriting
+	 */
+	public static boolean LockTCOnlyOnWriting = true;
 
 	/**
 	 * Builds a new test builder
@@ -113,17 +120,24 @@ public class TestBuilder implements Runnable {
 	 */
 	private boolean findImplied(Vector<Pair<String, Object>> tuple) {
 		boolean found = false;
-		for (int i = 0; i < this.tcList.size(); i++) {
-			// Try to acquire the mytex
-			if (tcList.get(i).testMutex.tryAcquire()) {
-				assert (tcList.get(i).testMutex.lockedByCaller());
-				// Check the predicate
-				if (tcList.get(i).isImplied(tuple)) {
-					found = true;
-				}
-				// In any case free this context
-				tcList.get(i).testMutex.release();
+		for (int i=0; i<this.tcList.size(); i++) {
+			// Try to acquire the mutex if the lock even during reading is required
+			if (!LockTCOnlyOnWriting)
+				if (!tcList.get(i).testMutex.tryAcquire())
+					continue;
+				else 
+					// If the lock has been acquired, check if it is locked by the caller
+					assert(tcList.get(i).testMutex.lockedByCaller());
+			
+			// Check the predicate
+			if (tcList.get(i).isImplied(tuple)) {
+				found = true;
 			}
+			
+			// In any case free this context if the lock has been acquired
+			if (!LockTCOnlyOnWriting)
+				tcList.get(i).testMutex.release();
+			
 			if (found)
 				break;
 		}

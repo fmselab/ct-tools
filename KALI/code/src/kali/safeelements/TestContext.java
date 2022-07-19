@@ -29,6 +29,7 @@ import org.sosy_lab.java_smt.api.SolverException;
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.util.Pair;
+import kali.threads.TestBuilder;
 import kali.util.Operations;
 import kali.util.TestCase;
 import kali.util.TupleConverter;
@@ -253,7 +254,8 @@ public class TestContext {
 	 */
 	public boolean isImplied(Vector<Pair<String, Object>> tuple) {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.LockTCOnlyOnWriting)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Check if it is implied
 		for (Pair<String, Object> t : tuple) {
