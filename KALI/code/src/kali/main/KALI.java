@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -152,10 +153,12 @@ public class KALI {
 		}
 		System.out.println(header.substring(0, header.length()-1));
 		
+		HashSet<String> tests = new HashSet<String>();
+		
 		for (TestContext tc : tcList) {
 			nCovered += tc.getNCovered();
 			try {
-				System.out.println(tc.getTest(false));
+				tests.add(tc.getTest(false));
 			} catch (InterruptedException | SolverException e) {
 				System.out.println(e.getMessage());
 			}
@@ -163,6 +166,9 @@ public class KALI {
 			tc.close();			
 		}
 		totTuples = tuples.getNTuples();
+		
+		// Print the tests
+		tests.forEach(x -> {System.out.println(x);});
 
 		// Print the tests
 		if (verbose) {
@@ -175,7 +181,7 @@ public class KALI {
 		} else {
 			FileWriter fw = new FileWriter(OUTPUT_TXT, true);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(fileName + ";" + tcList.size() + ";" + (System.currentTimeMillis() - start) + ";" + SORT + ";"
+			bw.write(fileName + ";" + tests.size() + ";" + (System.currentTimeMillis() - start) + ";" + SORT + ";"
 					+ ORDER.toString() + ";" + nThreads + ";" + TestContext.SMTSolver);
 			bw.newLine();
 			bw.close();
