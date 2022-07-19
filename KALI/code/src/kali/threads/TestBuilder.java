@@ -166,8 +166,7 @@ public class TestBuilder implements Runnable {
 				assert (orderedList.get(index).testMutex.lockedByCaller());
 				// Check the predicate
 				if (orderedList.get(index).isCoverable(tuple)) {
-					orderedList.get(index).addTuple(tuple);
-					found = true;
+					found = orderedList.get(index).addTuple(tuple);
 				}
 				// In any case free this context
 				orderedList.get(index).testMutex.release();
