@@ -205,6 +205,7 @@ public class TestBuilder implements Runnable {
 							i++;
 						}
 					}
+					this.testContextMutex.release();
 					if (orderedTcList.size() > 0 && sort) {
 						// Sort <TCIndex, CompletenessGrade>
 						Collections.sort(completenessGrades, new Comparator<Pair<Integer, Integer>>() {
@@ -213,8 +214,7 @@ public class TestBuilder implements Runnable {
 								return Integer.compare(o2.getSecond(), o1.getSecond());
 							}
 						});
-					}
-					this.testContextMutex.release();
+					}					
 				} catch (InterruptedException e) {
 					System.out.println(e.getMessage());
 				}
