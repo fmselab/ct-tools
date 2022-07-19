@@ -198,7 +198,8 @@ public class TestContext {
 	 */
 	public boolean isCompatiblePartialCheck(Vector<Pair<String, Object>> tuple) {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.LockTCOnlyOnWriting)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		for (Pair<String, Object> t : tuple) {
 			Object valueInTest = test[this.paramPosition.get(t.getFirst())];
@@ -233,7 +234,8 @@ public class TestContext {
 		prover.addConstraint(context.getFormulaManager().getBooleanFormulaManager().and(currentFormula, tupleFormula));
 		
 		// If the context is not SAT, it means that the tuple can't be added to this context
-		return !prover.isUnsat();		
+		boolean unsat = prover.isUnsat();
+		return !unsat;		
 	}
 	
 	/**
