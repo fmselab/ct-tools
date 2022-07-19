@@ -243,6 +243,7 @@ public class TestBuilder implements Runnable {
 						tc = empty;
 					else
 						tc = new TestContext(nParam, useConstraints, paramPosition, model);
+					
 					try {
 						tc.testMutex.acquire();
 						// Check if it is coverable by a new test context
@@ -266,6 +267,7 @@ public class TestBuilder implements Runnable {
 							nUncoverable++;
 							// the empty is now valid 
 							empty = tc;
+							tc.testMutex.release();
 						}
 					} catch (InterruptedException e) {
 						System.out.println(e.getMessage());
