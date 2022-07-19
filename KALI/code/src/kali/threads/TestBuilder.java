@@ -247,7 +247,9 @@ public class TestBuilder implements Runnable {
 						tc.testMutex.acquire();
 						// Check if it is coverable by a new test context
 						if (tc.isCoverable(tuple)) {
-							tc.addTuple(tuple);
+							boolean added = tc.addTuple(tuple);
+							if (!added)
+								safeQueue.insert(tuple);
 							tc.testMutex.release();
 							if (KALI.PRINT_DEBUG)
 								System.out.println("The tuple " + Operations.printTuple(tuple)

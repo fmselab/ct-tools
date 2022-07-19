@@ -97,6 +97,11 @@ public class TestContext {
 	 * The Map storing each parameter and the corresponding formulas (one for each value of the enumerative)
 	 */
 	public Map<Parameter, Map<String, Formula>> declaredTypes = new HashMap<>();
+
+	/**
+	 * The prover to be used when checking formulas
+	 */
+	ProverEnvironment prover;
 	
 	/**
 	 * Builds a new TestContext
@@ -123,6 +128,7 @@ public class TestContext {
 		this.testMutex = new ExtendedSemaphore();
 		Arrays.fill(this.test, UNDEF);
 		this.paramPosition = paramPosition;
+		this.prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
 	}
 	
 	/**
@@ -276,10 +282,13 @@ public class TestContext {
 	 * The tuple to be added must be compatible with the partial test
 	 * 
 	 * @param tuple: the tuple to be added
+	 * @return true if the tuple has been added, false otherwise
 	 * @throws InterruptedException 
 	 * @throws SolverException 
 	 */
-	public void addTuple(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
+	public boolean addTuple(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
+		boolean added = true;
+		
 		// We must use a test context in a mutex mode
 		assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
@@ -290,21 +299,24 @@ public class TestContext {
 
 		// Update the context, if constraints are available
 		if (useConstraints) {
-			updateContext(tuple);
+			added = updateContext(tuple);
 		}
 		else {
 			nCovered++;
 		}
+		
+		return added;
 	}
 
 	/**
 	 * Updates the internal context structure by adding the new tuple
 	 * 
 	 * @param tuple: the tuple to be added
+	 * @return true if the update succeed, false otherwise
 	 * @throws InterruptedException 
 	 * @throws SolverException 
 	 */
-	private void updateContext(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
+	private boolean updateContext(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		assert (this.testMutex.lockedByCaller() || nCovered == 0);
 				
@@ -319,9 +331,12 @@ public class TestContext {
 		prover.addConstraint(currentFormula);
 		
 		// Now verify that the cardinality is still greater than 0
-		assert (!prover.isUnsat());
-		
+		if(prover.isUnsat()) {
+			return false;
+		}
+
 		nCovered++;
+		return true;
 	}
 	
 	/**
