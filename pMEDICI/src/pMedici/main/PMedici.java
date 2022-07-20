@@ -126,6 +126,10 @@ public class PMedici {
 		// Save the tests
 		int nCovered = 0;
 		int totTuples = 0;
+		
+		// Search for duplicates
+		tcList = Operations.removeEmpty(tcList);
+		
 		ArrayList<String> testCases = new ArrayList<String>();
 		for (TestContext tc : tcList) {
 			nCovered += tc.getNCovered();

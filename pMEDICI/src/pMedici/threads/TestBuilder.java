@@ -226,17 +226,20 @@ public class TestBuilder implements Runnable {
 				try {
 					tc.testMutex.acquire();
 					// Check if it is coverable by a new test context
-					if (tc.isCoverable(tuple)) {
+					if (tc.isCoverable(tuple)) {					
 						boolean added = tc.addTuple(tuple);
 						if (!added)
 							safeQueue.insert(tuple);
+						
 						tc.testMutex.release();
-						if (PMedici.PRINT_DEBUG)
-							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
+						
 						// Add the new test context to the list
 						this.testContextMutex.acquire();
 						tcList.add(tc);
 						this.testContextMutex.release();
+						
+						if (PMedici.PRINT_DEBUG)
+							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
 						empty = null; // empty is no longer empty
 					} else {
 						if (PMedici.PRINT_DEBUG)

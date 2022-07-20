@@ -22,6 +22,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.ParameterValuesToInt;
 import pMedici.safeelements.ExtendedSemaphore;
+import pMedici.safeelements.TestContext;
 
 public class Operations {
 
@@ -365,6 +366,9 @@ public class Operations {
 			row = row.substring(0, row.length() - 1);
 			csv_out.add(row);
 		}
+		
+		//assert csv_out.size() == csv_out.stream().distinct().collect(Collectors.toList()).size();
+		
 		csv_out = csv_out.stream().distinct().collect(Collectors.toList());
 		return csv_out;
 	}
@@ -456,6 +460,17 @@ public class Operations {
 		}
 		
 		return reducedTestSuite;
+		
+	}
+
+	/**
+	 * Removes empty tests contexts, that do not cover any tuple
+	 * @param tcList the list of the test contexts
+	 * @return the polished list of test contexts 
+	 */
+	public static Vector<TestContext> removeEmpty(Vector<TestContext> tcList) {
+		tcList.removeIf(x -> x.getNCovered() == 0);
+		return tcList;
 		
 	}
 	
