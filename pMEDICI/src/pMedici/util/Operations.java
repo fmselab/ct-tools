@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
@@ -259,31 +260,6 @@ public class Operations {
 		searcher.setNode(node);
 		searcher.countPaths();
 		return searcher.getPath();
-		
-//		int totVars = manager.getAllVariables().length;
-//		int[] res = new int[totVars];
-//		
-//		for (int i = 0; i < totVars; i++) {
-//			assert (getCardinality(node, manager) > 0) : "Error on variable " + (i+1) + " of " + totVars;
-//			int[] children = manager.getChildren(node);
-//
-//			if (children != null && children.length > 0) {
-//				for (int child : children) {
-//					if (leadsToTrue(child, manager)) {
-//						res[i] = getValueFromNode(manager, node, child, i);
-////						if (res[i] == -1 && test[i] != -1) {
-////							res[i] = test[i];
-////							node = manager.getChild(node, res[i]);
-////						} else {
-//							node = child;
-////						}
-//						break;
-//					}
-//				}
-//			}
-//		}
-//
-//		return res;
 	}
 
 	/**
@@ -381,6 +357,7 @@ public class Operations {
 			row = row.substring(0, row.length() - 1);
 			csv_out.add(row);
 		}
+		csv_out = csv_out.stream().distinct().collect(Collectors.toList());
 		return csv_out;
 	}
 	/// TODO unire con il precedente
