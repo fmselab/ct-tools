@@ -54,6 +54,14 @@ public class Operations {
 		return readModelFromReader(reader);
 	}
 
+	/**
+	 * Reads the combinatorial model from a reader and converts it into a
+	 * TestModel object
+	 * 
+	 * @param reader: the reader
+	 * @return the TestModel object
+	 * @throws IOException
+	 */
 	public static TestModel readModelFromReader(BufferedReader reader) throws IOException {
 		int nParams = 0;
 		int strength = 0;
