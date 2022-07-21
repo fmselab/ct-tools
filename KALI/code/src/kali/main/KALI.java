@@ -155,6 +155,9 @@ public class KALI {
 		
 		HashSet<String> tests = new HashSet<String>();
 		
+		// Remove empty contexts
+		tcList.removeIf(x -> x.getNCovered() == 0);
+		
 		for (TestContext tc : tcList) {
 			nCovered += tc.getNCovered();
 			try {
