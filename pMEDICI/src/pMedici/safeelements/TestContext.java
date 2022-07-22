@@ -360,4 +360,13 @@ public class TestContext {
 		searcher.setNode(intersection);
 		return searcher.countPaths();
 	}
+	
+	/**
+	 * Returns the current MDD 
+	 * 
+	 * @return the current MDD 
+	 */
+	public int getMDD() {
+		return mdd;
+	}
 }

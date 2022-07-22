@@ -1,11 +1,14 @@
 package pMedici.util;
 
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -367,8 +370,6 @@ public class Operations {
 			csv_out.add(row);
 		}
 		
-		//assert csv_out.size() == csv_out.stream().distinct().collect(Collectors.toList()).size();
-		
 		csv_out = csv_out.stream().distinct().collect(Collectors.toList());
 		return csv_out;
 	}
@@ -471,7 +472,40 @@ public class Operations {
 	public static Vector<TestContext> removeEmpty(Vector<TestContext> tcList) {
 		tcList.removeIf(x -> x.getNCovered() == 0);
 		return tcList;
-		
 	}
-	
+
+	/**
+	 * Removes useless tests contexts, that are implied by other test contexts
+	 * @param tcList the list of the test contexts
+	 * @param manager: the MDD manager
+	 * @return the polished list of test contexts 
+	 */
+	public static Vector<TestContext> removeImplied(Vector<TestContext> tcList, MDDManager manager) {
+		tcList.removeIf(x -> isImpliedByTc(x, tcList, manager));
+		return tcList;
+	}
+
+	/**
+	 * Checks whether the test context x is implied by one of the context in the tcList
+	 * 
+	 * @param x: the test context to be checked
+	 * @param tcList: the list of test contexts
+	 * @param manager: the MDD manager
+	 * @return true if at least one testcontext implying x is found
+	 */
+	private static boolean isImpliedByTc(TestContext x, Vector<TestContext> tcList, MDDManager manager) {
+		int mddX = x.getMDD();
+		for (TestContext tc : tcList) {
+			int mddTC = tc.getMDD();
+			int mddNotX = manager.mnot(mddX, 1);
+			int mddTcAndNotX = MDDBaseOperators.AND.combine(manager, mddTC, mddNotX);
+			int mddImplies = manager.mnot(mddTcAndNotX, 1);
+			PathSearcher searcher = new PathSearcher(manager,1);
+			searcher.setNode(mddImplies);
+			if (searcher.countPaths() == 0)
+				return true;
+		}
+		
+		return false;
+	}
 }

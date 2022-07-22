@@ -46,6 +46,14 @@ public class PMediciMDDTest {
 		TestContext.IN_TEST = true;
 		PMedici.main(new String[] { "2", "examples/BOOLC_4_Simple.ctw" });
 	}
+	
+	@Test
+	public void test3() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici.main(new String[] { "2", "examples/MVM.ctw" });
+		//generateAndCheck("examples/MVM.ctw", true);
+	}
 
 	@Test
 	public void testValidity()

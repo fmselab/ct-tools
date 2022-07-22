@@ -127,8 +127,9 @@ public class PMedici {
 		int nCovered = 0;
 		int totTuples = 0;
 		
-		// Search for duplicates
+		// Search for duplicates and implied
 		tcList = Operations.removeEmpty(tcList);
+		tcList = Operations.removeImplied(tcList, manager);
 		
 		ArrayList<String> testCases = new ArrayList<String>();
 		for (TestContext tc : tcList) {
