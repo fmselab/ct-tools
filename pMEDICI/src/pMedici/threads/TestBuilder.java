@@ -25,7 +25,7 @@ public class TestBuilder implements Runnable {
 	public static boolean LockTCOnlyOnWriting = true;
 	
 	// if true, the lock while checking if a tuple is implied is only performed with tryAcquire 
-	public static boolean UseTryAcquire = false;
+	public static boolean UseTryAcquireForFindImplies = false;
 	
 	/*
 	 * END OPTIMIZATIONS
@@ -113,7 +113,7 @@ public class TestBuilder implements Runnable {
 		for (int i=0; i<this.tcList.size(); i++) {
 			// Try to acquire the mutex if the lock even during reading is required
 			if (!LockTCOnlyOnWriting)
-				if (UseTryAcquire) {
+				if (UseTryAcquireForFindImplies) {
 					if (!tcList.get(i).testMutex.tryAcquire())
 						continue;
 					else 
