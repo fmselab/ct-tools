@@ -373,7 +373,6 @@ public class Operations {
 		csv_out = csv_out.stream().distinct().collect(Collectors.toList());
 		return csv_out;
 	}
-	/// TODO unire con il precedente
 	
 	/**
 	 * Translates the output from MEDICI format to a CSV one and returns it as a String
@@ -385,48 +384,7 @@ public class Operations {
 	 * @throws IOException
 	 */
 	public static String translateOutputToString(ArrayList<String> testCases, CitModel model) throws IOException {
-		String csv_out = "";
-		// creating an array of integers with size equal to the number of the parameters of CitModel
-		// in each position we will have the size of the corresponding parameter
-		int[] sizes = new int[model.getParameters().size()];
-		EList<Parameter> parameters = model.getParameters();
-		for (int i = 0; i < parameters.size(); i++) {
-			Parameter param = parameters.get(i);
-			sizes[i] = ParameterSize.eInstance.doSwitch(param);
-			csv_out += param.getName() + (i < parameters.size() -1 ? ";" : "");
-		}
-
-		csv_out = csv_out.substring(0, csv_out.length() - 1);
-		csv_out += "\n";
-
-		// Other rows -> parameter values
-		// 1) Questo crea un oggetto che permette di mappare i parametri del
-		//    modello a numeri interi
-		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
-		for (String s : testCases) {
-			String[] values = s.split(" ");
-			for (int i = 0; i < values.length; i++) {
-				int previousCount = 0;
-				int val = 0;
-				for (int j = 0; j < i; j++) {
-					previousCount += sizes[j];
-				}
-				if (Integer.parseInt(values[i]) == -1) {
-					val = randInt(previousCount, previousCount + sizes[i] - 1);
-				} else {
-					val = previousCount + Integer.parseInt(values[i]);
-				}
-				// 2) Questo permette, da un valore intero, di ottenere
-				//    il valore della stringa ad esso corrispondente e lo
-				//    aggiunge a csv_out
-				csv_out += valToInt.convertInt(val).getSecond() + ";";
-			}
-			csv_out = csv_out.substring(0, csv_out.length() - 1);
-			csv_out += "\n";
-		}
-
-		return csv_out;		
-		
+		return String.join("\n",translateOutput(testCases, model));
 	}
 
 	/**
@@ -442,6 +400,12 @@ public class Operations {
 		return randomNum;
 	}
 	
+	/**
+	 * Deletes duplicates from a test suite in CSV format
+	 * 
+	 * @param testSuite: the test suite in CSV format
+	 * @return the new test suite in CSV format without duplicates
+	 */
 	public static String deleteDuplicates(String testSuite) {
 		ArrayList<String> tests = new ArrayList<String>();
 		tests.addAll(Arrays.asList(testSuite.split("\n")));
