@@ -14,9 +14,9 @@ import pMedici.util.Pair;
 
 public class TestBuilder implements Runnable {
 	
-	/*
+	/* -----------------------------------
 	 * OPTIMIZATIONS
-	 */
+	 * ----------------------------------- */
 	
 	// if true, when a test context is created but not filled, then it can be reused the next time
 	public static boolean RecycleUnusedTestContexts = true;
@@ -27,9 +27,9 @@ public class TestBuilder implements Runnable {
 	// if true, the lock while checking if a tuple is implied is only performed with tryAcquire 
 	public static boolean UseTryAcquireForFindImplies = false;
 	
-	/*
+	/* -----------------------------------
 	 * END OPTIMIZATIONS
-	 */
+	 * ----------------------------------- */
 	
 	TestContext empty = null;
 
