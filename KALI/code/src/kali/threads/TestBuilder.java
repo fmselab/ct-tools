@@ -248,6 +248,7 @@ public class TestBuilder implements Runnable {
 							if (KALI.PRINT_DEBUG)
 								System.out.println("The tuple " + Operations.printTuple(tuple) + " is not coverable");
 							nUncoverable++;
+							tc.testMutex.release();
 							// the empty is now valid 
 							empty = tc;
 						}

@@ -92,7 +92,7 @@ public class TestBuilder implements Runnable {
 	private boolean findImplied(Vector<Pair<Integer, Integer>> tuple) { 
 		boolean found = false;
 		for (int i=0; i<this.tcList.size(); i++) {
-			// Try to acquire the mytex
+			// Try to acquire the mutex
 			if (tcList.get(i).testMutex.tryAcquire()) {
 				assert(tcList.get(i).testMutex.lockedByCaller());
 				// Check the predicate
