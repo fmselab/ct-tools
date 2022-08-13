@@ -105,8 +105,8 @@ public class PMediciMDDTest {
 	    System.out.println(ts.toString());
 	    
 		// Define the validator
-		SMTTestSuiteValidator tsv = new SMTTestSuiteValidator();
-		tsv.setTestSuite(ts);
+		SMTTestSuiteValidator tsv = new SMTTestSuiteValidator(ts);
+		//tsv.setTestSuite(ts);
 				
 		// Save the number of covered tuples
 		int covTuples = tsv.howManyTuplesCovers();
@@ -121,7 +121,7 @@ public class PMediciMDDTest {
 			// Now remove tests until the covered tuples decreases
 			while (ts.getTests().size() > 0) {
 				ts.getTests().remove(0);
-				tsv.setTestSuite(ts);
+				//tsv.setTestSuite(ts);
 					
 				if (tsv.howManyTuplesCovers() < covTuples)
 					break;
