@@ -168,7 +168,9 @@ public class PMedici {
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
-		TestSuite testSuite = Operations.translateOutput(testCases, model);
+		TestSuite testSuite = new TestSuite(Operations.translateOutputToString(testCases, model),model);
+		// TODO
+		// testSuite.setGeneratorTime(nThreads);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();

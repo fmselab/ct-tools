@@ -1,3 +1,4 @@
+package pMedici.main;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -152,15 +153,11 @@ public class PMediciMDDTest {
 			SolverException, InvalidConfigurationException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
-		CitModel model = Utility.loadModelFromPath(filename);
+		PMedici pMedici = new PMedici();
+		pMedici.verb = saveandprint;
 		// generate the tests (as lines in a csv format)
-		List<String> testsuite = PMedici.executePMedici(model,2, saveandprint);
-		// Read the file containig the test suite
-		String csvModel = testsuite.stream().collect(Collectors.joining("\n"));
-		// Produced test suite
-		TestSuite ts = new TestSuite(csvModel, model);
+		TestSuite ts = pMedici.generateTests(filename,2);
 		ts.populateTestSuite();
-		ts.setStrength(2);
 		if (saveandprint) {
 			PrintStream consoleStream = new PrintStream(new FileOutputStream(FileDescriptor.out));
 			System.setOut(consoleStream);
