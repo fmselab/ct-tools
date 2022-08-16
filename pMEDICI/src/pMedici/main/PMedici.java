@@ -1,8 +1,10 @@
 package pMedici.main;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -53,7 +55,6 @@ public class PMedici {
 	
 		PMedici pMedici = new PMedici();
 		new CommandLine(pMedici).parseArgs(args);
-
 		
 		String fileName = "";
 		int strength = 2;
@@ -76,18 +77,15 @@ public class PMedici {
 	CitModel model;
 
 	// covert from ctwedge to medici and saves into a file called "model.txt"
-	//TODO avoid the use of a file or at least use a temp file (see KALI)
 	private String buildMediciModel(String fileName) throws IOException {
+		assert fileName.endsWith(".ctw");
+		assert Files.exists(Paths.get(fileName));
+		assert Files.isRegularFile(Paths.get(fileName));
+		
 		model = Utility.loadModelFromPath(fileName);
 		MediciCITGenerator gen = new MediciCITGenerator();
 		MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
-		String mediciModel = gen.translateModel(model, false);
-		File modelFile = new File("model.txt");
-		FileWriter wf = new FileWriter(modelFile);
-		wf.write(mediciModel);
-		wf.close();
-		fileName = "model.txt";
-		return fileName;
+		return gen.translateModel(model, false);
 	}
 
 	/**
@@ -101,19 +99,16 @@ public class PMedici {
 	 */
 	 TestSuite generateTests(String fileName, int strength)
 			throws IOException, InterruptedException {
-
-		assert fileName.endsWith(".ctw");
-		assert Files.exists(Paths.get(fileName));
-		assert Files.isRegularFile(Paths.get(fileName));
+		 String mediciModel = "";
 		// Convert the model from CTWedge to Medici format
 		if (!fileName.equals("")) {
-			fileName = buildMediciModel(fileName);
+			mediciModel = buildMediciModel(fileName);
 		} else {
 			assert false : "what to do if the filename is empty???";
 		}
 		// Read the combinatorial model and get the MDD representing the model without
 		// constraints
-		TestModel m = Operations.readFile(fileName);
+		TestModel m = Operations.readModelFromReader(new BufferedReader(new StringReader(mediciModel)));
 
 		// Set the strength
 		m.setStrength(strength);
