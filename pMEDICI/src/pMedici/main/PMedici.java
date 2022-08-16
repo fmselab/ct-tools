@@ -174,7 +174,8 @@ public class PMedici implements Callable<Integer> {
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println(
 					"Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
-			System.out.println("Generated " + tcList.size() + " tests");
+			System.out.println("Number of tests generated before duplicate removal: " + tcList.size());
+			System.out.println("Number of tests generated after duplicate removal: " + testSuite.getTests().size());
 		}
 
 		// Join the tuple filler thread
