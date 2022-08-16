@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Callable;
 
 import org.colomoto.mddlib.MDDManager;
 
@@ -29,16 +30,24 @@ import pMedici.util.Pair;
 import pMedici.util.TestModel;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 import pMedici.combinations.TupleGenerator;
 
 /**
  *  main class to call pMedici
  * TODO: use the picocli library, convert method to non static and variables as fields
  */
-public class PMedici {
+public class PMedici implements Callable<Integer> {
+	
+	@Parameters(index = "0", description = "The strength for test generation.")
+	int strength = 2;
+	
+	@Parameters(index = "1", description = "The name of the file containing the model in CTW format.")
+	String fileName = "";
+	
 
-	/** The create. */
-	@Option(names = "-verb", description = "verbose")
+	/** Use the verbose mode */
+	@Option(names = "-verb", description = "Use the verbose mode.")
 	boolean verb;
 	
 	/** The print debug. */
@@ -52,25 +61,15 @@ public class PMedici {
 	 * @throws InterruptedException the interrupted exception
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-	
 		PMedici pMedici = new PMedici();
-		new CommandLine(pMedici).parseArgs(args);
-		
-		String fileName = "";
-		int strength = 2;
-
-		// Read the test model from arguments
-		if (args.length >= 2) {
-			strength = Integer.parseInt(args[0]);
-			fileName = args[1];
-//			if (args.length > 2)
-//				verb = Boolean.parseBoolean(args[2]);
-		} else {
-			throw new RuntimeException(
-					"You must specify the strength and the model file name for generating a test suite");
-		}
-		// TODO probably parameters are not necessary since they are set?
-		pMedici.generateTests(fileName, strength);
+		int exitCode = new CommandLine(pMedici).execute(args);
+		System.exit(exitCode);
+	}
+	
+	@Override
+    public Integer call() throws Exception {
+		generateTests(fileName, strength);
+		return 0;
 	}
 	
 	// the model for the generation
@@ -164,6 +163,7 @@ public class PMedici {
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
 		TestSuite testSuite = new TestSuite(Operations.translateOutputToString(testCases, model),model);
+		System.out.println(testSuite.getTs());
 		// TODO
 		// testSuite.setGeneratorTime(nThreads);
 
