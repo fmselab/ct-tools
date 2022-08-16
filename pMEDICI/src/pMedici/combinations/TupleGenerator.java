@@ -10,6 +10,7 @@ import java.util.Vector;
 import pMedici.util.Pair;
 import pMedici.util.TestModel;
 
+// TODO: there is a similar class and methods in ctwedge.utils - remove duplicates?
 // A the type of the paramters
 // B the typle of the values of the paramters
 public class TupleGenerator {
