@@ -7,6 +7,7 @@ import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
 
+import pMedici.threads.TestBuilder;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
 import pMedici.util.TupleConverter;
@@ -73,7 +74,7 @@ public class TestContext {
 	 */
 	public boolean isCoverable(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST)
+		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Checks using the test vector
@@ -105,7 +106,7 @@ public class TestContext {
 	 */
 	private boolean isCompatible(Vector<Pair<Integer, Integer>> tuple, boolean skipFirstStep) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST)
+		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// First phase - Check without the MDD
@@ -138,8 +139,7 @@ public class TestContext {
 	public boolean isCompatiblePartialCheck(Vector<Pair<Integer, Integer>> tuple) {
 		// We must use a test context in a mutex mode
 		if (!IN_TEST)
-			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-		
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);	
 		for (Pair<Integer, Integer> t : tuple) {
 			int valueInTest = test[t.getFirst()];
 			if (valueInTest != UNDEF) {
@@ -162,7 +162,7 @@ public class TestContext {
 	 */
 	public boolean verifyWithMDD(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST)
+		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 				
 		// Create an MDD representing the tuple
@@ -200,7 +200,7 @@ public class TestContext {
 	 */
 	public boolean isImplied(Vector<Pair<Integer, Integer>> tuple) {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST)
+		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Check if it is implied
@@ -222,7 +222,24 @@ public class TestContext {
 	 * @param tuple: the tuple to be added
 	 * @throws InterruptedException 
 	 */
-	public void addTuple(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
+	public boolean addTuple(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
+		// If LockTCOnlyOnWriting, we try to acquire the mutex 
+		if (TestBuilder.LockTCOnlyOnWriting) {
+			if(this.testMutex.availablePermits() > 0) {
+				if (!this.testMutex.tryAcquire())
+					return false;
+				else {
+					// Verify that the tuple is still compatible
+					if (!isCompatible(tuple, false)) {
+						this.testMutex.release();
+						return false;
+					}
+				}
+			} else {
+				return false;
+			}
+		}
+		
 		// We must use a test context in a mutex mode
 		if (!IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
@@ -239,6 +256,11 @@ public class TestContext {
 		else {
 			nCovered++;
 		}
+		
+		if (TestBuilder.LockTCOnlyOnWriting) 
+			this.testMutex.release();
+		
+		return true;
 	}
 
 	/**
@@ -337,5 +359,14 @@ public class TestContext {
 		PathSearcher searcher = new PathSearcher(manager, 1);
 		searcher.setNode(intersection);
 		return searcher.countPaths();
+	}
+	
+	/**
+	 * Returns the current MDD 
+	 * 
+	 * @return the current MDD 
+	 */
+	public int getMDD() {
+		return mdd;
 	}
 }

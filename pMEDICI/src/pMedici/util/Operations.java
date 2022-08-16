@@ -1,25 +1,31 @@
 package pMedici.util;
 
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
+import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.ParameterValuesToInt;
-import ctwedge.util.TestSuite;
 import pMedici.safeelements.ExtendedSemaphore;
+import pMedici.safeelements.TestContext;
 
 public class Operations {
 
@@ -46,6 +52,21 @@ public class Operations {
 	 * @throws IOException
 	 */
 	public static TestModel readFile(String path) throws IOException {
+		// Open the model file
+		File modelFile = new File(path);
+		BufferedReader reader = new BufferedReader(new FileReader(modelFile));
+		return readModelFromReader(reader);
+	}
+
+	/**
+	 * Reads the combinatorial model from a reader and converts it into a
+	 * TestModel object
+	 * 
+	 * @param reader: the reader
+	 * @return the TestModel object
+	 * @throws IOException
+	 */
+	public static TestModel readModelFromReader(BufferedReader reader) throws IOException {
 		int nParams = 0;
 		int strength = 0;
 		int[] bounds;
@@ -53,9 +74,6 @@ public class Operations {
 		String tempStr;
 		ArrayList<Constraint> constraintList = new ArrayList<Constraint>();
 
-		// Open the model file
-		File modelFile = new File(path);
-		BufferedReader reader = new BufferedReader(new FileReader(modelFile));
 
 		// The first line contains the strength
 		strength = Integer.parseInt(reader.readLine());
@@ -254,31 +272,6 @@ public class Operations {
 		searcher.setNode(node);
 		searcher.countPaths();
 		return searcher.getPath();
-		
-//		int totVars = manager.getAllVariables().length;
-//		int[] res = new int[totVars];
-//		
-//		for (int i = 0; i < totVars; i++) {
-//			assert (getCardinality(node, manager) > 0) : "Error on variable " + (i+1) + " of " + totVars;
-//			int[] children = manager.getChildren(node);
-//
-//			if (children != null && children.length > 0) {
-//				for (int child : children) {
-//					if (leadsToTrue(child, manager)) {
-//						res[i] = getValueFromNode(manager, node, child, i);
-////						if (res[i] == -1 && test[i] != -1) {
-////							res[i] = test[i];
-////							node = manager.getChild(node, res[i]);
-////						} else {
-//							node = child;
-////						}
-//						break;
-//					}
-//				}
-//			}
-//		}
-//
-//		return res;
 	}
 
 	/**
@@ -330,31 +323,32 @@ public class Operations {
 	 * 
 	 * @param testCases: the test cases list
 	 * @param model:     the CIT Model
-	 * @return 
+	 * @return a list of strings, one for each row (test) and header as first row
 	 * @throws IOException
 	 */
-	public static TestSuite translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
-		String csv_out = "";
+	public static List<String> translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
+		List<String> csv_out = new ArrayList<>();
 		// creating an array of integers with size equal to the number of the parameters of CitModel
 		// in each position we will have the size of the corresponding parameter
 		int[] sizes = new int[model.getParameters().size()];
 		int count = 0;
-
+		String header = "";
 		// First row -> parameter names
 		for (Parameter param : model.getParameters()) {
 			sizes[count] = ParameterSize.eInstance.doSwitch(param);
-			csv_out += param.getName() + ";";
+			header += param.getName() + ";";
 			count++;
 		}
-
-		csv_out = csv_out.substring(0, csv_out.length() - 1);
-		csv_out += "\n";
+		// remove 
+		header = header.substring(0, header.length() - 1);
+		csv_out.add(header);
 
 		// Other rows -> parameter values
 		// 1) Questo crea un oggetto che permette di mappare i parametri del
 		//    modello a numeri interi
 		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
 		for (String s : testCases) {
+			String row = "";
 			String[] values = s.split(" ");
 			for (int i = 0; i < values.length; i++) {
 				int previousCount = 0;
@@ -370,18 +364,14 @@ public class Operations {
 				// 2) Questo permette, da un valore intero, di ottenere
 				//    il valore della stringa ad esso corrispondente e lo
 				//    aggiunge a csv_out
-				csv_out += valToInt.convertInt(val).getSecond() + ";";
+				row += valToInt.convertInt(val).getSecond() + ";";
 			}
-			csv_out = csv_out.substring(0, csv_out.length() - 1);
-			csv_out += "\n";
+			row = row.substring(0, row.length() - 1);
+			csv_out.add(row);
 		}
-
-		// Print the results
-		Arrays.stream(csv_out.split("\n")).distinct().forEach(x -> System.out.println(x));
-		// return the test suite as TestSuite object
-		TestSuite ts = new TestSuite(csv_out, model);
-		// TODO ts.setGeneratorName(XXXX);
-		return ts;
+		
+		csv_out = csv_out.stream().distinct().collect(Collectors.toList());
+		return csv_out;
 	}
 	
 	/**
@@ -394,50 +384,7 @@ public class Operations {
 	 * @throws IOException
 	 */
 	public static String translateOutputToString(ArrayList<String> testCases, CitModel model) throws IOException {
-		String csv_out = "";
-		// creating an array of integers with size equal to the number of the parameters of CitModel
-		// in each position we will have the size of the corresponding parameter
-		int[] sizes = new int[model.getParameters().size()];
-		int count = 0;
-
-		// First row -> parameter names
-		for (Parameter param : model.getParameters()) {
-			sizes[count] = ParameterSize.eInstance.doSwitch(param);
-			csv_out += param.getName() + ";";
-			count++;
-		}
-
-		csv_out = csv_out.substring(0, csv_out.length() - 1);
-		csv_out += "\n";
-
-		// Other rows -> parameter values
-		// 1) Questo crea un oggetto che permette di mappare i parametri del
-		//    modello a numeri interi
-		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
-		for (String s : testCases) {
-			String[] values = s.split(" ");
-			for (int i = 0; i < values.length; i++) {
-				int previousCount = 0;
-				int val = 0;
-				for (int j = 0; j < i; j++) {
-					previousCount += sizes[j];
-				}
-				if (Integer.parseInt(values[i]) == -1) {
-					val = randInt(previousCount, previousCount + sizes[i] - 1);
-				} else {
-					val = previousCount + Integer.parseInt(values[i]);
-				}
-				// 2) Questo permette, da un valore intero, di ottenere
-				//    il valore della stringa ad esso corrispondente e lo
-				//    aggiunge a csv_out
-				csv_out += valToInt.convertInt(val).getSecond() + ";";
-			}
-			csv_out = csv_out.substring(0, csv_out.length() - 1);
-			csv_out += "\n";
-		}
-
-		return csv_out;		
-		
+		return String.join("\n",translateOutput(testCases, model));
 	}
 
 	/**
@@ -453,6 +400,12 @@ public class Operations {
 		return randomNum;
 	}
 	
+	/**
+	 * Deletes duplicates from a test suite in CSV format
+	 * 
+	 * @param testSuite: the test suite in CSV format
+	 * @return the new test suite in CSV format without duplicates
+	 */
 	public static String deleteDuplicates(String testSuite) {
 		ArrayList<String> tests = new ArrayList<String>();
 		tests.addAll(Arrays.asList(testSuite.split("\n")));
@@ -474,5 +427,49 @@ public class Operations {
 		return reducedTestSuite;
 		
 	}
-	
+
+	/**
+	 * Removes empty tests contexts, that do not cover any tuple
+	 * @param tcList the list of the test contexts
+	 * @return the polished list of test contexts 
+	 */
+	public static Vector<TestContext> removeEmpty(Vector<TestContext> tcList) {
+		tcList.removeIf(x -> x.getNCovered() == 0);
+		return tcList;
+	}
+
+	/**
+	 * Removes useless tests contexts, that are implied by other test contexts
+	 * @param tcList the list of the test contexts
+	 * @param manager: the MDD manager
+	 * @return the polished list of test contexts 
+	 */
+	public static Vector<TestContext> removeImplied(Vector<TestContext> tcList, MDDManager manager) {
+		tcList.removeIf(x -> isImpliedByTc(x, tcList, manager));
+		return tcList;
+	}
+
+	/**
+	 * Checks whether the test context x is implied by one of the context in the tcList
+	 * 
+	 * @param x: the test context to be checked
+	 * @param tcList: the list of test contexts
+	 * @param manager: the MDD manager
+	 * @return true if at least one testcontext implying x is found
+	 */
+	private static boolean isImpliedByTc(TestContext x, Vector<TestContext> tcList, MDDManager manager) {
+		int mddX = x.getMDD();
+		for (TestContext tc : tcList) {
+			int mddTC = tc.getMDD();
+			int mddNotX = manager.mnot(mddX, 1);
+			int mddTcAndNotX = MDDBaseOperators.AND.combine(manager, mddTC, mddNotX);
+			int mddImplies = manager.mnot(mddTcAndNotX, 1);
+			PathSearcher searcher = new PathSearcher(manager,1);
+			searcher.setNode(mddImplies);
+			if (searcher.countPaths() == 0)
+				return true;
+		}
+		
+		return false;
+	}
 }
