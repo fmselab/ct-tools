@@ -18,6 +18,7 @@ import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.ParameterValuesToInt;
+import ctwedge.util.TestSuite;
 import pMedici.safeelements.ExtendedSemaphore;
 
 public class Operations {
@@ -329,9 +330,10 @@ public class Operations {
 	 * 
 	 * @param testCases: the test cases list
 	 * @param model:     the CIT Model
+	 * @return 
 	 * @throws IOException
 	 */
-	public static void translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
+	public static TestSuite translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
 		String csv_out = "";
 		// creating an array of integers with size equal to the number of the parameters of CitModel
 		// in each position we will have the size of the corresponding parameter
@@ -376,6 +378,10 @@ public class Operations {
 
 		// Print the results
 		Arrays.stream(csv_out.split("\n")).distinct().forEach(x -> System.out.println(x));
+		// return the test suite as TestSuite object
+		TestSuite ts = new TestSuite(csv_out, model);
+		// TODO ts.setGeneratorName(XXXX);
+		return ts;
 	}
 	
 	/**

@@ -15,6 +15,7 @@ import org.colomoto.mddlib.MDDManager;
 import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
+import ctwedge.util.TestSuite;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -27,11 +28,10 @@ import pMedici.util.TestModel;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import pMedici.combinations.TupleGenerator;
-// TODO: Auto-generated Javadoc
 
 /**
  *  main class to call pMedici
- * TODO: use the pciocli library, convert method to non static and variables as fields
+ * TODO: use the picocli library, convert method to non static and variables as fields
  */
 public class PMedici {
 
@@ -99,7 +99,7 @@ public class PMedici {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
-	 ArrayList<String> generateTests(String fileName, int strength)
+	 TestSuite generateTests(String fileName, int strength)
 			throws IOException, InterruptedException {
 
 		assert fileName.endsWith(".ctw");
@@ -168,7 +168,7 @@ public class PMedici {
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
-		Operations.translateOutput(testCases, model);
+		TestSuite testSuite = Operations.translateOutput(testCases, model);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();
@@ -183,7 +183,7 @@ public class PMedici {
 		// Join the tuple filler thread
 		tFillerThread.join();
 		// return the test suite
-		return testCases;
+		return testSuite;
 	}
 
 }
