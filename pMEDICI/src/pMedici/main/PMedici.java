@@ -45,6 +45,8 @@ public class PMedici implements Callable<Integer> {
 	@Parameters(index = "1", description = "The name of the file containing the model in CTW format.")
 	String fileName = "";
 	
+	@Option(names = "-n", description = "Number of threads to be used for test building. Do not specify (or set to 0) if the one of the system architecture has to be used.")
+    private int nThreads = Runtime.getRuntime().availableProcessors();
 
 	/** Use the verbose mode */
 	@Option(names = "-verb", description = "Use the verbose mode.")
@@ -68,7 +70,7 @@ public class PMedici implements Callable<Integer> {
 	
 	@Override
     public Integer call() throws Exception {
-		generateTests(fileName, strength);
+		generateTests(fileName, strength, nThreads);
 		return 0;
 	}
 	
@@ -92,11 +94,12 @@ public class PMedici implements Callable<Integer> {
 	 *
 	 * @param fileName the file name containing the cit model in CTWEDGE format!
 	 * @param strength the strength
+	 * @param nThreads the number of threads to be used
 	 * @return 
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
-	 TestSuite generateTests(String fileName, int strength)
+	 TestSuite generateTests(String fileName, int strength, int nThreads)
 			throws IOException, InterruptedException {
 		 String mediciModel = "";
 		// Convert the model from CTWedge to Medici format
@@ -136,7 +139,8 @@ public class PMedici implements Callable<Integer> {
 		tFillerThread.start();
 
 		// Start all the TestBuilder threads
-		int nThreads = Runtime.getRuntime().availableProcessors();
+		if (nThreads == 0)
+			nThreads = Runtime.getRuntime().availableProcessors();
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		boolean sort = false;
