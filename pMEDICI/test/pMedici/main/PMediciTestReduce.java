@@ -30,7 +30,6 @@ public class PMediciTestReduce {
 		TestSuite testsuite = pMedici.generateTests("examples/CTComp/BOOLC_0.ctw",2);
 		assertEquals(2, testsuite.getStrength());
 		System.out.println("test suite size " + testsuite.getTests().size());
-		TestSuite testsuite = pMedici.generateTests("examples/CTComp/BOOLC_0.ctw",2);
 		MinimalityTestSuiteValidator minimality = new MinimalityTestSuiteValidator(testsuite);
 		System.out.println(minimality.isMinimal());
 		TestSuite ts = minimality.reduceSize();
