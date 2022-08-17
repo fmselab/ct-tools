@@ -29,6 +29,11 @@ public class PMediciTestReduce {
 
 	}
 	@Test
+	public void test2() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		extracted("examples/CTComp/MCAC_0.ctw");
+
+	}
+	@Test
 	public void testSimple() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
 		extracted("examples/BOOLC_4_Simple.ctw");
 
