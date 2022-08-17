@@ -164,6 +164,7 @@ public class PMedici implements Callable<Integer> {
 		System.out.println("-----TEST SUITE-----");
 		TestSuite testSuite = new TestSuite(Operations.translateOutputToString(testCases, model),model);
 		System.out.println(testSuite.getTs());
+		testSuite.setStrength(strength);
 		// TODO
 		// testSuite.setGeneratorTime(nThreads);
 
