@@ -38,14 +38,16 @@ public class PMediciMDDTest {
 	public void test() throws IOException, InterruptedException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
-		PMedici.main(new String[] { "2", "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\UNIFORM_ALL_18.ctw" });
+		PMedici pMedici = new PMedici();
+		pMedici.generateTests("examples/CTComp/UNIFORM_ALL_18.ctw", 2);
 	}
 
 	@Test
 	public void test2() throws IOException, InterruptedException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
-		PMedici.main(new String[] { "2", "examples/BOOLC_4_Simple.ctw" });
+		PMedici pMedici = new PMedici();
+		pMedici.generateTests("examples/BOOLC_4_Simple.ctw", 2);
 	}
 	
 	@Test
