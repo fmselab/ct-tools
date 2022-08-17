@@ -35,8 +35,8 @@ public class PMediciTestReduce {
 	}
 
 	public void extracted(String fileName) throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		Logger.getLogger(MinimalityTestSuiteValidator.class).setLevel(Level.ALL);
-		//Logger.getLogger(ParameterSwitchToPairStrings.class).setLevel(Level.ALL);
+		Logger.getLogger(MinimalityTestSuiteValidator.class).setLevel(Level.OFF);
+		Logger.getLogger(ParameterSwitchToPairStrings.class).setLevel(Level.OFF);
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
 		pMedici.PRINT_DEBUG = true;
@@ -46,10 +46,13 @@ public class PMediciTestReduce {
 		assertEquals(2, testsuite.getStrength());
 		System.out.println("test suite size " + testsuite.getTests().size());
 		MinimalityTestSuiteValidator minimality = new MinimalityTestSuiteValidator(testsuite);
-		System.out.println(minimality.isMinimal());
+		System.out.println("minimal ?" + minimality.isMinimal());
 		TestSuite reducedTS = minimality.reduceSize();
-		System.out.println(reducedTS.getTests().size());
+		assertNotNull(reducedTS.getModel());
+		System.out.println("reduced test size " + reducedTS.getTests().size() + " original " + testsuite.getTests().size());
+		// 
 		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(reducedTS);
-		System.out.println(validator.isComplete());
+		assertTrue(validator.isComplete());
+		System.out.println("the reduced test suite is complete");		
 	}
 }

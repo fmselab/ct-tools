@@ -162,8 +162,9 @@ public class PMedici implements Callable<Integer> {
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
-		TestSuite testSuite = new TestSuite(Operations.translateOutputToString(testCases, model),model);
-		System.out.println(testSuite.getTs());
+		String tsAsCSV = Operations.translateOutputToString(testCases, model);
+		TestSuite testSuite = new TestSuite(tsAsCSV,model);
+		System.out.println(tsAsCSV);
 		testSuite.setStrength(strength);
 		// TODO
 		// testSuite.setGeneratorTime(nThreads);
