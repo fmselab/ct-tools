@@ -27,9 +27,10 @@ public class PMediciTestReduce {
 		pMedici.PRINT_DEBUG = true;
 		pMedici.verb = true;
 		TestBuilder.LockTCOnlyOnWriting = true;
-		TestSuite testsuite = pMedici.generateTests("examples\\CTComp\\BOOLC_0.ctw",2);
+		TestSuite testsuite = pMedici.generateTests("examples/CTComp/BOOLC_0.ctw",2);
 		assertEquals(2, testsuite.getStrength());
 		System.out.println("test suite size " + testsuite.getTests().size());
+		TestSuite testsuite = pMedici.generateTests("examples/CTComp/BOOLC_0.ctw",2);
 		MinimalityTestSuiteValidator minimality = new MinimalityTestSuiteValidator(testsuite);
 		System.out.println(minimality.isMinimal());
 		TestSuite ts = minimality.reduceSize();
