@@ -54,15 +54,15 @@ public class PMediciMDDTest {
 	public void test3() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
-		PMedici.main(new String[] { "2", "examples/MVM.ctw" });
-		//generateAndCheck("examples/MVM.ctw", true);
+		PMedici pMedici = new PMedici();
+		pMedici.generateTests("examples/MVM.ctw", 2);
 	}
 
 	@Test
 	public void testValidity()
 			throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
 		// Read the model
-		String filename = "C:\\Users\\Andrea_PC\\Desktop\\CTComp\\CTComp\\MCAC_4.ctw";
+		String filename = "examples/CTComp/MCAC_4.ctw";
 		generateAndCheck(filename, false);
 	}
 
