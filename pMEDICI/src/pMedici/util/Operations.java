@@ -369,7 +369,7 @@ public class Operations {
 			row = row.substring(0, row.length() - 1);
 			csv_out.add(row);
 		}
-		
+		// remove duplicates if they are exactly the same 
 		csv_out = csv_out.stream().distinct().collect(Collectors.toList());
 		return csv_out;
 	}
