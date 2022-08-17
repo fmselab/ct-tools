@@ -248,7 +248,7 @@ public class TestBuilder implements Runnable {
 					if (tc.isCoverable(tuple)) {					
 						boolean added = tc.addTuple(tuple);
 						if (!added)
-							safeQueue.insert(tuple);
+							safeQueue.reinsert(tuple);
 						
 						tc.testMutex.release();
 						
