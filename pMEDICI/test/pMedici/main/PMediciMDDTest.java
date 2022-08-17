@@ -39,7 +39,7 @@ public class PMediciMDDTest {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
-		pMedici.generateTests("examples/CTComp/UNIFORM_ALL_18.ctw", 2);
+		pMedici.generateTests("examples/CTComp/UNIFORM_ALL_18.ctw", 2, 0);
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class PMediciMDDTest {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
-		pMedici.generateTests("examples/BOOLC_4_Simple.ctw", 2);
+		pMedici.generateTests("examples/BOOLC_4_Simple.ctw", 2, 0);
 	}
 	
 	@Test
@@ -55,7 +55,7 @@ public class PMediciMDDTest {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
-		pMedici.generateTests("examples/MVM.ctw", 2);
+		pMedici.generateTests("examples/MVM.ctw", 2, 0);
 	}
 
 	@Test
@@ -91,7 +91,6 @@ public class PMediciMDDTest {
 					try {
 						generateAndCheck(x.getAbsolutePath(), false);
 					} catch (IOException | InterruptedException | SolverException | InvalidConfigurationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				});
@@ -158,7 +157,7 @@ public class PMediciMDDTest {
 		PMedici pMedici = new PMedici();
 		pMedici.verb = saveandprint;
 		// generate the tests (as lines in a csv format)
-		TestSuite ts = pMedici.generateTests(filename,2);
+		TestSuite ts = pMedici.generateTests(filename,2, 0);
 		ts.populateTestSuite();
 		if (saveandprint) {
 			PrintStream consoleStream = new PrintStream(new FileOutputStream(FileDescriptor.out));

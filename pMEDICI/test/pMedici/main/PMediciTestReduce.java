@@ -42,7 +42,7 @@ public class PMediciTestReduce {
 		pMedici.PRINT_DEBUG = true;
 		pMedici.verb = true;
 		TestBuilder.LockTCOnlyOnWriting = true;
-		TestSuite testsuite = pMedici.generateTests(fileName,2);
+		TestSuite testsuite = pMedici.generateTests(fileName,2, 0);
 		assertEquals(2, testsuite.getStrength());
 		System.out.println("test suite size " + testsuite.getTests().size());
 		MinimalityTestSuiteValidator minimality = new MinimalityTestSuiteValidator(testsuite);
