@@ -27,6 +27,25 @@ public class CSVImporter {
 		// setting the environment for reading the file
 		File file = new File(csvFilePath);
 		FileReader fr = new FileReader(file);
+		return readFromReader(fr);
+	}
+	
+	/**
+	 * Import the test suite from a reader
+	 * 
+	 * @param fr the reader containing the test suite
+	 * 
+	 * @return a {@link Vector} where each position is one test case. A test case is
+	 *         a {@link Map} collection that contains a {@link String} as key which
+	 *         is the parameter name and {@link String} as value which is the
+	 *         corresponding parameter value.
+	 * @throws IOException
+	 */
+	public static Vector<Map<String, String>> readFromReader(Reader fr) throws IOException {
+		// in each position of the vector there is one test case
+		Vector<Map<String, String>> tests = new Vector<Map<String, String>>();
+
+		// setting the environment for reading the reader
 		BufferedReader br = new BufferedReader(fr);
 		String line = " ";
 
