@@ -31,6 +31,9 @@ public class PMediciPlus {
 
 	public static boolean PRINT_DEBUG = true;
 
+	static boolean verb = false;
+
+	
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		String evolvedModelPath = "";
@@ -39,8 +42,7 @@ public class PMediciPlus {
 
 		int strength = 2;
 		CitModel model = null;
-		boolean verb = false;
-
+		
 		// Read the test model from arguments
 		// args[0] = t-wise strength
 		// args[1] = file name (path) to CTWedge evolved model
@@ -59,8 +61,6 @@ public class PMediciPlus {
 					"You must specify 1) the strength, 2) the new model file path, 3) the old test suite file path and 4) the file path for the test suite export file");
 		}
 
-		// Get current time
-		long start = System.currentTimeMillis();
 
 		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
 
@@ -83,6 +83,25 @@ public class PMediciPlus {
 		// Set the strength (default was 0)
 		m.setStrength(strength);
 
+		String testSuite = genereteTests(model, m, oldTests);
+
+		// Export the test suite
+		pMedici.exporter.CSVExporter.export(testSuite, exportFilePath);
+
+	}
+
+	/**
+	 * 
+	 * @param model the new citmodel 
+	 * @param m the new model as test model TODO delete (only 1 model)
+	 * @param oldTests the old tests
+	 * @return
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
+	public static String genereteTests(CitModel model, TestModel m, Vector<Map<String, String>> oldTests) throws InterruptedException, IOException {
+		// Get current time
+		long start = System.currentTimeMillis();
 		// Get the MDD representing the model without constraints
 		ModelToMDDConverter mc = new ModelToMDDConverter(m);
 		MDDManager manager = mc.getMDD();
@@ -231,9 +250,7 @@ public class PMediciPlus {
 
 		System.out.println("Time required for the whole algorithm: " + (System.currentTimeMillis() - start) + " ms");
 
-		// Export the test suite
-		pMedici.exporter.CSVExporter.export(testSuite, exportFilePath);
 
+		return testSuite;
 	}
-
 }
