@@ -34,32 +34,35 @@ import picocli.CommandLine.Parameters;
 import pMedici.combinations.TupleGenerator;
 
 /**
- * main class to call pMedici TODO: use the picocli library, convert method to
- * non static and variables as fields
+ *  main class to call pMedici
+ * TODO: use the picocli library, convert method to non static and variables as fields
  */
 public class PMedici implements Callable<Integer> {
-
+	
 	@Parameters(index = "0", description = "The strength for test generation.")
 	int strength = 2;
-
+	
 	@Parameters(index = "1", description = "The name of the file containing the model in CTW format.")
 	String fileName = "";
-
+	
 	@Option(names = "-n", description = "Number of threads to be used for test building. Do not specify (or set to 0) if the one of the system architecture has to be used.")
-	private int nThreads = Runtime.getRuntime().availableProcessors();
+    private int nThreads = Runtime.getRuntime().availableProcessors();
 
 	/** Use the verbose mode */
 	@Option(names = "-verb", description = "Use the verbose mode.")
 	boolean verb;
-
+	
 	/** The print debug. */
 	public static boolean PRINT_DEBUG = false;
+	
+	/** the model for the generation */
+	CitModel model;
 
 	/**
 	 * The main method.
 	 *
 	 * @param args the arguments
-	 * @throws IOException          Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -67,22 +70,19 @@ public class PMedici implements Callable<Integer> {
 		int exitCode = new CommandLine(pMedici).execute(args);
 		System.exit(exitCode);
 	}
-
+	
 	@Override
-	public Integer call() throws Exception {
+    public Integer call() throws Exception {
 		generateTests(fileName, strength, nThreads);
 		return 0;
 	}
-
-	// the model for the generation
-	private CitModel model;
 
 	// covert from ctwedge to medici and saves into a file called "model.txt"
 	private String buildMediciModel(String fileName) throws IOException {
 		assert fileName.endsWith(".ctw");
 		assert Files.exists(Paths.get(fileName));
 		assert Files.isRegularFile(Paths.get(fileName));
-
+		
 		model = Utility.loadModelFromPath(fileName);
 		MediciCITGenerator gen = new MediciCITGenerator();
 		MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
@@ -95,13 +95,13 @@ public class PMedici implements Callable<Integer> {
 	 * @param fileName the file name containing the cit model in CTWEDGE format!
 	 * @param strength the strength
 	 * @param nThreads the number of threads to be used
-	 * @return
-	 * @throws IOException          Signals that an I/O exception has occurred.
+	 * @return 
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
-	public TestSuite generateTests(String fileName, int strength, int nThreads)
+	 public TestSuite generateTests(String fileName, int strength, int nThreads)
 			throws IOException, InterruptedException {
-		String mediciModel = "";
+		 String mediciModel = "";
 		// Convert the model from CTWedge to Medici format
 		if (!fileName.equals("")) {
 			mediciModel = buildMediciModel(fileName);
@@ -167,7 +167,7 @@ public class PMedici implements Callable<Integer> {
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
 		String tsAsCSV = Operations.translateOutputToString(testCases, model);
-		TestSuite testSuite = new TestSuite(tsAsCSV, model);
+		TestSuite testSuite = new TestSuite(tsAsCSV,model);
 		System.out.println(tsAsCSV);
 		testSuite.setStrength(strength);
 		// TODO
@@ -188,6 +188,10 @@ public class PMedici implements Callable<Integer> {
 		tFillerThread.join();
 		// return the test suite
 		return testSuite;
+	}
+	 
+	public CitModel getModel() {
+		return this.model;
 	}
 
 }
