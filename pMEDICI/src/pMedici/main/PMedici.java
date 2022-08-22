@@ -54,6 +54,9 @@ public class PMedici implements Callable<Integer> {
 	
 	/** The print debug. */
 	public static boolean PRINT_DEBUG = false;
+	
+	/** the model for the generation */
+	CitModel model;
 
 	/**
 	 * The main method.
@@ -73,9 +76,6 @@ public class PMedici implements Callable<Integer> {
 		generateTests(fileName, strength, nThreads);
 		return 0;
 	}
-	
-	// the model for the generation
-	CitModel model;
 
 	// covert from ctwedge to medici and saves into a file called "model.txt"
 	private String buildMediciModel(String fileName) throws IOException {
@@ -99,7 +99,7 @@ public class PMedici implements Callable<Integer> {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
-	 TestSuite generateTests(String fileName, int strength, int nThreads)
+	 public TestSuite generateTests(String fileName, int strength, int nThreads)
 			throws IOException, InterruptedException {
 		 String mediciModel = "";
 		// Convert the model from CTWedge to Medici format
@@ -188,6 +188,10 @@ public class PMedici implements Callable<Integer> {
 		tFillerThread.join();
 		// return the test suite
 		return testSuite;
+	}
+	 
+	public CitModel getModel() {
+		return this.model;
 	}
 
 }
