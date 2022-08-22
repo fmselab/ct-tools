@@ -78,7 +78,7 @@ public class PMedici implements Callable<Integer> {
 	}
 
 	// covert from ctwedge to medici and saves into a file called "model.txt"
-	private String buildMediciModel(String fileName) throws IOException {
+	public String buildMediciModel(String fileName) throws IOException {
 		assert fileName.endsWith(".ctw");
 		assert Files.exists(Paths.get(fileName));
 		assert Files.isRegularFile(Paths.get(fileName));

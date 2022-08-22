@@ -83,7 +83,7 @@ public class PMediciPlus {
 		// Set the strength (default was 0)
 		m.setStrength(strength);
 
-		String testSuite = genereteTests(model, m, oldTests);
+		String testSuite = generateTests(model, m, oldTests);
 
 		// Export the test suite
 		pMedici.exporter.CSVExporter.export(testSuite, exportFilePath);
@@ -99,7 +99,7 @@ public class PMediciPlus {
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	public static String genereteTests(CitModel model, TestModel m, Vector<Map<String, String>> oldTests) throws InterruptedException, IOException {
+	public static String generateTests(CitModel model, TestModel m, Vector<Map<String, String>> oldTests) throws InterruptedException, IOException {
 		// Get current time
 		long start = System.currentTimeMillis();
 		// Get the MDD representing the model without constraints
