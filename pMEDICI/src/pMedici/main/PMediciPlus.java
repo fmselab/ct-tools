@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
@@ -29,6 +30,8 @@ import pMedici.importer.CSVImporter;
 
 public class PMediciPlus {
 
+	static final Logger LOGGER = Logger.getLogger(PMediciPlus.class);
+	
 	public static boolean PRINT_DEBUG = true;
 
 	static boolean verb = false;
@@ -126,7 +129,7 @@ public class PMediciPlus {
 		// is present or not in the old test suite. If it is, then we add the parameter
 		// value in the tuple of the current iteration.
 		for (Map<String, String> oldTest : oldTests) {
-
+			LOGGER.debug("adding test " + oldTest);
 			// Creating the tuple related to the current iteration
 			Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>();
 			int tupleIndex = 0;
@@ -163,8 +166,7 @@ public class PMediciPlus {
 
 					// Adding the tc to the list of all the test context tcList
 					tcList.add(tc);
-
-				}
+				} 
 			}
 
 		}
