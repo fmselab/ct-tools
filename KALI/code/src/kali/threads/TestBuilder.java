@@ -75,6 +75,11 @@ public class TestBuilder implements Runnable {
 	 * Set the optimization: LockTCOnlyOnWriting
 	 */
 	public static boolean LockTCOnlyOnWriting = true;
+	
+	/**
+	 * Exclude the check during testing
+	 */
+	public static boolean IN_TEST = false;
 
 	/**
 	 * Builds a new test builder
@@ -127,7 +132,8 @@ public class TestBuilder implements Runnable {
 					continue;
 				else 
 					// If the lock has been acquired, check if it is locked by the caller
-					assert(tcList.get(i).testMutex.lockedByCaller());
+					if (!IN_TEST)
+						assert(tcList.get(i).testMutex.lockedByCaller());
 			
 			// Check the predicate
 			if (tcList.get(i).isImplied(tuple)) {
@@ -163,7 +169,8 @@ public class TestBuilder implements Runnable {
 			
 			// Try to acquire the mutex
 			if (orderedList.get(index).testMutex.tryAcquire()) {
-				assert (orderedList.get(index).testMutex.lockedByCaller());
+				if (!IN_TEST)
+					assert (orderedList.get(index).testMutex.lockedByCaller());
 				// Check the predicate
 				if (orderedList.get(index).isCoverable(tuple)) {
 					found = orderedList.get(index).addTuple(tuple);

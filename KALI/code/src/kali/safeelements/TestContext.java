@@ -141,7 +141,8 @@ public class TestContext {
 	 */
 	public boolean isCoverable(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Checks using the test vector
 		for (Pair<String, Object> t : tuple) {
@@ -173,7 +174,8 @@ public class TestContext {
 	 */
 	private boolean isCompatible(Vector<Pair<String, Object>> tuple, boolean skipFirstStep) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// First phase - Check without the SAT Solver
 		if (!skipFirstStep) {
@@ -204,7 +206,7 @@ public class TestContext {
 	 */
 	public boolean isCompatiblePartialCheck(Vector<Pair<String, Object>> tuple) {
 		// We must use a test context in a mutex mode
-		if (!TestBuilder.LockTCOnlyOnWriting)
+		if (!TestBuilder.LockTCOnlyOnWriting && !TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		for (Pair<String, Object> t : tuple) {
@@ -230,7 +232,8 @@ public class TestContext {
 	 */
 	private boolean verifyWithSAT(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 				
 		// Create a formula representing the tuple
 		BooleanFormula tupleFormula = getFormulaFromTuple(tuple);
@@ -262,7 +265,7 @@ public class TestContext {
 	 */
 	public boolean isImplied(Vector<Pair<String, Object>> tuple) {
 		// We must use a test context in a mutex mode
-		if (!TestBuilder.LockTCOnlyOnWriting)
+		if (!TestBuilder.LockTCOnlyOnWriting && !TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Check if it is implied
@@ -290,7 +293,8 @@ public class TestContext {
 		boolean added = true;
 		
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Add the tuple to the partial test
 		for (Pair<String, Object> t : tuple) {
@@ -318,7 +322,8 @@ public class TestContext {
 	 */
 	private boolean updateContext(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 				
 		// Create a formula representing the tuple
 		BooleanFormula tupleFormula = getFormulaFromTuple(tuple);
@@ -453,7 +458,8 @@ public class TestContext {
 	 * @return the completeness grade of the test context
 	 */
 	public int getCompletenessGrade() {
-		assert (this.testMutex.lockedByCaller() || nCovered == 0);
+		if (!TestBuilder.IN_TEST)
+			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		int counter = 0;
 		for (Object i : test)
 			if (i.equals(UNDEF))
