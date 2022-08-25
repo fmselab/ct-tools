@@ -6,3 +6,4 @@
 ./examples/ctcomp/MCA_0.ctw;1446;16722;true;AS_DECLARED;8;SMTINTERPOL
 ./examples/ctcomp/MCA_0.ctw;1450;17654;true;AS_DECLARED;8;SMTINTERPOL
 examples/bool2.ctw;15;2533;true;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+examples/bool2.ctw;14;1898;true;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
