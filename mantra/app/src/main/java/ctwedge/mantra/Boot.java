@@ -16,18 +16,14 @@ public class Boot {
 
     public static void main(String[] args) {
         // create the plugin manager
-    	System.setProperty(DefaultPluginManager.PLUGINS_DIR_PROPERTY_NAME, "pluginz");
-        PluginManager pluginManager = new DefaultPluginManager();
-        // load the plugins
+    	System.setProperty(DefaultPluginManager.PLUGINS_DIR_PROPERTY_NAME, "C:\\Users\\feder\\Desktop\\University\\Magistrale\\Primo_Anno\\QUASMED\\Code\\ct-tools\\mantra\\plugins");
+    	System.setProperty(DefaultPluginManager.MODE_PROPERTY_NAME, "development");
+        
+    	PluginManager pluginManager = new DefaultPluginManager();
+
         pluginManager.loadPlugins();
-
-        // enable a disabled plugin
-//        pluginManager.enablePlugin("welcome-plugin");
-
-        // start (active/resolved) the plugins
         pluginManager.startPlugins();
 
-        // retrieves the extensions for Greeting extension point
         List<Model> models = pluginManager.getExtensions(Model.class);
         System.out.println(String.format("Found %d extensions for extension point '%s'", models.size(), Model.class.getName()));
         for (Model model : models) {
@@ -54,16 +50,6 @@ public class Boot {
 
         // stop the plugins
         pluginManager.stopPlugins();
-        /*
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-
-            @Override
-            public void run() {
-                pluginManager.stopPlugins();
-            }
-
-        });
-        */
     }
 
 }

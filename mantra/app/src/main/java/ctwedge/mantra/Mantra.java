@@ -22,6 +22,7 @@ import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
 import ctwedge.mantra.model.Model;
 import ctwedge.mantra.safeelements.SafeQueue;
+import ctwedge.mantra.threads.TupleFiller;
 import ctwedge.util.TestSuite;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
@@ -67,7 +68,6 @@ public class Mantra implements Callable<Integer> {
 		return 0;
 	}
 
-
 	/**
 	 * Generate tests.
 	 *
@@ -110,7 +110,7 @@ public class Mantra implements Callable<Integer> {
 		// Add to the baseNode the constraints
 
 		// Shared object between producer and consumer
-		SafeQueue<?,?> tuples = model.getSafeQueue();
+		SafeQueue<?,?> tuples = model.getSafeQueue(); //TODO sistemare!
 
 		// Combination generator
 		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(m);
