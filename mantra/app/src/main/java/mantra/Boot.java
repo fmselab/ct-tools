@@ -1,4 +1,4 @@
-package ctwedge.mantra;
+package mantra;
 
 import java.util.List;
 import java.util.Set;
@@ -7,7 +7,7 @@ import org.pf4j.DefaultPluginManager;
 import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
 
-import ctwedge.mantra.model.Model;
+import mantra.model.Model;
 
 /**
  * A boot class that start the application.
@@ -16,8 +16,8 @@ public class Boot {
 
     public static void main(String[] args) {
         // create the plugin manager
-    	System.setProperty(DefaultPluginManager.PLUGINS_DIR_PROPERTY_NAME, "C:\\Users\\feder\\Desktop\\University\\Magistrale\\Primo_Anno\\QUASMED\\Code\\ct-tools\\mantra\\plugins");
-    	System.setProperty(DefaultPluginManager.MODE_PROPERTY_NAME, "development");
+    	System.setProperty(DefaultPluginManager.PLUGINS_DIR_PROPERTY_NAME, "pluginz");
+    	//System.setProperty(DefaultPluginManager.MODE_PROPERTY_NAME, "development");
         
     	PluginManager pluginManager = new DefaultPluginManager();
 

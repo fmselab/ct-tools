@@ -1,4 +1,4 @@
-package ctwedge.mantra.util;
+package mantra.util;
 
 public class Pair<A, B> {
 	private A first;

@@ -1,4 +1,4 @@
-package ctwedge.mantra.safeelements;
+package mantra.safeelements;
 
 import java.util.concurrent.Semaphore;
 

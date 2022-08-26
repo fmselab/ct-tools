@@ -1,11 +1,12 @@
-package ctwedge.mantra.kali;
+package mantra.kali;
 
 import org.apache.commons.lang.StringUtils;
 
 import org.pf4j.PluginWrapper;
 import org.pf4j.RuntimeMode;
 
-import ctwedge.mantra.model.Model;
+import mantra.model.Model;
+import mantra.safeelements.SafeQueue;
 
 import org.pf4j.Extension;
 import org.pf4j.Plugin;
@@ -36,6 +37,12 @@ public class KaliPlugin extends Plugin {
 		@Override
 		public void loadModelFromPath(String filename) {
 			System.out.println("Kali model!");
+		}
+
+		@Override
+		public SafeQueue<?, ?> getSafeQueue() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	}

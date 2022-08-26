@@ -1,4 +1,4 @@
-package ctwedge.mantra;
+package mantra;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,13 +17,11 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.PluginManager;
 
-import ctwedge.ctWedge.CitModel;
-import ctwedge.generator.medici.MediciCITGenerator;
-import ctwedge.generator.util.Utility;
-import ctwedge.mantra.model.Model;
-import ctwedge.mantra.safeelements.SafeQueue;
-import ctwedge.mantra.threads.TupleFiller;
-import ctwedge.util.TestSuite;
+
+import mantra.model.Model;
+import mantra.safeelements.SafeQueue;
+import mantra.threads.TupleFiller;
+import mantra.util.Pair;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -78,7 +76,7 @@ public class Mantra implements Callable<Integer> {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
-	 public TestSuite generateTests(String fileName, int strength, int nThreads)
+	 public int generateTests(String fileName, int strength, int nThreads)
 			throws IOException, InterruptedException {
 		 assert pluginDir != null : "which plugin should be user???";
 		 System.setProperty(DefaultPluginManager.PLUGINS_DIR_PROPERTY_NAME, pluginDir);
@@ -112,64 +110,10 @@ public class Mantra implements Callable<Integer> {
 		// Shared object between producer and consumer
 		SafeQueue<?,?> tuples = model.getSafeQueue(); //TODO sistemare!
 
-		// Combination generator
-		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(m);
+		
 
-		// Start the filler thread
-		TupleFiller tFiller = new TupleFiller(tg, tuples);
-		Thread tFillerThread = new Thread(tFiller);
-		tFillerThread.start();
+		return 0;
 
-		// Start all the TestBuilder threads
-		if (nThreads == 0)
-			nThreads = Runtime.getRuntime().availableProcessors();
-		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
-		Vector<TestContext> tcList = new Vector<TestContext>();
-		boolean sort = false;
-		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
-		for (int i = 0; i < nThreads; i++) {
-			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, m.getnParams(),
-					m.getUseConstraints(), manager, testContextsMutex));
-			testBuilderThreads.add(tBuilder);
-			tBuilder.start();
-		}
-
-		// Join all the test builder threads
-		for (int i = 0; i < nThreads; i++) {
-			testBuilderThreads.get(i).join();
-		}
-
-		// Save the tests
-		ArrayList<String> testCases = new ArrayList<String>();
-		for (TestContext tc : tcList) {
-			nCovered += tc.getNCovered();
-			testCases.add(tc.getTest(false));
-		}
-
-		// Print test suite
-		System.out.println("-----TEST SUITE-----");
-		String tsAsCSV = Operations.translateOutputToString(testCases, model);
-		TestSuite testSuite = new TestSuite(tsAsCSV,model);
-		System.out.println(tsAsCSV);
-		testSuite.setStrength(strength);
-		// TODO
-		// testSuite.setGeneratorTime(nThreads);
-
-		if (verb) {
-			totTuples = tuples.getNTuples();
-			System.out.println("Covered: " + nCovered + " tuples");
-			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
-			System.out.println("Total number of tuples: " + totTuples + " tuples");
-			System.out.println(
-					"Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
-			System.out.println("Number of tests generated before duplicate removal: " + tcList.size());
-			System.out.println("Number of tests generated after duplicate removal: " + testSuite.getTests().size());
-		}
-
-		// Join the tuple filler thread
-		tFillerThread.join();
-		// return the test suite
-		return testSuite;
 	}
 	 
 }

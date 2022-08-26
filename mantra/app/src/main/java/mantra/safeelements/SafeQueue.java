@@ -1,9 +1,9 @@
-package ctwedge.mantra.safeelements;
+package mantra.safeelements;
 
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import ctwedge.mantra.util.Pair;
+import mantra.util.Pair;
 
 public class SafeQueue<S, K> {
 

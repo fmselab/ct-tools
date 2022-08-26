@@ -1,11 +1,11 @@
-package ctwedge.mantra.threads;
+package mantra.threads;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import ctwedge.mantra.util.Pair;
-import ctwedge.mantra.safeelements.SafeQueue;
+import mantra.safeelements.SafeQueue;
+import mantra.util.Pair;
 
 public class TupleFiller<S, K> implements Runnable {
 

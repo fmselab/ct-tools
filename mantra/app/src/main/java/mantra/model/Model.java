@@ -1,8 +1,8 @@
-package ctwedge.mantra.model;
+package mantra.model;
 
 import org.pf4j.ExtensionPoint;
 
-import ctwedge.mantra.safeelements.SafeQueue;
+import mantra.safeelements.SafeQueue;
 
 public interface Model extends ExtensionPoint {
 

@@ -1,4 +1,4 @@
-package ctwedge.mantra;
+package mantra;
 
 import java.util.ArrayList;
 import java.util.List;
