@@ -74,7 +74,7 @@
         </dependency>
 
         <dependency>
-            <groupId>ctwedge</groupId>
+            <groupId>mantra</groupId>
             <artifactId>mantra-app</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <!-- !!! VERY IMPORTANT -->
