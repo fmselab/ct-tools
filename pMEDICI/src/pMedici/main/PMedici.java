@@ -1,8 +1,6 @@
 package pMedici.main;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -19,6 +17,7 @@ import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.TestSuite;
+import pMedici.combinations.TupleGenerator;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -31,7 +30,6 @@ import pMedici.util.TestModel;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import pMedici.combinations.TupleGenerator;
 
 /**
  *  main class to call pMedici

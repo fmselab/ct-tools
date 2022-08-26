@@ -23,7 +23,18 @@ import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaManager;
 import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
-import ctwedge.ctWedge.*;
+
+import ctwedge.ctWedge.AndExpression;
+import ctwedge.ctWedge.AtomicPredicate;
+import ctwedge.ctWedge.EqualExpression;
+import ctwedge.ctWedge.ImpliesExpression;
+import ctwedge.ctWedge.ModMultDiv;
+import ctwedge.ctWedge.NotExpression;
+import ctwedge.ctWedge.OrExpression;
+import ctwedge.ctWedge.Parameter;
+import ctwedge.ctWedge.PlusMinus;
+import ctwedge.ctWedge.PlusMinusOperators;
+import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import kali.safeelements.TestContext;
 

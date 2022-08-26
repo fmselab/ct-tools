@@ -14,6 +14,8 @@ import org.colomoto.mddlib.MDDManager;
 import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
+import pMedici.combinations.TupleGenerator;
+import pMedici.importer.CSVImporter;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -24,8 +26,6 @@ import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
 import pMedici.util.TestModel;
-import pMedici.combinations.TupleGenerator;
-import pMedici.importer.CSVImporter;
 
 public class PMediciPlusMT {
 

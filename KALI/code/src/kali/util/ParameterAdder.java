@@ -23,7 +23,10 @@ import java.util.Map;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.Formula;
 
-import ctwedge.ctWedge.*;
+import ctwedge.ctWedge.Bool;
+import ctwedge.ctWedge.Element;
+import ctwedge.ctWedge.Enumerative;
+import ctwedge.ctWedge.Range;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import ctwedge.util.validator.ParameterElementsGetterAsStrings;
 import kali.safeelements.TestContext;
