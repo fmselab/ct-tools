@@ -22,6 +22,7 @@ import mantra.model.Model;
 import mantra.safeelements.SafeQueue;
 import mantra.threads.TupleFiller;
 import mantra.util.Pair;
+import pMedici.combinations.TupleGenerator;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -108,10 +109,16 @@ public class Mantra implements Callable<Integer> {
 		// Add to the baseNode the constraints
 
 		// Shared object between producer and consumer
-		SafeQueue<?,?> tuples = model.getSafeQueue(); //TODO sistemare!
+		SafeQueue<?,?> tuples = model.getSafeQueue();
 
-		
+		// Combination generator
+		ModelUtils.
+		Iterator<List<Pair<?, ?>>> tg = model.getAllKWiseCombination();
 
+		// Start the filler thread
+		TupleFiller tFiller = new TupleFiller(tg, tuples);
+		Thread tFillerThread = new Thread(tFiller);
+		tFillerThread.start();
 		return 0;
 
 	}
