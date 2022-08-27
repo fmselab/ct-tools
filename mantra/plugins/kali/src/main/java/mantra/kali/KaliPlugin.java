@@ -1,5 +1,8 @@
 package mantra.kali;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 
 import org.pf4j.PluginWrapper;
@@ -41,6 +44,12 @@ public class KaliPlugin extends Plugin {
 
 		@Override
 		public SafeQueue<?, ?> getSafeQueue() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Map<?, List<?>> getElements() {
 			// TODO Auto-generated method stub
 			return null;
 		}

@@ -1,5 +1,8 @@
 package mantra.pmedici;
 
+import java.util.List;
+import java.util.Map;
+
 import org.pf4j.Extension;
 import org.pf4j.Plugin;
 import org.pf4j.PluginWrapper;
@@ -36,6 +39,12 @@ public class PMediciPlugin extends Plugin {
 
 		@Override
 		public SafeQueue<?, ?> getSafeQueue() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Map<?, List<?>> getElements() {
 			// TODO Auto-generated method stub
 			return null;
 		}
