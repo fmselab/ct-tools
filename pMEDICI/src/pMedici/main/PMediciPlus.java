@@ -27,6 +27,15 @@ import pMedici.util.TestModel;
 import pMedici.combinations.TupleGenerator;
 import pMedici.importer.CSVImporter;
 
+/**
+ * Non-multithread version of pMEDICI+. 
+ * This version has never been tested and it should not be used.
+ * Please use the multithread version <i>{@link PMediciPlusMT}.
+ * 
+ * @author Luca Parimbelli
+ *
+ */
+@Deprecated
 public class PMediciPlus {
 
 	public static boolean PRINT_DEBUG = true;
