@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.emf.common.util.EList;
 import org.pf4j.ExtensionPoint;
 
 import ctwedge.ctWedge.Parameter;
@@ -22,7 +23,7 @@ public interface Model extends ExtensionPoint {
 
 	boolean getUseConstraints();
 
-	Parameter[] getParameters();
+	EList<Parameter> getParameters();
 
 	void translateOutputToString(HashSet<String> tests);
 
