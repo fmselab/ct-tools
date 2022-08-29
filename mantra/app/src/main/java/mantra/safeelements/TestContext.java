@@ -2,12 +2,13 @@ package mantra.safeelements;
 
 import java.util.Vector;
 
+import org.pf4j.ExtensionPoint;
 import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.util.Pair;
 import mantra.model.Model;
 
-public interface TestContext extends Comparable<TestContext> {
+public interface TestContext extends Comparable<TestContext>, ExtensionPoint {
 
 	void init(Model model, int nParam, boolean useConstraints);
 

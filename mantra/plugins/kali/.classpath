@@ -35,5 +35,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/mantra-app"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ctwedge"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ctwedge.util"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
