@@ -1,6 +1,7 @@
 package mantra.kali;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,9 +15,23 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EList;
 import org.pf4j.PluginWrapper;
 import org.pf4j.RuntimeMode;
+import org.sosy_lab.common.NativeLibraries;
+import org.sosy_lab.common.ShutdownNotifier;
+import org.sosy_lab.common.configuration.Configuration;
+import org.sosy_lab.common.configuration.InvalidConfigurationException;
+import org.sosy_lab.common.log.LogManager;
+import org.sosy_lab.java_smt.SolverContextFactory;
+import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
+import org.sosy_lab.java_smt.api.BooleanFormula;
+import org.sosy_lab.java_smt.api.Formula;
+import org.sosy_lab.java_smt.api.ProverEnvironment;
+import org.sosy_lab.java_smt.api.SolverContext;
+import org.sosy_lab.java_smt.api.SolverException;
+import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
 
 import ctwedge.ctWedge.Bool;
 import ctwedge.ctWedge.CitModel;
+import ctwedge.ctWedge.Constraint;
 import ctwedge.ctWedge.Element;
 import ctwedge.ctWedge.Enumerative;
 import ctwedge.ctWedge.Parameter;
@@ -24,7 +39,11 @@ import ctwedge.ctWedge.Range;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.Pair;
+import mantra.kali.util.ConstraintTranslator;
+import mantra.kali.util.ParameterAdder;
 import mantra.model.Model;
+import mantra.safeelements.ExtendedSemaphore;
+import mantra.safeelements.TestContext;
 import mantra.util.Order;
 
 import org.pf4j.Extension;
@@ -54,6 +73,8 @@ public class KaliPlugin extends Plugin {
 	public static class KaliModel implements Model {
 		
 		CitModel citModel;
+		
+		
 
 		@Override
 		public void loadModelFromPath(String filename) {
@@ -160,6 +181,209 @@ public class KaliPlugin extends Plugin {
 			return res;
 		}
 
+		public EList<Constraint> getConstraints(){
+			return this.citModel.getConstraints();
+		}
 	}
+	
+	
+	@Extension
+	public static class KaliTestContext implements TestContext{
+		
+		public static String UNDEF = "*";
+		
+		public static Solvers SMTSolver = Solvers.SMTINTERPOL;
 
+		public static Configuration config =Configuration.defaultConfiguration();
+		
+		Object[] test;
+		
+		boolean useConstraints;
+		
+		int nCovered;
+		
+		BooleanFormula currentFormula;
+		
+		SolverContext context;
+		
+		public ExtendedSemaphore testMutex;
+		
+		Map<String, Integer> paramPosition;
+		
+		KaliModel model;
+
+		HashMap<Parameter, List<Formula>> variablesList;
+		
+		public Map<Parameter, Map<String, Formula>> declaredTypes = new HashMap<>();
+		
+		ProverEnvironment prover;
+		
+		Integer completenessGrades;
+		
+		
+		@Override
+		public int compareTo(TestContext o) {
+			KaliTestContext t = (KaliTestContext) o;
+			return this.completenessGrades - t.completenessGrades;
+		}
+
+		@Override
+		public void init(Model model, int nParam, boolean useConstraints) {
+			try {
+				variablesList = new HashMap<Parameter,List<Formula>>();
+				this.useConstraints = useConstraints;
+				this.test = new Object[nParam];
+				this.nCovered = 0;
+				this.context = SolverContextFactory.createSolverContext(
+						config,
+				        LogManager.createNullLogManager(),
+				        ShutdownNotifier.createDummy(),
+				        SMTSolver,
+				        NativeLibraries::loadLibrary);
+				if(model instanceof KaliModel)
+					this.model = (KaliModel) model;
+				this.currentFormula = setupContext();
+				this.testMutex = new ExtendedSemaphore();
+				Arrays.fill(this.test, UNDEF);
+				this.paramPosition = setParamPosition(this.model.citModel);
+				this.prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+			
+		}
+
+		@Override
+		public void close() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean isImplied(Vector<Pair<Object, Object>> tuple) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCoverable(Vector<Pair<Object, Object>> tuple) throws InterruptedException, SolverException {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCompatiblePartialCheck(Vector<Pair<Object, Object>> tuple) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean addTuple(Vector<Pair<Object, Object>> tuple) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public ExtendedSemaphore getTestMutex() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int getNCovered() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public String getTest(boolean b) throws InterruptedException, SolverException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		private BooleanFormula setupContext() throws InvalidConfigurationException {		
+			// The formula representing the constraints		
+			return createCtxFromModel(model, this, variablesList);
+		}
+		
+		private static BooleanFormula createCtxFromModel(KaliModel model, KaliTestContext ctx, Map<Parameter, List<Formula>> variables) {
+			// Add all the parameters to the new CTX
+			addParameters(model, ctx, variables);
+
+			// Add constraints when more formulas are available for a single parameter (it happens only in case of Enumeratives)
+			// Then, Translate all the constraints and add them to the context
+			BooleanFormula constraints = addConstraintsForEnumeratives(model, ctx, variables);
+			for (Constraint r : model.getConstraints()) {
+				ConstraintTranslator translator = new ConstraintTranslator(ctx, variables);
+				Formula constraint = translator.doSwitch(r);
+
+				assert constraint instanceof BooleanFormula : "Constraints must be boolean";
+
+				constraints = ctx.getContext().getFormulaManager().getBooleanFormulaManager().and(constraints, (BooleanFormula)constraint);
+			}
+
+			return constraints;
+		}
+		
+		private static void addParameters(Model model, KaliTestContext ctx, Map<Parameter, List<Formula>> variables) {
+			// Add all the parameters to the logical context
+			ParameterAdder pa = new ParameterAdder(ctx);
+
+			for (Parameter nt : model.getParameters()) {
+				List<Formula> variable = pa.doSwitch(nt);
+				variables.put(nt, variable);
+			}
+		}
+		
+		public SolverContext getContext() {
+			return this.context;
+		}
+	}
+	
+	private static BooleanFormula addConstraintsForEnumeratives(Model model, KaliTestContext ctx, Map<Parameter, List<Formula>> variables) {
+		SolverContext sContext = ctx.getContext();
+		
+		BooleanFormula res = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
+		for (Parameter p : model.getParameters()) {	
+			// Only if it is an enumerative
+			if (p instanceof Enumerative) {
+				
+				List<Formula> list = variables.get(p);
+				BooleanFormula constraint = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
+				
+				// If the size is greater than 1, only one value per time can be true
+				if (list.size() > 1) {
+					for (Formula f : list) {
+						BooleanFormula subFormula = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
+						for (Formula f1 : list) {
+							if (!f.equals(f1)) {
+								// AND Between all the NOT of the elements
+								subFormula = sContext.getFormulaManager().getBooleanFormulaManager().and(subFormula, 
+										sContext.getFormulaManager().getBooleanFormulaManager().not((BooleanFormula)f1));
+							}
+						}
+						// First element equals to the SubFormula
+						subFormula = sContext.getFormulaManager().getBooleanFormulaManager().equivalence(subFormula, (BooleanFormula)f);
+						// Add this to the constraint
+						constraint = sContext.getFormulaManager().getBooleanFormulaManager().and(constraint, subFormula);
+					}
+				}
+				
+				res = sContext.getFormulaManager().getBooleanFormulaManager().and(res, constraint);
+			}
+		}
+		return res;
+	}
+	
+	public static Map<String, Integer> setParamPosition(CitModel m) {
+		Map<String, Integer> paramPosition = new HashMap<String, Integer>();
+		int i=0;
+		
+		for (Parameter p : m.getParameters()) {
+			paramPosition.put(p.getName(), i++);
+		}
+		
+		return paramPosition;
+	}
+	
 }
