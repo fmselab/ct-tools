@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
@@ -26,7 +25,6 @@ import mantra.safeelements.TestContext;
 import mantra.threads.TestBuilder;
 import mantra.threads.TupleFiller;
 import mantra.util.Order;
-import mantra.util.Pair;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
