@@ -25,6 +25,6 @@ public interface TestContext extends Comparable<TestContext> {
 
 	int getNCovered();
 
-	String getTest(boolean b);
+	String getTest(boolean b) throws InterruptedException, SolverException;
 
 }

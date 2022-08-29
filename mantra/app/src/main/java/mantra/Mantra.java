@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.PluginManager;
+import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.Parameter;
 import ctwedge.util.ModelUtils;
@@ -146,6 +147,7 @@ public class Mantra implements Callable<Integer> {
 
 		// Compute the summary values
 		System.out.println("-----TEST SUITE-----");
+		
 		// First row -> parameter names
 		String header = "";
 		for (Parameter param : model.getParameters()) {
@@ -160,13 +162,13 @@ public class Mantra implements Callable<Integer> {
 
 		for (TestContext tc : tcList) {
 			nCovered += tc.getNCovered();
-			//try {
+			try {
 				tests.add(tc.getTest(false));
-			//} catch (InterruptedException | SolverException e) {
-			//	System.out.println(e.getMessage());
-			//}
+			} catch (InterruptedException | SolverException e) {
+				System.out.println(e.getMessage());
+			}
 			// Close the context
-			tc.close();
+			tc.close();			
 		}
 		totTuples = tuples.getNTuples();
 		model.translateOutputToString(tests);
