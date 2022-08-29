@@ -3,12 +3,12 @@ package mantra.safeelements;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import mantra.util.Pair;
+import ctwedge.util.Pair;
 
-public class SafeQueue<S, K> {
+public class SafeQueue {
 
-	ConcurrentLinkedQueue<Vector<Pair<S, K>>> tupleList;
-	Boolean finished_inserting;
+	ConcurrentLinkedQueue<Vector<Pair<Object, Object>>> tupleList;
+	Boolean finishedInserting;
 	int nTuples;
 
 	/**
@@ -21,8 +21,8 @@ public class SafeQueue<S, K> {
 	 * consumer can extract one
 	 */
 	public SafeQueue() {
-		finished_inserting = false;
-		tupleList = new ConcurrentLinkedQueue<Vector<Pair<S, K>>>();
+		finishedInserting = false;
+		tupleList = new ConcurrentLinkedQueue<Vector<Pair<Object, Object>>>();
 		nTuples = 0;
 	}
 
@@ -31,7 +31,7 @@ public class SafeQueue<S, K> {
 	 * 
 	 * @param tuple: the tuple to be added in the queue
 	 */
-	public void insert(Vector<Pair<S, K>> tuple) {
+	public void insert(Vector<Pair<Object, Object>> tuple) {
 		tupleList.add(tuple);
 		nTuples++;
 	}
@@ -41,7 +41,7 @@ public class SafeQueue<S, K> {
 	 * 
 	 * @param tuple: the tuple to be added in the queue
 	 */
-	public void reinsert(Vector<Pair<S, K>> tuple) {
+	public void reinsert(Vector<Pair<Object, Object>> tuple) {
 		tupleList.add(tuple);
 	}
 
@@ -50,7 +50,7 @@ public class SafeQueue<S, K> {
 	 * 
 	 * @return the new tuple if available, otherwise returns null
 	 */
-	public Vector<Pair<S, K>> get() {
+	public Vector<Pair<Object, Object>> get() {
 		return tupleList.poll();
 	}
 
@@ -69,14 +69,14 @@ public class SafeQueue<S, K> {
 	 * @return true if the tuple has finished to be used, false otherwise
 	 */
 	public boolean finished() {
-		return finished_inserting && tupleList.size() == 0;
+		return finishedInserting && tupleList.size() == 0;
 	}
 
 	/**
 	 * Set finished inserting
 	 */
 	public void setFinishedInserting() {
-		finished_inserting = true;
+		finishedInserting = true;
 	}
 
 	/**

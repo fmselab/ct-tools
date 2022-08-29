@@ -1,20 +1,30 @@
 package mantra.model;
 
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.pf4j.ExtensionPoint;
 
-import mantra.safeelements.SafeQueue;
-import mantra.util.Pair;
+import ctwedge.ctWedge.Parameter;
+import ctwedge.util.Pair;
+import mantra.util.Order;
+
 
 public interface Model extends ExtensionPoint {
 
-    void loadModelFromPath(String filename);
+	void loadModelFromPath(String filename);
 
-	SafeQueue<?, ?> getSafeQueue();
+	Map<Object, List<Object>> getElements(Order order);
 
-	Map<?, List<?>> getElements();
+	int getNParams();
 
+	boolean getUseConstraints();
+
+	Parameter[] getParameters();
+
+	void translateOutputToString(HashSet<String> tests);
+
+	String printTuple(Vector<Pair<Object, Object>> tuple);
 }

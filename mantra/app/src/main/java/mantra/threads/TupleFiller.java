@@ -5,19 +5,19 @@ import java.util.List;
 import java.util.Vector;
 
 import mantra.safeelements.SafeQueue;
-import mantra.util.Pair;
+import ctwedge.util.Pair;
 
-public class TupleFiller<S, K> implements Runnable {
+public class TupleFiller implements Runnable {
 
 	/**
 	 * The object generating the tuples
 	 */
-	Iterator<List<Pair<S, K>>> tg;
+	Iterator<List<Pair<Object, Object>>> tg;
 
 	/**
 	 * The queue in which the tuples must be added
 	 */
-	SafeQueue<S, K> queue;
+	SafeQueue queue;
 
 	/**
 	 * Creates a new thread that fills the queue with the tuples
@@ -25,7 +25,7 @@ public class TupleFiller<S, K> implements Runnable {
 	 * @param tg:    the tuple generator object
 	 * @param queue: the destination queue
 	 */
-	public TupleFiller(Iterator<List<Pair<S, K>>> tg, SafeQueue<S, K> queue) {
+	public TupleFiller(Iterator<List<Pair<Object, Object>>> tg, SafeQueue queue) {
 		this.tg = tg;
 		this.queue = queue;
 	}
@@ -33,7 +33,7 @@ public class TupleFiller<S, K> implements Runnable {
 	@Override
 	public void run() {
 		while (tg.hasNext()) {
-			Vector<Pair<S, K>> tuple = new Vector<Pair<S, K>>(tg.next());
+			Vector<Pair<Object, Object>> tuple = new Vector<Pair<Object, Object>>(tg.next());
 
 			// Wait if the queue is full
 			while (queue.full())
