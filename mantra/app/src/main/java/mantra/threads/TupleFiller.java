@@ -33,7 +33,7 @@ public class TupleFiller implements Runnable {
 	@Override
 	public void run() {
 		while (tg.hasNext()) {
-			Vector<Pair<Object, Object>> tuple = new Vector<Pair<Object, Object>>(tg.next());
+			Vector<Pair<Object, Object>> tuple = new Vector<>(tg.next());
 
 			// Wait if the queue is full
 			while (queue.full())

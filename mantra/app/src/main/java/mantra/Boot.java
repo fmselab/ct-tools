@@ -1,5 +1,6 @@
 package mantra;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,12 @@ public class Boot {
         List<Model> models = pluginManager.getExtensions(Model.class);
         System.out.println(String.format("Found %d extensions for extension point '%s'", models.size(), Model.class.getName()));
         for (Model model : models) {
-            model.loadModelFromPath(null);
+            try {
+				model.loadModelFromPath(null);
+			} catch (InterruptedException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 
         System.out.println("Extension classes by classpath:");
