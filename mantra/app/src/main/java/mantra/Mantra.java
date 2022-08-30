@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.PluginManager;
@@ -230,7 +231,7 @@ public class Mantra implements Callable<Integer> {
 	private String[] choosePlugins(PluginManager pluginManager) {
 		String[] pluginIds = {};
 
-		List<String> availablePlugins = pluginManager.getPlugins().stream().map(it -> it.getPluginId()).toList();
+		List<String> availablePlugins = pluginManager.getPlugins().stream().map(it -> it.getPluginId()).collect(Collectors.toList());
 		System.out.println("Available plugins:");
 		availablePlugins.forEach(it -> System.out.println("# " + it));
 

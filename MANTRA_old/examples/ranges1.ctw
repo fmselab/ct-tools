@@ -1,9 +1,0 @@
-Model ranges1
-Parameters:
-p1 : [ 0 .. 10 ]
-p2 : [ -2 .. 5 ]
-
-Constraints:
-# p1 > 3  #
-# (p1 >= 5) => (p2 == -1)  #
-# p1 != p2 #

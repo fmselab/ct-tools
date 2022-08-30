@@ -1,5 +1,0 @@
-/bin/
-/target/
-!/libs/*.jar
-/hs_err_*.log
-/replay_pid*.log
