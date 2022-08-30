@@ -43,7 +43,7 @@ public class TestBuilder implements Runnable {
 	/**
 	 * Exclude the check during testing
 	 */
-	public static boolean IN_TEST = false;
+	public static boolean IN_TEST = true;
 
 	/**
 	 * The queue in which the tuples are stored
@@ -148,22 +148,19 @@ public class TestBuilder implements Runnable {
 			throws InterruptedException, SolverException {
 		boolean found = false;
 		for (int i = 0; i < orderedList.size(); i++) {
-			// Try to acquire the mutex if it is needed
-			if (!LockTCOnlyOnWriting)
-				if (orderedList.get(i).getTestMutex().tryAcquire())
+			// Try to acquire the mutex
+			if (orderedList.get(i).getTestMutex().tryAcquire()) {
+				if (!IN_TEST)
 					assert (orderedList.get(i).getTestMutex().lockedByCaller());
-				else
-					continue;
 
-			// Check the predicate
-			if (orderedList.get(i).isCoverable(tuple)) {
-				found = orderedList.get(i).addTuple(tuple);
-			}
-
-			// If the context has been locked, free it
-			if (!LockTCOnlyOnWriting)
+				// Check the predicate
+				if (orderedList.get(i).isCoverable(tuple)) {
+					found = orderedList.get(i).addTuple(tuple);
+				}
+	
+				// In any case free this context
 				orderedList.get(i).getTestMutex().release();
-
+			}
 			// If the tuple has been added, stop the iteration
 			if (found)
 				break;
@@ -196,11 +193,11 @@ public class TestBuilder implements Runnable {
 							orderedTcList.add(tc);
 						}
 					}
+					this.testContextMutex.release();
 					if (orderedTcList.size() > 0 && sort) {
 						// Sort the orderedTestContext list
 						Collections.sort(orderedTcList);
 					}
-					this.testContextMutex.release();
 				} catch (InterruptedException e) {
 					System.out.println(e.getMessage());
 				}
@@ -252,6 +249,7 @@ public class TestBuilder implements Runnable {
 						if (Mantra.PRINT_DEBUG)
 							System.out.println("The tuple " + model.printTuple(tuple) + " is not coverable");
 						nUncoverable++;
+
 						empty = tc; // empty is usable if needed
 						tc.getTestMutex().release();
 					}
