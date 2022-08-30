@@ -263,7 +263,8 @@ public class Mantra implements Callable<Integer> {
 			try {
 				pluginIds[i] = availablePlugins.get(Integer.parseInt(pluginIdsNo[i]));
 			} catch (NumberFormatException nfe) {
-				line = "all";
+				pluginIds = availablePlugins.toArray(new String[availablePlugins.size()]);
+				break;
 		    }
 		}
 		

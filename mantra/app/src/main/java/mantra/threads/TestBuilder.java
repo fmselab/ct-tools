@@ -26,7 +26,7 @@ public class TestBuilder implements Runnable {
 	public static boolean RecycleUnusedTestContexts = true;
 
 	// if true, a test context is locked only when writing
-	public static boolean LockTCOnlyOnWriting = false;
+	public static boolean LockTCOnlyOnWriting = true;
 
 	// if true, the lock while checking if a tuple is implied is only performed with
 	// tryAcquire
