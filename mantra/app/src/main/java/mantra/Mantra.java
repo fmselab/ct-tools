@@ -51,7 +51,7 @@ public class Mantra implements Callable<Integer> {
 	boolean verb;
 
 	/** The print debug. */
-	public static boolean PRINT_DEBUG = true;
+	public static boolean PRINT_DEBUG = false;
 	static String OUTPUT_TXT = "output.txt";
 	public static boolean SORT = true;
 	public static Order ORDER = Order.IN_ORDER_SIZE_DESC;
@@ -71,9 +71,14 @@ public class Mantra implements Callable<Integer> {
 
 	@Override
 	public Integer call() throws Exception {
-		System.out.println("\r" + "  __  __             _             \r\n" + " |  \\/  |           | |            \r\n"
-				+ " | \\  / | __ _ _ __ | |_ _ __ __ _ \r\n" + " | |\\/| |/ _` | '_ \\| __| '__/ _` |\r\n"
-				+ " | |  | | (_| | | | | |_| | | (_| |\r\n" + " |_|  |_|\\__,_|_| |_|\\__|_|  \\__,_|\r\n" + "");
+		System.out.println("\r" 
+				+ "  __  __             _             \r\n" 
+				+ " |  \\/  |           | |            \r\n"
+				+ " | \\  / | __ _ _ __ | |_ _ __ __ _ \r\n" 
+				+ " | |\\/| |/ _` | '_ \\| __| '__/ _` |\r\n"
+				+ " | |  | | (_| | | | | |_| | | (_| |\r\n" 
+				+ " |_|  |_|\\__,_|_| |_|\\__|_|  \\__,_|\r\n" 
+				+ "");
 		generateTests(fileName, strength, nThreads);
 		return 0;
 	}
