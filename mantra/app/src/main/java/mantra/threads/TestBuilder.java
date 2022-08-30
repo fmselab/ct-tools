@@ -148,19 +148,22 @@ public class TestBuilder implements Runnable {
 			throws InterruptedException, SolverException {
 		boolean found = false;
 		for (int i = 0; i < orderedList.size(); i++) {
-			// Try to acquire the mutex
-			if (orderedList.get(i).getTestMutex().tryAcquire()) {
-				if (!IN_TEST)
-					assert (orderedList.get(i).getTestMutex().lockedByCaller());
-
-				// Check the predicate
-				if (orderedList.get(i).isCoverable(tuple)) {
-					found = orderedList.get(i).addTuple(tuple);
-				}
-	
-				// In any case free this context
-				orderedList.get(i).getTestMutex().release();
+			// Try to acquire the mutex if it is needed
+			if (!LockTCOnlyOnWriting)
+				if (orderedList.get(i).getTestMutex().tryAcquire()) 
+					assert(orderedList.get(i).getTestMutex().lockedByCaller());
+				else
+					continue;
+			
+			// Check the predicate
+			if (orderedList.get(i).isCoverable(tuple)) {
+				found = orderedList.get(i).addTuple(tuple);
 			}
+			
+			// If the context has been locked, free it
+			if (!LockTCOnlyOnWriting)
+				orderedList.get(i).getTestMutex().release();
+			
 			// If the tuple has been added, stop the iteration
 			if (found)
 				break;

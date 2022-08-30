@@ -52,7 +52,7 @@ public class Mantra implements Callable<Integer> {
 	boolean verb;
 
 	/** The print debug. */
-	public static boolean PRINT_DEBUG = false;
+	public static boolean PRINT_DEBUG = true;
 	static String OUTPUT_TXT = "output.txt";
 	public static boolean SORT = true;
 	public static Order ORDER = Order.IN_ORDER_SIZE_DESC;
