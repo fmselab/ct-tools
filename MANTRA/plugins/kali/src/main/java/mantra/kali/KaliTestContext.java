@@ -45,32 +45,75 @@ public class KaliTestContext implements TestContext{
 	
 	public static String UNDEF = "*";
 	
+	/**
+	 *  The smt solver to be used
+	 */
 	public static Solvers SMTSolver = Solvers.SMTINTERPOL;
 
+	/**
+	 * The configuration to be used by the SMT solver 
+	 */
 	public static Configuration config =Configuration.defaultConfiguration();
 	
+	/**
+	 * The (partial) test containing the values already set
+	 */
 	Object[] test;
 	
+	/**
+	 * Are the constraints present?
+	 */
 	boolean useConstraints;
 	
+
+	/**
+	 *  Number of tuples covered by this test context 
+	 */
 	int nCovered;
 	
+	/**
+	 * The current boolean formula
+	 */
 	BooleanFormula currentFormula;
 	
+	/**
+	 * The context
+	 */
 	SolverContext context;
 	
+	/**
+	 * The semaphore for managing a test context in a mutex manner
+	 */
 	public ExtendedSemaphore testMutex;
 	
+	/**
+	 * The structure mapping the parameter on its position
+	 */
 	Map<String, Integer> paramPosition;
 	
+	/**
+	 * The Kali Model
+	 */
 	KaliModel model;
 
+	/**
+	 * Support structures to maintain the elements and the variables mapping
+	 */
 	HashMap<Parameter, List<Formula>> variablesList;
 	
+	/**
+	 * The Map storing each parameter and the corresponding formulas (one for each value of the enumerative)
+	 */
 	public Map<Parameter, Map<String, Formula>> declaredTypes = new HashMap<>();
 	
+	/**
+	 * The prover to be used when checking formulas
+	 */
 	ProverEnvironment prover;
 	
+	/**
+	 * The completenessGrade of the test context
+	 */
 	Integer completenessGrades;
 	
 	
@@ -80,6 +123,13 @@ public class KaliTestContext implements TestContext{
 		return this.getCompletenessGrade() - t.getCompletenessGrade();
 	}
 
+	/**
+	 * Init a new TestContext
+	 * 
+	 * @param nParams: the number of parameters of the combinatorial problem
+	 * @param useConstraints: are constraints present?
+	 * @param model: the Kali Model
+	 */
 	@Override
 	public void init(Model model, int nParam, boolean useConstraints) {
 		try {
@@ -106,11 +156,21 @@ public class KaliTestContext implements TestContext{
 		
 	}
 
+	/**
+	 * Closes the SMT logical context
+	 */
 	@Override
 	public void close() {
 		context.close();
 	}
 
+	/**
+	 * Checks if a tuple is implied (already contained in the partial test of the TestContext).
+	 * It does not require the use of a SAT Solver
+	 * 
+	 * @param tuple: the tuple to be checked
+	 * @return true if the tuple is implied, false otherwise
+	 */
 	@Override
 	public boolean isImplied(Vector<Pair<Object, Object>> tuple) {
 		// We must use a test context in a mutex mode
@@ -129,6 +189,14 @@ public class KaliTestContext implements TestContext{
 		return true;
 	}
 
+	/**
+	 * Checks whether the tuple given as parameter is coverable or not by the current context
+	 * 
+	 * @param tuple: the tuple to be checked
+	 * @return true if the tuple is coverable, false otherwise
+	 * @throws InterruptedException 
+	 * @throws SolverException 
+	 */
 	@Override
 	public boolean isCoverable(Vector<Pair<Object, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
@@ -154,6 +222,12 @@ public class KaliTestContext implements TestContext{
 		return true;
 	}
 
+	/**
+	 * Checks whether the tuple given as parameter is compatible or not by the current test context without using the SAT Solver
+	 * 
+	 * @param tuple: the tuple to be checked
+	 * @return true if the tuple is compatible, false otherwise
+	 */
 	@Override
 	public boolean isCompatiblePartialCheck(Vector<Pair<Object, Object>> tuple) {
 		// We must use a test context in a mutex mode
@@ -173,6 +247,15 @@ public class KaliTestContext implements TestContext{
 		return true;
 	}
 
+	/**
+	 * This method adds a tuple to the partial test associated to the test context.
+	 * The tuple to be added must be compatible with the partial test
+	 * 
+	 * @param tuple: the tuple to be added
+	 * @return true if the tuple has been added, false otherwise
+	 * @throws InterruptedException 
+	 * @throws SolverException 
+	 */
 	@Override
 	public boolean addTuple(Vector<Pair<Object, Object>> tuple) {
 		boolean added = true;
@@ -206,16 +289,34 @@ public class KaliTestContext implements TestContext{
 		return added;
 	}
 
+	/**
+	 * Returns the semaphore owned by this test context
+	 * 
+	 * @return the semaphore owned by this test context
+	 */
 	@Override
 	public ExtendedSemaphore getTestMutex() {
 		return this.testMutex;
 	}
 
+	/**
+	 * Returns the number of tuples covered by this test context
+	 * 
+	 * @return the number of tuples covered by this test context
+	 */
 	@Override
 	public int getNCovered() {
 		return this.nCovered;
 	}
 
+	/**
+	 * Returns the test derived from this test context
+	 * 
+	 * @param printVector: if true the test in the vector is printed (to be used when no constraints are available), otherwise the test is extracted from the context
+	 * @return the string representing the test derived from this test context
+	 * @throws InterruptedException 
+	 * @throws SolverException 
+	 */
 	@Override
 	public String getTest(boolean printVector) throws InterruptedException, SolverException {
 		String res = "";
@@ -266,6 +367,12 @@ public class KaliTestContext implements TestContext{
 		return res.substring(0, res.length()-1);
 	}
 
+	/**
+	 * Convert the tuple in a boolean formula
+	 * 
+	 * @param tuple: the tuple to be converted
+	 * @return: the BooleanFormula corresponding to the tuple
+	 */
 	public BooleanFormula getFormulaFromTuple(Vector<Pair<Object, Object>> tuple) {
 		
 		Map<Parameter, String> tupleMap = new HashMap<Parameter, String>();
@@ -276,10 +383,20 @@ public class KaliTestContext implements TestContext{
 		return TupleConverter.extractFormulaFromTuple(this, variablesList, tupleMap);
 	}
 
+	/**
+	 * Get the current logical context
+	 * 
+	 * @return the current logical context
+	 */
 	public SolverContext getContext() {
 		return this.context;
 	}
 	
+	/**
+	 * Return the completeness grade (number of elements not yet assigned). Used when sorting TestContexts
+	 * 
+	 * @return the completeness grade of the test context
+	 */
 	public int getCompletenessGrade() {
 		if (!TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
@@ -302,12 +419,27 @@ public class KaliTestContext implements TestContext{
 	
 	// PRIVATE METHODS
 	
+	/**
+	 * Updates the context with all the parameters of the combinatorial model, and creates a boolean formula representing
+	 * the conjunction of all the constraints
+
+	 * @return the boolean formula representing the conjunction of all the constraints
+	 * @throws InvalidConfigurationException
+	 */
 	private BooleanFormula setupContext() throws InvalidConfigurationException {		
 		// The formula representing the constraints		
 		return createCtxFromModel(model, this, variablesList);
 	}
 	
-	
+	/**
+	 * Checks whether the tuple given as parameter is compatible or not by the current context
+	 * 
+	 * @param tuple: the tuple to be checked
+	 * @param skipFirstStep: true if the check with the vector has already been done
+	 * @return true if the tuple is compatible, false otherwise
+	 * @throws InterruptedException 
+	 * @throws SolverException 
+	 */
 	private boolean isCompatible(Vector<Pair<Object, Object>> tuple, boolean skipFirstStep) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
@@ -334,6 +466,14 @@ public class KaliTestContext implements TestContext{
 		return verifyWithSAT(tuple);
 	}
 	
+	/**
+	 * Verify with the use of the SAT Solver if the tuple is compatible with this test context
+	 * 
+	 * @param tuple: the tuple to be checked
+	 * @return true if the tuple is compatible, false otherwise
+	 * @throws InterruptedException 
+	 * @throws SolverException 
+	 */
 	private boolean verifyWithSAT(Vector<Pair<Object, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
@@ -351,6 +491,14 @@ public class KaliTestContext implements TestContext{
 		return !unsat;		
 	}
 	
+	/**
+	 * Updates the internal context structure by adding the new tuple
+	 * 
+	 * @param tuple: the tuple to be added
+	 * @return true if the update succeed, false otherwise
+	 * @throws InterruptedException 
+	 * @throws SolverException 
+	 */
 	private boolean updateContext(Vector<Pair<Object, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
@@ -375,6 +523,11 @@ public class KaliTestContext implements TestContext{
 		return true;
 	}
 	
+	/**
+	 * Checks whether the test is complete or not
+	 * 
+	 * @return true if the test is complete, false otherwise
+	 */
 	private boolean isComplete() {
 		for (Object i : test)
 			if (i.equals(UNDEF))
@@ -391,7 +544,7 @@ public class KaliTestContext implements TestContext{
 		// Add constraints when more formulas are available for a single parameter (it happens only in case of Enumeratives)
 		// Then, Translate all the constraints and add them to the context
 		BooleanFormula constraints = addConstraintsForEnumeratives(model, ctx, variables);
-		for (Constraint r : model.getConstraints()) {
+		for (Constraint r : model.getCitModel().getConstraints()) {
 			ConstraintTranslator translator = new ConstraintTranslator(ctx, variables);
 			Formula constraint = translator.doSwitch(r);
 			

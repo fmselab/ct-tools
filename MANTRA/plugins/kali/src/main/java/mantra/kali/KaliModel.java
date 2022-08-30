@@ -1,5 +1,6 @@
 package mantra.kali;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,12 +11,10 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.util.EList;
 import org.pf4j.Extension;
 
 import ctwedge.ctWedge.Bool;
 import ctwedge.ctWedge.CitModel;
-import ctwedge.ctWedge.Constraint;
 import ctwedge.ctWedge.Element;
 import ctwedge.ctWedge.Enumerative;
 import ctwedge.ctWedge.Parameter;
@@ -32,11 +31,23 @@ public class KaliModel implements Model {
 	CitModel citModel;
 	
 
+	/**
+	 * Loads the model from file
+	 * @param filename: the path of the file where the model is stored
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
 	@Override
 	public void loadModelFromPath(String filename) {
 		this.citModel =  Utility.loadModelFromPath(filename);
 	}
 
+	/**
+	 * Convert the elements of this model in a MAP [ParameterIdentifier, List(Values)]
+	 * 
+	 * @param order: the order for parameter consideration during tuple generation
+	 * @return the elements in a MAP [ParameterIdentifier, List(Values)]
+	 */
 	@Override
 	public Map<Object, List<Object>> getElements(Order order) {
 		assert order != null;
@@ -108,16 +119,32 @@ public class KaliModel implements Model {
 				e -> e.getValue()));
 	}
 
+	/**
+	 * Returns the number of parameters of this model
+	 * @return the number of parameters of this model
+	 */
 	@Override
 	public int getNParams() {
 		return citModel.getParameters().size();
 	}
 
+	/**
+	 * Returns true if the model has constraints, otherwise false
+	 * @return true if the model has constraints, otherwise false
+	 */
 	@Override
 	public boolean getUseConstraints() {
 		return getNParams() > 0;
 	}
 
+	/**
+	 * Translates the output of this model format to a CSV one and returns it as a String
+	 * 
+	 * @param testCases: the test cases list
+	 * 
+	 * @return a {@link String} containing the test suite in a CSV format
+	 * @throws IOException
+	 */
 	@Override
 	public String translateOutputToString(Collection<String> tests) {
 		String header = "";
@@ -128,6 +155,11 @@ public class KaliModel implements Model {
 		return header.substring(0, header.length() - 1) + "\n" + String.join("\n", tests);
 	}
 
+	/**
+	 * Prints the current tuple and returns it as string
+	 * @param tuple: tuple to be printed
+	 * @return a string with the printed tuple 
+	 */
 	@Override
 	public String printTuple(Vector<Pair<Object, Object>> tuple) {
 		String res = "";
@@ -137,10 +169,10 @@ public class KaliModel implements Model {
 		return res;
 	}
 
-	public EList<Constraint> getConstraints(){
-		return this.citModel.getConstraints();
-	}
-
+	/**
+	 * Returns the model in ctw format
+	 * @return the model in ctw format
+	 */
 	@Override
 	public CitModel getCitModel() {
 		return citModel;

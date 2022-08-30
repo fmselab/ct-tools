@@ -67,6 +67,13 @@ public class PMediciTestContext implements TestContext {
 		return -1;
 	}
 
+	/**
+	 * Init a new TestContext
+	 * 
+	 * @param nParams: the number of parameters of the combinatorial problem
+	 * @param useConstraints: are constraints present?
+	 * @param model: the Model
+	 */
 	@Override
 	public void init(Model model, int nParams, boolean useConstraints) {
 		PMediciModel mediciModel = (PMediciModel) model;
@@ -79,6 +86,9 @@ public class PMediciTestContext implements TestContext {
 		Arrays.fill(this.test, UNDEF);		
 	}
 
+	/**
+	 * Closes the SMT logical context
+	 */
 	@Override
 	public void close() {}
 
@@ -370,16 +380,31 @@ public class PMediciTestContext implements TestContext {
 		return searcher.countPaths();
 	}
 
+	/**
+	 * Returns the semaphore owned by this test context
+	 * 
+	 * @return the semaphore owned by this test context
+	 */
 	@Override
 	public ExtendedSemaphore getTestMutex() {
 		return testMutex;
 	}
 
+	/**
+	 * Returns the number of tuples covered by this test context
+	 * 
+	 * @return the number of tuples covered by this test context
+	 */
 	@Override
 	public int getNCovered() {
 		return nCovered;
 	}
 
+	/**
+	 * Returns the MDD model
+	 * 
+	 * @return the MDD model
+	 */
 	public int getMDD() {
 		return mdd;
 	}
