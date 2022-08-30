@@ -22,6 +22,18 @@
 		<plugin.dependencies />
 	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.parent.parent.basedir}/app/plugins</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>commons-lang</groupId>
