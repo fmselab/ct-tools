@@ -22,7 +22,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.Pair;
 import ctwedge.util.ParameterValuesToInt;
-import mantra.pmedici.PMediciPlugin.PMediciTestContext;
+import mantra.pmedici.PMediciTestContext;
 import mantra.safeelements.ExtendedSemaphore;
 import mantra.safeelements.TestContext;
 
