@@ -46,7 +46,7 @@ public class TestContext {
 	/**
 	 * The configuration to be used by the SMT solver 
 	 */
-	public static Configuration config =Configuration.defaultConfiguration();
+	public static Configuration config = Configuration.defaultConfiguration();
 	
 	/**
 	 * The (partial) test containing the values already set

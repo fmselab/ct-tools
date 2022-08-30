@@ -229,11 +229,13 @@ public class Mantra implements Callable<Integer> {
 	}
 
 	private String[] choosePlugins(PluginManager pluginManager) {
-		String[] pluginIds = {};
+		String[] pluginIdsNo = {};
 
 		List<String> availablePlugins = pluginManager.getPlugins().stream().map(it -> it.getPluginId()).collect(Collectors.toList());
 		System.out.println("Available plugins:");
-		availablePlugins.forEach(it -> System.out.println("# " + it));
+		for(int i = 0; i < availablePlugins.size(); i++) {
+			System.out.println(i + " - " + availablePlugins.get(i));			
+		}
 
 		String line;
 
@@ -249,12 +251,22 @@ public class Mantra implements Callable<Integer> {
 				line = "all";
 			}
 		}
-
-		pluginIds = line.split("\\s+");
 		
-		if (pluginIds.length == 1 && (pluginIds[0].equalsIgnoreCase("all") || pluginIds[0].isBlank()))
-			pluginIds = availablePlugins.toArray(new String[0]);
-
+		pluginIdsNo = line.split(" ");
+		
+		if (pluginIdsNo.length == 1 && (pluginIdsNo[0].equalsIgnoreCase("all") || pluginIdsNo[0].isBlank()))
+			pluginIdsNo = availablePlugins.toArray(new String[0]);
+		
+		String[] pluginIds = new String[pluginIdsNo.length];
+		
+		for(int i = 0; i < pluginIdsNo.length; i++) {
+			try {
+				pluginIds[i] = availablePlugins.get(Integer.parseInt(pluginIdsNo[i]));
+			} catch (NumberFormatException nfe) {
+				line = "all";
+		    }
+		}
+		
 		return pluginIds;
 	}
 

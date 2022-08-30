@@ -385,7 +385,12 @@ public class PMediciTestContext implements TestContext {
 	}
 
 	@Override
-	public boolean mustLockOnRead() {
+	public boolean mustLockOnReadForFindCompatible() {
+		return false;
+	}
+	
+	@Override
+	public boolean mustTryAcquireForFindImplies() {
 		return false;
 	}
 }

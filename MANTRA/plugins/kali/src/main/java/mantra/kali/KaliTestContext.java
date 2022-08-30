@@ -291,7 +291,12 @@ public class KaliTestContext implements TestContext{
 	}
 	
 	@Override
-	public boolean mustLockOnRead() {
+	public boolean mustLockOnReadForFindCompatible() {
+		return true;
+	}
+	
+	@Override
+	public boolean mustTryAcquireForFindImplies() {
 		return true;
 	}
 	

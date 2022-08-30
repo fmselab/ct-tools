@@ -28,5 +28,7 @@ public interface TestContext extends Comparable<TestContext>, ExtensionPoint {
 
 	String getTest(boolean printB) throws InterruptedException, SolverException;
 	
-	boolean mustLockOnRead();
+	boolean mustLockOnReadForFindCompatible();
+	
+	boolean mustTryAcquireForFindImplies();
 }

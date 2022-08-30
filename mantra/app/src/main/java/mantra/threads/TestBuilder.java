@@ -114,7 +114,7 @@ public class TestBuilder implements Runnable {
 		for (TestContext tc: tcList) {
 			// Try to acquire the mutex if the lock even during reading is required
 			if (!LockTCOnlyOnWriting)
-				if (UseTryAcquireForFindImplies) {
+				if (UseTryAcquireForFindImplies || tc.mustTryAcquireForFindImplies()) {
 					if (!tc.getTestMutex().tryAcquire())
 						continue;
 					else
@@ -150,7 +150,7 @@ public class TestBuilder implements Runnable {
 	
 		for(TestContext tc: orderedList) {
 			// Try to acquire the mutex if it is needed
-			if (!LockTCOnlyOnWriting || tc.mustLockOnRead())
+			if (!LockTCOnlyOnWriting || tc.mustLockOnReadForFindCompatible())
 				if (tc.getTestMutex().tryAcquire()) 
 					assert(tc.getTestMutex().lockedByCaller());
 				else
@@ -162,7 +162,7 @@ public class TestBuilder implements Runnable {
 			}
 			
 			// If the context has been locked, free it
-			if (!LockTCOnlyOnWriting || tc.mustLockOnRead())
+			if (!LockTCOnlyOnWriting || tc.mustLockOnReadForFindCompatible())
 				tc.getTestMutex().release();
 			
 			// If the tuple has been added, stop the iteration
