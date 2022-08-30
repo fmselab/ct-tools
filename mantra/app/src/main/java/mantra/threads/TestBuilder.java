@@ -84,11 +84,13 @@ public class TestBuilder implements Runnable {
 	 * The Solver Model
 	 */
 	Model model;
-	
+
 	PluginManager pluginManager;
 
+	String pluginId;
+
 	public TestBuilder(Model model, SafeQueue safeQueue, Vector<TestContext> tcList, boolean sort, int nParam,
-			boolean useConstraints, ExtendedSemaphore testContextMutex, PluginManager pluginManager) {
+			boolean useConstraints, ExtendedSemaphore testContextMutex, PluginManager pluginManager, String pluginId) {
 		this.safeQueue = safeQueue;
 		this.tcList = tcList;
 		this.testContextMutex = testContextMutex;
@@ -98,6 +100,7 @@ public class TestBuilder implements Runnable {
 		this.useConstraints = useConstraints;
 		this.model = model;
 		this.pluginManager = pluginManager;
+		this.pluginId = pluginId;
 	}
 
 	/**
@@ -222,7 +225,7 @@ public class TestBuilder implements Runnable {
 				if (empty != null && RecycleUnusedTestContexts) {
 					tc = empty;
 				} else {
-					tc = pluginManager.getExtensions(TestContext.class).get(0);
+					tc = pluginManager.getExtensions(TestContext.class, pluginId).get(0);
 					tc.init(model, nParam, useConstraints);
 				}
 
