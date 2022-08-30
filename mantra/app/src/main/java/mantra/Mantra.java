@@ -38,7 +38,7 @@ public class Mantra implements Callable<Integer> {
 	@Parameters(index = "1", description = "The name of the file containing the model in CTW format.")
 	String fileName = "";
 
-	@Parameters(index = "2", description = "The parent folder of the plugin in Jar format.")
+	@Option(names = "-d", description = "The parent folder of the plugin in Jar format.")
 	String pluginDir = null;
 
 	@Option(names = "-n", description = "Number of threads to be used for test building. Do not specify (or set to 0) if the one of the system architecture has to be used.")
@@ -84,9 +84,9 @@ public class Mantra implements Callable<Integer> {
 	 * @throws InterruptedException the interrupted exception
 	 */
 	public void generateTests(String fileName, int strength, int nThreads) throws IOException, InterruptedException {
-		assert pluginDir != null : "which plugin should be user???";
+		if(pluginDir == null)
+			pluginDir = "plugins";
 		System.setProperty(DefaultPluginManager.PLUGINS_DIR_PROPERTY_NAME, pluginDir);
-
 		PluginManager pluginManager = new DefaultPluginManager();
 		pluginManager.loadPlugins();
 		pluginManager.startPlugins();
