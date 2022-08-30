@@ -109,7 +109,6 @@ public class KaliTestContext implements TestContext{
 	@Override
 	public void close() {
 		context.close();
-		
 	}
 
 	@Override

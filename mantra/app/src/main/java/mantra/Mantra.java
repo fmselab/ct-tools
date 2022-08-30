@@ -129,7 +129,7 @@ public class Mantra implements Callable<Integer> {
 			if (Mantra.PRINT_DEBUG)
 				System.out.println("using " + nThreads + " threads");
 		}
-
+		
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
