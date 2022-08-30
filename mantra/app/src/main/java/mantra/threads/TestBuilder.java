@@ -193,11 +193,11 @@ public class TestBuilder implements Runnable {
 							orderedTcList.add(tc);
 						}
 					}
-					this.testContextMutex.release();
 					if (orderedTcList.size() > 0 && sort) {
 						// Sort the orderedTestContext list
 						Collections.sort(orderedTcList);
 					}
+					this.testContextMutex.release();
 				} catch (InterruptedException e) {
 					System.out.println(e.getMessage());
 				}
