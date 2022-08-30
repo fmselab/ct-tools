@@ -111,7 +111,9 @@ public class TestBuilder implements Runnable {
 	 */
 	private boolean findImplied(Vector<Pair<Object, Object>> tuple) {
 		boolean found = false;
-		for (TestContext tc: tcList) {
+		
+		for(int i = 0; i < tcList.size(); i++) {
+			TestContext tc = tcList.get(i);
 			// Try to acquire the mutex if the lock even during reading is required
 			if (!LockTCOnlyOnWriting)
 				if (UseTryAcquireForFindImplies || tc.mustTryAcquireForFindImplies()) {
@@ -148,7 +150,8 @@ public class TestBuilder implements Runnable {
 			throws InterruptedException, SolverException {
 		boolean found = false;
 	
-		for(TestContext tc: orderedList) {
+		for(int i = 0; i < tcList.size(); i++) {
+			TestContext tc = tcList.get(i);
 			// Try to acquire the mutex if it is needed
 			if (!LockTCOnlyOnWriting || tc.mustLockOnReadForFindCompatible())
 				if (tc.getTestMutex().tryAcquire()) 
