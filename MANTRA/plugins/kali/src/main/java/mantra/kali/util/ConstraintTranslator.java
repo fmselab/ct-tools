@@ -36,7 +36,7 @@ import ctwedge.ctWedge.PlusMinus;
 import ctwedge.ctWedge.PlusMinusOperators;
 import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
-import mantra.kali.KaliPlugin.KaliTestContext;
+import mantra.kali.KaliTestContext;
 
 /**
  * translates a constraints in SMT expressions

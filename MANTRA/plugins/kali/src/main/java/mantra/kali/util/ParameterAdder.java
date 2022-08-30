@@ -29,7 +29,7 @@ import ctwedge.ctWedge.Enumerative;
 import ctwedge.ctWedge.Range;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import ctwedge.util.validator.ParameterElementsGetterAsStrings;
-import mantra.kali.KaliPlugin.KaliTestContext;
+import mantra.kali.KaliTestContext;
 
 public class ParameterAdder extends CtWedgeSwitch<List<Formula>> {
 

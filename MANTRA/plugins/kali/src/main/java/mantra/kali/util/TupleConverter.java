@@ -12,7 +12,7 @@ import ctwedge.ctWedge.Bool;
 import ctwedge.ctWedge.Enumerative;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.ctWedge.Range;
-import mantra.kali.KaliPlugin.KaliTestContext;
+import mantra.kali.KaliTestContext;
 
 public class TupleConverter {
 
