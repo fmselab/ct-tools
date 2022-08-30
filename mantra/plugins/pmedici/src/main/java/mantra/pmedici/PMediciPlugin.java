@@ -17,7 +17,6 @@ import org.eclipse.emf.common.util.EList;
 import org.pf4j.Extension;
 import org.pf4j.Plugin;
 import org.pf4j.PluginWrapper;
-import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
@@ -28,11 +27,11 @@ import mantra.model.Model;
 import mantra.pmedici.util.ModelToMDDConverter;
 import mantra.pmedici.util.Operations;
 import mantra.pmedici.util.TestModel;
+import mantra.pmedici.util.TupleConverter;
 import mantra.safeelements.ExtendedSemaphore;
 import mantra.safeelements.TestContext;
 import mantra.threads.TestBuilder;
 import mantra.util.Order;
-import mantra.pmedici.util.TupleConverter;
 
 public class PMediciPlugin extends Plugin {
 
