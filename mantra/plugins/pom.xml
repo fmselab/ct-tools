@@ -1,89 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <parent>
-        <groupId>mantra</groupId>
-        <artifactId>mantra</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>mantra</groupId>
+		<artifactId>mantra</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>mantra-plugins</artifactId>
-    <packaging>pom</packaging>
-    <name>Plugins Parent</name>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>mantra-plugins</artifactId>
+	<packaging>pom</packaging>
+	<name>Plugins Parent</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Override below properties in each plugin's pom.xml -->
-        <plugin.id/>
-        <plugin.class/>
-        <plugin.version/>
-        <plugin.provider/>
-        <plugin.dependencies/>
-    </properties>
+		<!-- Override below properties in each plugin's pom.xml -->
+		<plugin.id />
+		<plugin.class />
+		<plugin.version />
+		<plugin.provider />
+		<plugin.dependencies />
+	</properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <finalName>${project.artifactId}-${project.version}-all</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <attach>false</attach>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Plugin-Id>${plugin.id}</Plugin-Id>
-                            <Plugin-Version>${plugin.version}</Plugin-Version>
-                            <Plugin-Provider>${plugin.provider}</Plugin-Provider>
-                            <Plugin-Class>${plugin.class}</Plugin-Class>
-                            <Plugin-Dependencies>${plugin.dependencies}</Plugin-Dependencies>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.1.0</version>
+					<configuration>
+						<outputDirectory>${project.parent.parent.basedir}/app/plugins</outputDirectory>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+						<finalName>${project.artifactId}-${project.version}-all</finalName>
+						<appendAssemblyId>false</appendAssemblyId>
+						<attach>false</attach>
+						<archive>
+							<manifest>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							</manifest>
+							<manifestEntries>
+								<Plugin-Id>${plugin.id}</Plugin-Id>
+								<Plugin-Version>${plugin.version}</Plugin-Version>
+								<Plugin-Provider>${plugin.provider}</Plugin-Provider>
+								<Plugin-Class>${plugin.class}</Plugin-Class>
+								<Plugin-Dependencies>${plugin.dependencies}</Plugin-Dependencies>
+							</manifestEntries>
+						</archive>
+					</configuration>
+					<executions>
+						<execution>
+							<id>make-assembly</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.pf4j</groupId>
-            <artifactId>pf4j</artifactId>
-            <version>${pf4j.version}</version>
-            <!-- !!! VERY IMPORTANT -->
-            <scope>provided</scope>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.pf4j</groupId>
+			<artifactId>pf4j</artifactId>
+			<version>${pf4j.version}</version>
+			<!-- !!! VERY IMPORTANT -->
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>mantra</groupId>
-            <artifactId>mantra-app</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <!-- !!! VERY IMPORTANT -->
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>mantra</groupId>
+			<artifactId>mantra-app</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<!-- !!! VERY IMPORTANT -->
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
-  <modules>
-    <module>pmedici</module>
-    <module>kali</module>
-  </modules>
+	<modules>
+		<module>pmedici</module>
+		<module>kali</module>
+	</modules>
 </project>
