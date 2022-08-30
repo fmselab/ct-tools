@@ -251,8 +251,8 @@ public class Mantra implements Callable<Integer> {
 		}
 
 		pluginIds = line.split("\\s+");
-
-		if (pluginIds.length == 1 && pluginIds[0].equalsIgnoreCase("all"))
+		
+		if (pluginIds.length == 1 && (pluginIds[0].equalsIgnoreCase("all") || pluginIds[0].isBlank()))
 			pluginIds = availablePlugins.toArray(new String[0]);
 
 		return pluginIds;
