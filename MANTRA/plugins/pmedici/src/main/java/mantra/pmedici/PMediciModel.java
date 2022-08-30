@@ -3,18 +3,16 @@ package mantra.pmedici;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import org.colomoto.mddlib.MDDManager;
-import org.eclipse.emf.common.util.EList;
 import org.pf4j.Extension;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.Pair;
@@ -76,14 +74,8 @@ public class PMediciModel implements Model {
 	}
 
 	@Override
-	public EList<Parameter> getParameters() {
-		return citModel.getParameters();
-	}
-
-	@Override
-	public void translateOutputToString(HashSet<String> tests) {
-		String tsAsCSV = Operations.translateOutputToString(tests, citModel);
-		System.out.println(tsAsCSV);
+	public String translateOutputToString(Collection<String> tests) {
+		return Operations.translateOutputToString(tests, citModel);
 	}
 
 	@Override
@@ -118,6 +110,11 @@ public class PMediciModel implements Model {
 
 	public void setTestModel(TestModel testModel) {
 		this.testModel = testModel;
+	}
+
+	@Override
+	public CitModel getCitModel() {
+		return citModel;
 	}
 
 }

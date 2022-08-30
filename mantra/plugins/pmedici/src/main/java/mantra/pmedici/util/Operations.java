@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -310,7 +310,7 @@ public class Operations {
 	 * @return a list of strings, one for each row (test) and header as first row
 	 * @throws IOException
 	 */
-	public static List<String> translateOutput(HashSet<String> testCases, CitModel model) {
+	public static List<String> translateOutput(Collection<String> testCases, CitModel model) {
 		List<String> csv_out = new ArrayList<>();
 		// creating an array of integers with size equal to the number of the parameters
 		// of CitModel
@@ -369,7 +369,7 @@ public class Operations {
 	 * @return a {@link String} containing the test suite in a CSV format
 	 * @throws IOException
 	 */
-	public static String translateOutputToString(HashSet<String> testCases, CitModel model) {
+	public static String translateOutputToString(Collection<String> testCases, CitModel model) {
 		return String.join("\n", translateOutput(testCases, model));
 	}
 

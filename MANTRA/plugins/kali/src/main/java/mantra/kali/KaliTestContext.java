@@ -270,7 +270,7 @@ public class KaliTestContext implements TestContext{
 		
 		Map<Parameter, String> tupleMap = new HashMap<Parameter, String>();
 		tuple.forEach((x) -> {
-			tupleMap.put(model.getParameters().get(this.paramPosition.get(x.getFirst())), x.getSecond().toString());
+			tupleMap.put(model.getCitModel().getParameters().get(this.paramPosition.get(x.getFirst())), x.getSecond().toString());
 		}); 
 		
 		return TupleConverter.extractFormulaFromTuple(this, variablesList, tupleMap);
@@ -407,7 +407,7 @@ public class KaliTestContext implements TestContext{
 		// Add all the parameters to the logical context
 		ParameterAdder pa = new ParameterAdder(ctx);
 		
-		for (Parameter nt : model.getParameters()) {
+		for (Parameter nt : model.getCitModel().getParameters()) {
 			List<Formula> variable = pa.doSwitch(nt);
 			variables.put(nt, variable);
 		}
@@ -417,7 +417,7 @@ public class KaliTestContext implements TestContext{
 		SolverContext sContext = ctx.getContext();
 		
 		BooleanFormula res = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
-		for (Parameter p : model.getParameters()) {	
+		for (Parameter p : model.getCitModel().getParameters()) {	
 			// Only if it is an enumerative
 			if (p instanceof Enumerative) {
 				

@@ -19,9 +19,9 @@ import org.pf4j.DefaultPluginManager;
 import org.pf4j.PluginManager;
 import org.sosy_lab.java_smt.api.SolverException;
 
-import ctwedge.ctWedge.Parameter;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
+import ctwedge.util.validator.SMTTestSuiteValidator;
 import mantra.model.Model;
 import mantra.safeelements.ExtendedSemaphore;
 import mantra.safeelements.SafeQueue;
@@ -29,6 +29,7 @@ import mantra.safeelements.TestContext;
 import mantra.threads.TestBuilder;
 import mantra.threads.TupleFiller;
 import mantra.util.Order;
+import mantra.util.StatsTestSuite;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -105,136 +106,146 @@ public class Mantra implements Callable<Integer> {
 
 		String[] pluginIds = choosePlugins(pluginManager);
 
+		List<StatsTestSuite> suites = new ArrayList<>(pluginIds.length);
+
 		for (String pluginId : pluginIds) {
-			if (PRINT_DEBUG) {
-				List<Class<?>> ext = pluginManager.getExtensionClasses(pluginId);
-				System.out.println(String.format("Found %d extensions in plugin %s:", ext.size(), pluginId));
-				for (Class<?> extension : ext) {
-					System.out.println("  " + extension.getCanonicalName());
-				}
-			}
+			StatsTestSuite suite = generateTestsWithPlugin(fileName, strength, nThreads, pluginManager, pluginId);
+			suites.add(suite);
 
-			Model model = pluginManager.getExtensions(Model.class, pluginId).get(0);
-
-			if (!fileName.equals("")) {
-				assert fileName.endsWith(".ctw");
-				assert Files.exists(Paths.get(fileName));
-				assert Files.isRegularFile(Paths.get(fileName));
-				model.loadModelFromPath(fileName);
-			} else {
-				assert false : "what to do if the filename is empty???";
-			}
-
-			int nCovered = 0;
-			int totTuples = 0;
-
-			if (PRINT_DEBUG) {
-				System.out.println("Started test suite generation with " + pluginId + "...");
-			}
-
-			// Get current time
-			long start = System.currentTimeMillis();
-
-			// Add to the baseNode the constraints
-
-			// Shared object between producer and consumer
-			SafeQueue tuples = new SafeQueue();
-			Iterator<List<Pair<Object, Object>>> tg = ModelUtils.getAllKWiseCombination(model.getElements(ORDER),
-					strength);
-
-			// Start the filler thread
-			TupleFiller tFiller = new TupleFiller(tg, tuples);
-			Thread tFillerThread = new Thread(tFiller);
-			tFillerThread.start();
-
-			// Start all the TestBuilder threads
-			if (nThreads == 0) {
-				nThreads = Runtime.getRuntime().availableProcessors();
-				if (Mantra.PRINT_DEBUG)
-					System.out.println("using " + nThreads + " threads");
-			}
-
-			ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
-			Vector<TestContext> tcList = new Vector<TestContext>();
-			ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
-			for (int i = 0; i < nThreads; i++) {
-				Thread tBuilder = new Thread(new TestBuilder(model, tuples, tcList, SORT, model.getNParams(),
-						model.getUseConstraints(), testContextsMutex, pluginManager, pluginId));
-				testBuilderThreads.add(tBuilder);
-				tBuilder.start();
-			}
-
-			// Join all the test builder threads
-			for (int i = 0; i < nThreads; i++) {
-				testBuilderThreads.get(i).join();
-			}
-
-			if (PRINT_DEBUG) {
-				System.out.println("Test suite generation with " + pluginId + " finished");
-			}
-
-			// Compute the summary values
-			System.out.println("-----TEST SUITE: " + pluginId + "-----");
-
-			// First row -> parameter names
-			String header = "";
-			for (Parameter param : model.getParameters()) {
-				header += param.getName() + ";";
-			}
-			System.out.println(header.substring(0, header.length() - 1));
-
-			HashSet<String> tests = new HashSet<String>();
-
-			// Remove empty contexts
-			tcList.removeIf(x -> x.getNCovered() == 0);
-
-			for (TestContext tc : tcList) {
-				nCovered += tc.getNCovered();
-				try {
-					tests.add(tc.getTest(false));
-				} catch (InterruptedException | SolverException e) {
-					System.out.println(e.getMessage());
-				}
-				// Close the context
-				tc.close();
-			}
-			totTuples = tuples.getNTuples();
-			model.translateOutputToString(tests);
-
-			// Print the tests
-			// tests.forEach(x -> {
-			// System.out.println(x);
-			// });
+			System.out.println(suite.toString());
 
 			// Print the tests
 			if (verb) {
-				System.out.println("Covered: " + nCovered + " tuples");
-				System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
-				System.out.println("Total number of tuples: " + totTuples + " tuples");
-				System.out.println(
-						"Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
-				System.out.println("Generated " + tcList.size() + " tests");
+				System.out.println("Generator: " + pluginId);
+				System.out.println("Covered: " + suite.getCoveredTuples() + " tuples");
+				System.out.println("Uncovered: " + suite.getNotCoveredTuples() + " tuples");
+				System.out.println("Total number of tuples: " + suite.getTotTuples() + " tuples");
+				System.out.println("Time required for test suite generation: " + suite.getGeneratorTime() + " ms");
+				System.out.println("Generated " + suite.getTestNumber() + " tests");
 			} else {
 				FileWriter fw = new FileWriter(OUTPUT_TXT, true);
 				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write(fileName + ";" + tests.size() + ";" + (System.currentTimeMillis() - start) + ";" + SORT + ";"
-						+ ORDER.toString() + ";" + nThreads);
+				bw.write(fileName + ";" + suite.getGeneratorName() + ";" + suite.getTestNumber() + ";"
+						+ suite.getGeneratorTime() + ";" + SORT + ";" + ORDER.toString() + ";" + nThreads);
 				bw.newLine();
 				bw.close();
 			}
 
-			// Join the tuple filler thread
-			tFillerThread.join();
+			SMTTestSuiteValidator validator = new SMTTestSuiteValidator(suite);
+			System.out.println("Is the suite valid? " + validator.isValid());
+			System.out.println("Validator's covered tuples: " + validator.howManyTuplesCovers());
+
 		}
+	}
+
+	protected StatsTestSuite generateTestsWithPlugin(String fileName, int strength, int nThreads,
+			PluginManager pluginManager, String pluginId) throws InterruptedException, IOException {
+
+		if (PRINT_DEBUG) {
+			List<Class<?>> ext = pluginManager.getExtensionClasses(pluginId);
+			System.out.println(String.format("Found %d extensions in plugin %s:", ext.size(), pluginId));
+			for (Class<?> extension : ext) {
+				System.out.println("  " + extension.getCanonicalName());
+			}
+		}
+
+		Model model = pluginManager.getExtensions(Model.class, pluginId).get(0);
+
+		if (!fileName.equals("")) {
+			assert fileName.endsWith(".ctw");
+			assert Files.exists(Paths.get(fileName));
+			assert Files.isRegularFile(Paths.get(fileName));
+			model.loadModelFromPath(fileName);
+		} else {
+			assert false : "what to do if the filename is empty???";
+		}
+
+		int nCovered = 0;
+		int totTuples = 0;
+
+		if (PRINT_DEBUG) {
+			System.out.println("Started test suite generation with " + pluginId + "...");
+		}
+
+		// Get current time
+		long start = System.currentTimeMillis();
+
+		// Shared object between producer and consumer
+		SafeQueue tuples = new SafeQueue();
+		Iterator<List<Pair<Object, Object>>> tg = ModelUtils.getAllKWiseCombination(model.getElements(ORDER), strength);
+
+		// Start the filler thread
+		TupleFiller tFiller = new TupleFiller(tg, tuples);
+		Thread tFillerThread = new Thread(tFiller);
+		tFillerThread.start();
+
+		// Start all the TestBuilder threads
+		if (nThreads == 0) {
+			nThreads = Runtime.getRuntime().availableProcessors();
+			if (Mantra.PRINT_DEBUG)
+				System.out.println("using " + nThreads + " threads");
+		}
+
+		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
+		Vector<TestContext> tcList = new Vector<TestContext>();
+		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
+		for (int i = 0; i < nThreads; i++) {
+			Thread tBuilder = new Thread(new TestBuilder(model, tuples, tcList, SORT, model.getNParams(),
+					model.getUseConstraints(), testContextsMutex, pluginManager, pluginId));
+			testBuilderThreads.add(tBuilder);
+			tBuilder.start();
+		}
+
+		// Join all the test builder threads
+		for (int i = 0; i < nThreads; i++) {
+			testBuilderThreads.get(i).join();
+		}
+
+		if (PRINT_DEBUG) {
+			System.out.println("Test suite generation with " + pluginId + " finished");
+		}
+
+		// Compute the summary values
+		System.out.println("-----TEST SUITE: " + pluginId + "-----");
+
+		// First row -> parameter names
+		HashSet<String> tests = new HashSet<String>();
+
+		// Remove empty contexts
+		tcList.removeIf(x -> x.getNCovered() == 0);
+
+		for (TestContext tc : tcList) {
+			nCovered += tc.getNCovered();
+			try {
+				tests.add(tc.getTest(false));
+			} catch (InterruptedException | SolverException e) {
+				System.out.println(e.getMessage());
+			}
+			// Close the context
+			tc.close();
+		}
+
+		long stop = System.currentTimeMillis();
+
+		totTuples = tuples.getNTuples();
+		String testsAsCsv = model.translateOutputToString(tests);
+		// Join the tuple filler thread
+		tFillerThread.join();
+
+		StatsTestSuite testSuite = new StatsTestSuite(testsAsCsv, model.getCitModel(), strength, totTuples, nCovered,
+				tcList.size(), stop - start, nThreads, ORDER, pluginId);
+
+		return testSuite;
 	}
 
 	private String[] choosePlugins(PluginManager pluginManager) {
 		String[] pluginIdsNo = {};
 
-		List<String> availablePlugins = pluginManager.getPlugins().stream().map(it -> it.getPluginId()).collect(Collectors.toList());
+		List<String> availablePlugins = pluginManager.getPlugins().stream().map(it -> it.getPluginId())
+				.collect(Collectors.toList());
 		System.out.println("Available plugins:");
-		for(int i = 0; i < availablePlugins.size(); i++) {
-			System.out.println(i + " - " + availablePlugins.get(i));			
+		for (int i = 0; i < availablePlugins.size(); i++) {
+			System.out.println(i + " - " + availablePlugins.get(i));
 		}
 
 		String line;
@@ -251,23 +262,23 @@ public class Mantra implements Callable<Integer> {
 				line = "all";
 			}
 		}
-		
+
 		pluginIdsNo = line.split(" ");
-		
+
 		if (pluginIdsNo.length == 1 && (pluginIdsNo[0].equalsIgnoreCase("all") || pluginIdsNo[0].isBlank()))
 			pluginIdsNo = availablePlugins.toArray(new String[0]);
-		
+
 		String[] pluginIds = new String[pluginIdsNo.length];
-		
-		for(int i = 0; i < pluginIdsNo.length; i++) {
+
+		for (int i = 0; i < pluginIdsNo.length; i++) {
 			try {
 				pluginIds[i] = availablePlugins.get(Integer.parseInt(pluginIdsNo[i]));
 			} catch (NumberFormatException nfe) {
 				pluginIds = availablePlugins.toArray(new String[availablePlugins.size()]);
 				break;
-		    }
+			}
 		}
-		
+
 		return pluginIds;
 	}
 

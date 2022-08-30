@@ -1,10 +1,10 @@
 package mantra.kali;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -119,13 +119,13 @@ public class KaliModel implements Model {
 	}
 
 	@Override
-	public EList<Parameter> getParameters() {
-		return citModel.getParameters();
-	}
-
-	@Override
-	public void translateOutputToString(HashSet<String> tests) {
-		tests.forEach(x -> {System.out.println(x);});
+	public String translateOutputToString(Collection<String> tests) {
+		String header = "";
+		for (Parameter param : citModel.getParameters()) {
+			header += param.getName() + ";";
+		}
+		
+		return header.substring(0, header.length() - 1) + "\n" + String.join("\n", tests);
 	}
 
 	@Override
@@ -139,5 +139,10 @@ public class KaliModel implements Model {
 
 	public EList<Constraint> getConstraints(){
 		return this.citModel.getConstraints();
+	}
+
+	@Override
+	public CitModel getCitModel() {
+		return citModel;
 	}
 }
