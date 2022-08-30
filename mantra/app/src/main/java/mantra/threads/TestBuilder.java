@@ -111,32 +111,32 @@ public class TestBuilder implements Runnable {
 	 */
 	private boolean findImplied(Vector<Pair<Object, Object>> tuple) {
 		boolean found = false;
-		for (int i = 0; i < this.tcList.size(); i++) {
+		for (TestContext tc: tcList) {
 			// Try to acquire the mutex if the lock even during reading is required
 			if (!LockTCOnlyOnWriting)
 				if (UseTryAcquireForFindImplies) {
-					if (!tcList.get(i).getTestMutex().tryAcquire())
+					if (!tc.getTestMutex().tryAcquire())
 						continue;
 					else
 					// If the lock has been acquired, check if it is locked by the caller
 					if (!IN_TEST)
-						assert (tcList.get(i).getTestMutex().lockedByCaller());
+						assert (tc.getTestMutex().lockedByCaller());
 				} else {
 					try {
-						tcList.get(i).getTestMutex().acquire();
+						tc.getTestMutex().acquire();
 					} catch (InterruptedException e) {
 						continue;
 					}
 				}
 
 			// Check the predicate
-			if (tcList.get(i).isImplied(tuple)) {
+			if (tc.isImplied(tuple)) {
 				found = true;
 			}
 
 			// In any case free this context if the lock has been acquired
 			if (!LockTCOnlyOnWriting)
-				tcList.get(i).getTestMutex().release();
+				tc.getTestMutex().release();
 
 			if (found)
 				break;
