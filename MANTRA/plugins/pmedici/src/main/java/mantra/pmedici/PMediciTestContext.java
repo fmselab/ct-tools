@@ -384,4 +384,8 @@ public class PMediciTestContext implements TestContext {
 		return mdd;
 	}
 
+	@Override
+	public boolean mustLockOnRead() {
+		return false;
+	}
 }

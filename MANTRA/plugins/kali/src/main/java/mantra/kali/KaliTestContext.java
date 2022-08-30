@@ -290,6 +290,11 @@ public class KaliTestContext implements TestContext{
 		return counter;
 	}
 	
+	@Override
+	public boolean mustLockOnRead() {
+		return true;
+	}
+	
 	// PRIVATE METHODS
 	
 	private BooleanFormula setupContext() throws InvalidConfigurationException {		
@@ -456,4 +461,5 @@ public class KaliTestContext implements TestContext{
 		}
 		return null;
 	}
+	
 }

@@ -26,7 +26,7 @@ public class TestBuilder implements Runnable {
 	public static boolean RecycleUnusedTestContexts = true;
 
 	// if true, a test context is locked only when writing
-	public static boolean LockTCOnlyOnWriting = true;
+	public static boolean LockTCOnlyOnWriting = false;
 
 	// if true, the lock while checking if a tuple is implied is only performed with
 	// tryAcquire
@@ -147,22 +147,23 @@ public class TestBuilder implements Runnable {
 	private boolean findCompatible(Vector<Pair<Object, Object>> tuple, Vector<TestContext> orderedList)
 			throws InterruptedException, SolverException {
 		boolean found = false;
-		for (int i = 0; i < orderedList.size(); i++) {
+	
+		for(TestContext tc: orderedList) {
 			// Try to acquire the mutex if it is needed
-			if (!LockTCOnlyOnWriting)
-				if (orderedList.get(i).getTestMutex().tryAcquire()) 
-					assert(orderedList.get(i).getTestMutex().lockedByCaller());
+			if (!LockTCOnlyOnWriting || tc.mustLockOnRead())
+				if (tc.getTestMutex().tryAcquire()) 
+					assert(tc.getTestMutex().lockedByCaller());
 				else
 					continue;
 			
 			// Check the predicate
-			if (orderedList.get(i).isCoverable(tuple)) {
-				found = orderedList.get(i).addTuple(tuple);
+			if (tc.isCoverable(tuple)) {
+				found = tc.addTuple(tuple);
 			}
 			
 			// If the context has been locked, free it
-			if (!LockTCOnlyOnWriting)
-				orderedList.get(i).getTestMutex().release();
+			if (!LockTCOnlyOnWriting || tc.mustLockOnRead())
+				tc.getTestMutex().release();
 			
 			// If the tuple has been added, stop the iteration
 			if (found)
