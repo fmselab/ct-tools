@@ -53,6 +53,10 @@ public class PMedici implements Callable<Integer> {
 	@Option(names = "-verb", description = "Use the verbose mode.")
 	boolean verb;
 	
+	// use only verb and log4j
+	@Deprecated
+	public static boolean PRINT_DEBUG = true;
+	
 	/**
 	 * Variable used to share the size of the generated test suite with the class
 	 * {@link pMEDICIExperimenter}
