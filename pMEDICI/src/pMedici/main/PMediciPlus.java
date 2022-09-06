@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
@@ -38,8 +39,13 @@ import pMedici.importer.CSVImporter;
 @Deprecated
 public class PMediciPlus {
 
+	static final Logger LOGGER = Logger.getLogger(PMediciPlus.class);
+	
 	public static boolean PRINT_DEBUG = true;
 
+	static boolean verb = false;
+
+	
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		String evolvedModelPath = "";
@@ -48,8 +54,7 @@ public class PMediciPlus {
 
 		int strength = 2;
 		CitModel model = null;
-		boolean verb = false;
-
+		
 		// Read the test model from arguments
 		// args[0] = t-wise strength
 		// args[1] = file name (path) to CTWedge evolved model
@@ -68,8 +73,6 @@ public class PMediciPlus {
 					"You must specify 1) the strength, 2) the new model file path, 3) the old test suite file path and 4) the file path for the test suite export file");
 		}
 
-		// Get current time
-		long start = System.currentTimeMillis();
 
 		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
 
@@ -92,6 +95,25 @@ public class PMediciPlus {
 		// Set the strength (default was 0)
 		m.setStrength(strength);
 
+		String testSuite = generateTests(model, m, oldTests);
+
+		// Export the test suite
+		pMedici.exporter.CSVExporter.export(testSuite, exportFilePath);
+
+	}
+
+	/**
+	 * 
+	 * @param model the new citmodel 
+	 * @param m the new model as test model TODO delete (only 1 model)
+	 * @param oldTests the old tests
+	 * @return
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
+	public static String generateTests(CitModel model, TestModel m, Vector<Map<String, String>> oldTests) throws InterruptedException, IOException {
+		// Get current time
+		long start = System.currentTimeMillis();
 		// Get the MDD representing the model without constraints
 		ModelToMDDConverter mc = new ModelToMDDConverter(m);
 		MDDManager manager = mc.getMDD();
@@ -116,7 +138,7 @@ public class PMediciPlus {
 		// is present or not in the old test suite. If it is, then we add the parameter
 		// value in the tuple of the current iteration.
 		for (Map<String, String> oldTest : oldTests) {
-
+			LOGGER.debug("adding test " + oldTest);
 			// Creating the tuple related to the current iteration
 			Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>();
 			int tupleIndex = 0;
@@ -153,8 +175,7 @@ public class PMediciPlus {
 
 					// Adding the tc to the list of all the test context tcList
 					tcList.add(tc);
-
-				}
+				} 
 			}
 
 		}
@@ -240,9 +261,7 @@ public class PMediciPlus {
 
 		System.out.println("Time required for the whole algorithm: " + (System.currentTimeMillis() - start) + " ms");
 
-		// Export the test suite
-		pMedici.exporter.CSVExporter.export(testSuite, exportFilePath);
 
+		return testSuite;
 	}
-
 }

@@ -13,6 +13,25 @@ import pMedici.util.Operations;
 import pMedici.util.Pair;
 
 public class TestBuilder implements Runnable {
+	
+	/* -----------------------------------
+	 * OPTIMIZATIONS
+	 * ----------------------------------- */
+	
+	// if true, when a test context is created but not filled, then it can be reused the next time
+	public static boolean RecycleUnusedTestContexts = true;
+	
+	// if true, a test context is locked only when writing
+	public static boolean LockTCOnlyOnWriting = true;
+	
+	// if true, the lock while checking if a tuple is implied is only performed with tryAcquire 
+	public static boolean UseTryAcquireForFindImplies = false;
+	
+	/* -----------------------------------
+	 * END OPTIMIZATIONS
+	 * ----------------------------------- */
+	
+	TestContext empty = null;
 
 	/**
 	 * The base MDD containing the constraints
@@ -92,16 +111,31 @@ public class TestBuilder implements Runnable {
 	private boolean findImplied(Vector<Pair<Integer, Integer>> tuple) { 
 		boolean found = false;
 		for (int i=0; i<this.tcList.size(); i++) {
-			// Try to acquire the mutex
-			if (tcList.get(i).testMutex.tryAcquire()) {
-				assert(tcList.get(i).testMutex.lockedByCaller());
-				// Check the predicate
-				if (tcList.get(i).isImplied(tuple)) {
-					found = true;
+			// Try to acquire the mutex if the lock even during reading is required
+			if (!LockTCOnlyOnWriting)
+				if (UseTryAcquireForFindImplies) {
+					if (!tcList.get(i).testMutex.tryAcquire())
+						continue;
+					else 
+						// If the lock has been acquired, check if it is locked by the caller
+						assert(tcList.get(i).testMutex.lockedByCaller());
+				} else {
+					try {
+						tcList.get(i).testMutex.acquire();
+					} catch (InterruptedException e) {
+						continue;
+					}
 				}
-				// In any case free this context
-				tcList.get(i).testMutex.release();
+				
+			// Check the predicate
+			if (tcList.get(i).isImplied(tuple)) {
+				found = true;
 			}
+			
+			// In any case free this context if the lock has been acquired
+			if (!LockTCOnlyOnWriting)
+				tcList.get(i).testMutex.release();
+			
 			if (found)
 				break;
 		}
@@ -119,17 +153,24 @@ public class TestBuilder implements Runnable {
 	private boolean findCompatible(Vector<Pair<Integer, Integer>> tuple, Vector<TestContext> orderedList) throws InterruptedException {
 		boolean found = false;
 		for (int i=0; i<orderedList.size(); i++) {
-			// Try to acquire the mytex
-			if (orderedList.get(i).testMutex.tryAcquire()) {
-				assert(orderedList.get(i).testMutex.lockedByCaller());
-				// Check the predicate
-				if (orderedList.get(i).isCoverable(tuple)) {
-					orderedList.get(i).addTuple(tuple);
-					found = true;
-				}
-				// In any case free this context
-				orderedList.get(i).testMutex.release();
+			
+			// Try to acquire the mutex if it is needed
+			if (!LockTCOnlyOnWriting)
+				if (orderedList.get(i).testMutex.tryAcquire()) 
+					assert(orderedList.get(i).testMutex.lockedByCaller());
+				else
+					continue;
+			
+			// Check the predicate
+			if (orderedList.get(i).isCoverable(tuple)) {
+				found = orderedList.get(i).addTuple(tuple);
 			}
+			
+			// If the context has been locked, free it
+			if (!LockTCOnlyOnWriting)
+				orderedList.get(i).testMutex.release();
+			
+			// If the tuple has been added, stop the iteration
 			if (found)
 				break;
 		}
@@ -194,23 +235,37 @@ public class TestBuilder implements Runnable {
 				
 				// Incompatible or not implied for every test context
 				// 	-> Not implied and not coverable: build a new test context
-				TestContext tc = new TestContext(baseMDD, nParam, useConstraints, manager);
+				TestContext tc;
+				if (empty != null && RecycleUnusedTestContexts) {
+					tc = empty;
+				} else {
+					tc = new TestContext(baseMDD, nParam, useConstraints, manager);
+				}
+				
 				try {
 					tc.testMutex.acquire();
 					// Check if it is coverable by a new test context
-					if (tc.isCoverable(tuple)) {
-						tc.addTuple(tuple);
+					if (tc.isCoverable(tuple)) {					
+						boolean added = tc.addTuple(tuple);
+						if (!added)
+							safeQueue.reinsert(tuple);
+						
 						tc.testMutex.release();
-						if (PMedici.PRINT_DEBUG)
-							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
+						
 						// Add the new test context to the list
 						this.testContextMutex.acquire();
 						tcList.add(tc);
 						this.testContextMutex.release();
+						
+						if (PMedici.PRINT_DEBUG)
+							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
+						empty = null; // empty is no longer empty
 					} else {
 						if (PMedici.PRINT_DEBUG)
 							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " is not coverable");
 						nUncoverable++;
+						empty = tc; // empty is usable if needed
+						tc.testMutex.release();
 					}
 				} catch (InterruptedException e) {
 					System.out.println(e.getMessage());

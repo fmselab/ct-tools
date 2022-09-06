@@ -34,6 +34,15 @@ public class SafeQueue {
 		tupleList.add(tuple);
 		nTuples++;
 	}
+	
+	/**
+	 * Reinsert a tuple in the queue
+	 * 
+	 * @param tuple: the tuple to be added in the queue
+	 */
+	public void reinsert(Vector<Pair<Integer, Integer>> tuple) {
+		tupleList.add(tuple);
+	}
 
 	/**
 	 * Get the new element if available, otherwise returns null

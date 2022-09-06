@@ -1,18 +1,24 @@
 package pMedici.main;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Callable;
 
 import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
+import ctwedge.util.TestSuite;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -22,13 +28,31 @@ import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
 import pMedici.util.TestModel;
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 import pMedici.combinations.TupleGenerator;
 import pMedici.experiments.pMEDICIExperimenter;
 
-public class PMedici {
+/**
+ *  main class to call pMedici
+ * TODO: use the picocli library, convert method to non static and variables as fields
+ */
+public class PMedici implements Callable<Integer> {
+	
+	@Parameters(index = "0", description = "The strength for test generation.")
+	int strength = 2;
+	
+	@Parameters(index = "1", description = "The name of the file containing the model in CTW format.")
+	String fileName = "";
+	
+	@Option(names = "-n", description = "Number of threads to be used for test building. Do not specify (or set to 0) if the one of the system architecture has to be used.")
+    private int nThreads = Runtime.getRuntime().availableProcessors();
 
-	public static boolean PRINT_DEBUG = false;
-
+	/** Use the verbose mode */
+	@Option(names = "-verb", description = "Use the verbose mode.")
+	boolean verb;
+	
 	/**
 	 * Variable used to share the size of the generated test suite with the class
 	 * {@link pMEDICIExperimenter}
@@ -47,43 +71,62 @@ public class PMedici {
 	 */
 	public static int threadsNum = -1;
 
+	/** the model for the generation */
+	CitModel model;
+
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		String fileName = "";
-		int strength = 2;
-		CitModel model = null;
-		boolean verb = false;
+		PMedici pMedici = new PMedici();
+		int exitCode = new CommandLine(pMedici).execute(args);
+		System.exit(exitCode);
+	}
+	
+	@Override
+    public Integer call() throws Exception {
+		generateTests(fileName, strength, nThreads);
+		return 0;
+	}
 
-		// Read the test model from arguments
-		// args[0] = t-wise strength
-		// args[1] = file name (path) to the CTWedge model
-		// args[2] = boolean true/false for verb
-		if (args.length >= 2) {
-			strength = Integer.parseInt(args[0]);
-			fileName = args[1];
-			if (args.length > 2)
-				verb = Boolean.parseBoolean(args[2]);
-		} else {
-			throw new RuntimeException(
-					"You must specify the strength and the model file name for generating a test suite");
-		}
+	// covert from ctwedge to medici and saves into a file called "model.txt"
+	public String buildMediciModel(String fileName) throws IOException {
+		assert fileName.endsWith(".ctw");
+		assert Files.exists(Paths.get(fileName));
+		assert Files.isRegularFile(Paths.get(fileName));
+		
+		model = Utility.loadModelFromPath(fileName);
+		MediciCITGenerator gen = new MediciCITGenerator();
+		MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
+		return gen.translateModel(model, false);
+	}
 
+	/**
+	 * Generate tests.
+	 *
+	 * @param fileName the file name containing the cit model in CTWEDGE format!
+	 * @param strength the strength
+	 * @param nThreads the number of threads to be used
+	 * @return 
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws InterruptedException the interrupted exception
+	 */
+	 public TestSuite generateTests(String fileName, int strength, int nThreads)
+			throws IOException, InterruptedException {
+		 String mediciModel = "";
 		// Convert the model from CTWedge to Medici format
 		if (!fileName.equals("")) {
-			model = Utility.loadModelFromPath(fileName);
-			MediciCITGenerator gen = new MediciCITGenerator();
-			MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
-			String mediciModel = gen.translateModel(model, false);
-			File modelFile = new File("model.txt");
-			FileWriter wf = new FileWriter(modelFile);
-			wf.write(mediciModel);
-			wf.close();
-			fileName = "model.txt";
+			mediciModel = buildMediciModel(fileName);
+		} else {
+			assert false : "what to do if the filename is empty???";
 		}
-
 		// Read the combinatorial model and get the MDD representing the model without
 		// constraints
-		TestModel m = Operations.readFile(fileName);
-
+		TestModel m = Operations.readModelFromReader(new BufferedReader(new StringReader(mediciModel)));
 		// Set the strength
 		m.setStrength(strength);
 
@@ -111,8 +154,8 @@ public class PMedici {
 		tFillerThread.start();
 
 		// Start all the TestBuilder threads
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		threadsNum = nThreads;
+		if (nThreads == 0)
+			nThreads = Runtime.getRuntime().availableProcessors();
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		boolean sort = false;
@@ -138,14 +181,13 @@ public class PMedici {
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
-		// Operations.translateOutput(testCases, model);
-		String testSuite = Operations.translateOutputToString(testCases, model);
-		System.out.println(testSuite);
-		testSuiteSize = (testSuite.split("\n").length - 1);
-		
-		// Deleting eventually duplicated tests
-		String reducedTestSuite = Operations.deleteDuplicates(testSuite);
-		reducedTestSuiteSize = (reducedTestSuite.split("\n").length - 1);
+
+		String tsAsCSV = Operations.translateOutputToString(testCases, model);
+		TestSuite testSuite = new TestSuite(tsAsCSV,model);
+		System.out.println(tsAsCSV);
+		testSuite.setStrength(strength);
+		long generationTime = (System.currentTimeMillis() - start);
+		testSuite.setGeneratorTime(generationTime);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();
@@ -153,12 +195,18 @@ public class PMedici {
 			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println(
-					"Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
-			System.out.println("Generated " + tcList.size() + " tests");
+					"Time required for test suite generation: " + generationTime + " ms");
+			System.out.println("Number of tests generated before duplicate removal: " + tcList.size());
+			System.out.println("Number of tests generated after duplicate removal: " + testSuite.getTests().size());
 		}
 
 		// Join the tuple filler thread
 		tFillerThread.join();
+		// return the test suite
+		return testSuite;
 	}
-
+	 
+	public CitModel getModel() {
+		return this.model;
+	}
 }

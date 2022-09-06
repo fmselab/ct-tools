@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,6 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterSize;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
@@ -78,7 +78,7 @@ public class KALI {
 				strength = Integer.parseInt(arguments.get(0));
 				if (strength < 2)
 					throw new CmdLineException(parser, "strength cannot be less than 2");
-				// TODO: we should check that the strength is lower than the number of parameters of the model
+				// TODO: We should check that the strength is lower than the number of parameters of the model
 			} catch (NumberFormatException nf) {
 				throw new CmdLineException(parser, "strength must be a number >= 2 " + nf.getLocalizedMessage());
 			}
@@ -126,6 +126,7 @@ public class KALI {
 			if (KALI.PRINT_DEBUG)
 				System.out.println("using " + nThreads + " threads");
 		}
+		
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		int nParams = m.getParameters().size();
@@ -152,10 +153,15 @@ public class KALI {
 		}
 		System.out.println(header.substring(0, header.length()-1));
 		
+		HashSet<String> tests = new HashSet<String>();
+		
+		// Remove empty contexts
+		tcList.removeIf(x -> x.getNCovered() == 0);
+		
 		for (TestContext tc : tcList) {
 			nCovered += tc.getNCovered();
 			try {
-				System.out.println(tc.getTest(false));
+				tests.add(tc.getTest(false));
 			} catch (InterruptedException | SolverException e) {
 				System.out.println(e.getMessage());
 			}
@@ -163,6 +169,9 @@ public class KALI {
 			tc.close();			
 		}
 		totTuples = tuples.getNTuples();
+		
+		// Print the tests
+		tests.forEach(x -> {System.out.println(x);});
 
 		// Print the tests
 		if (verbose) {
@@ -175,7 +184,7 @@ public class KALI {
 		} else {
 			FileWriter fw = new FileWriter(OUTPUT_TXT, true);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(fileName + ";" + tcList.size() + ";" + (System.currentTimeMillis() - start) + ";" + SORT + ";"
+			bw.write(fileName + ";" + tests.size() + ";" + (System.currentTimeMillis() - start) + ";" + SORT + ";"
 					+ ORDER.toString() + ";" + nThreads + ";" + TestContext.SMTSolver);
 			bw.newLine();
 			bw.close();
