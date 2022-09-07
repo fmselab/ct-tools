@@ -111,7 +111,11 @@ public class TestEarlyFiller implements Runnable {
 						// we need to create a tuple because the method that verify
 						// the constraints accepts only the type Vector<Pair<Integer, Integer>>
 						Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>();
+						Vector<Pair<Integer, Integer>> tupleNew = new Vector<Pair<Integer, Integer>>();
 
+						// New test context
+						TestContext tc = new TestContext(baseMDD, m.getnParams(), m.getUseConstraints(), manager);
+						
 						EList<Parameter> parameters = model.getParameters();
 						for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
 							Parameter param = parameters.get(tupleIndex);
@@ -124,8 +128,16 @@ public class TestEarlyFiller implements Runnable {
 								// 1="true"
 								assert ( testParamValue.equals("true") || testParamValue.equals("false") ) : "model parameters must be boolean";
 								
-								tuple.add(
+								tupleNew.add(
 										new Pair<Integer, Integer>(tupleIndex, testParamValue.equals("true") ? 1 : 0));
+							
+								// If also partial tests should be kept, verify assignment per assignment
+								if (!tupleNew.isEmpty() && TestBuilder.KeepPartialOldTests) {
+									if (tc.verifyWithMDD(tupleNew)) { 
+										tc.addTuple(tupleNew);
+										tuple = tupleNew;
+									}
+								}
 							}
 
 						}
@@ -133,28 +145,38 @@ public class TestEarlyFiller implements Runnable {
 						// If we added at least one parameter test value to the tuple, then
 						// we check if the created tuple is valid with the model constraints
 						if (!tuple.isEmpty()) {
-							TestContext tc = new TestContext(baseMDD, m.getnParams(), m.getUseConstraints(), manager);
-
-							// If the tuple is compatible with the constraints, then we add the
-							// add the tuple to the current test context and we add the
-							// current test context to the list of all the test contexts from
-							// which the algorithm of medici will later start executing
-
-							try {
-								if (tc.verifyWithMDD(tuple)) {
-
-									// Adding the tuple to the current test context
-									// Notice: this method also update the mdd of the text context
-									tc.addTuple(tuple);
-
-									// Adding the tc to the shared list of all the test context tcList in a safe way
-									this.tcListMutex.acquire();
-									tcList.add(tc);
-									this.tcListMutex.release();
-
+							
+							// If the test context has already been updated step by step, skip the part
+							// adding the new tuple
+							if (!TestBuilder.KeepPartialOldTests) {
+							
+								// If the tuple is compatible with the constraints, then we add the
+								// add the tuple to the current test context and we add the
+								// current test context to the list of all the test contexts from
+								// which the algorithm of medici will later start executing
+	
+								try {
+									if (tc.verifyWithMDD(tuple)) {
+	
+										// Adding the tuple to the current test context
+										// Notice: this method also update the mdd of the text context
+										tc.addTuple(tuple);
+	
+										// Adding the tc to the shared list of all the test context tcList in a safe way
+										this.tcListMutex.acquire();
+										tcList.add(tc);
+										this.tcListMutex.release();
+	
+									}
+								} catch (InterruptedException e) {
+									System.out.println(e.getMessage());
 								}
-							} catch (InterruptedException e) {
-								System.out.println(e.getMessage());
+								
+							} else {
+								// Adding the tc to the shared list of all the test context tcList in a safe way
+								this.tcListMutex.acquire();
+								tcList.add(tc);
+								this.tcListMutex.release();
 							}
 					}
 				}

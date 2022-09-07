@@ -27,6 +27,9 @@ public class TestBuilder implements Runnable {
 	// if true, the lock while checking if a tuple is implied is only performed with tryAcquire 
 	public static boolean UseTryAcquireForFindImplies = false;
 	
+	// if true, during the TestEarlyFiller process, old test are partially kept if partially compatible
+	public static boolean KeepPartialOldTests = false;
+	
 	/* -----------------------------------
 	 * END OPTIMIZATIONS
 	 * ----------------------------------- */
