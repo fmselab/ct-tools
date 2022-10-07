@@ -9,7 +9,7 @@ Replication package and repository for the paper "Multi-thread Combinatorial Tes
 - `documents`: all data and code used for evaluating the tool performance
 	- `.\experiments.ipynb`: a Jupyter Notebook that contains all the tests and operations used for answering the research questions presented in the paper
 	- `.\KALI - Table Results.pdf`: the table containing the data used for comparing the tuple generation strategies (AS DECLARED, IN ORDER ASC, IN ORDER DESC, RANDOM)
-	- `.\output.csv` and `outputWIndex.csv`: all results of the tests performed on the example benchmarks of the CT-Competition
+	- `.\output.csv` and `.\outputWIndex.csv`: all results of the tests performed on the example benchmarks of the CT-Competition
 	- `.\output_solvers.csv`: the data used for comparing different SMT solvers for test generation
 	- `.\tools_comparison`: the python script and data used for comparing KALI with other tools such as pMEDICI and ACTS
 		- `.\data_aggregator.py`: the python script that aggregates the data of all the execution for a single model
