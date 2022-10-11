@@ -1,5 +1,7 @@
 package kali.main;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
+import ctwedge.util.validator.SMTTestSuiteValidator;
 import kali.safeelements.ExtendedSemaphore;
 import kali.safeelements.SafeQueue;
 import kali.safeelements.TestContext;

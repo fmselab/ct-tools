@@ -195,7 +195,7 @@ public class TestContext {
 		if (!useConstraints)
 			return true;
 
-		return verifyWithSAT(tuple);
+		return verifyWithSMT(tuple);
 	}
 	
 	/**
@@ -223,14 +223,14 @@ public class TestContext {
 	}
 
 	/**
-	 * Verify with the use of the SAT Solver if the tuple is compatible with this test context
+	 * Verify with the use of the SMT Solver if the tuple is compatible with this test context
 	 * 
 	 * @param tuple: the tuple to be checked
 	 * @return true if the tuple is compatible, false otherwise
 	 * @throws InterruptedException 
 	 * @throws SolverException 
 	 */
-	private boolean verifyWithSAT(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
+	private boolean verifyWithSMT(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
@@ -239,8 +239,10 @@ public class TestContext {
 		BooleanFormula tupleFormula = getFormulaFromTuple(tuple);
 		
 		// Try computing the intersection (AND)
-		ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
-		prover.addConstraint(context.getFormulaManager().getBooleanFormulaManager().and(currentFormula, tupleFormula));
+		// ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
+		BooleanFormula newFormula = context.getFormulaManager().getBooleanFormulaManager().and(currentFormula, tupleFormula);
+		prover.push();
+		prover.addConstraint(newFormula);
 		
 		// If the context is not SAT, it means that the tuple can't be added to this context
 		boolean unsat = prover.isUnsat();
@@ -332,7 +334,8 @@ public class TestContext {
 		currentFormula = context.getFormulaManager().getBooleanFormulaManager().and(currentFormula, tupleFormula);
 		
 		// Create the new prover
-		ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
+		// ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
+		prover.push();
 		prover.addConstraint(currentFormula);
 		
 		// Now verify that the cardinality is still greater than 0
