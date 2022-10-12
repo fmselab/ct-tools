@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
+import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 
 import kali.safeelements.TestContext;
 import kali.util.Order;
@@ -23,7 +24,7 @@ import kali.util.Order;
  */
 public class SMTTestBatchExecutor {
 
-	public static int NUM_EXECUTION = 10;
+	public static int NUM_EXECUTION = 3;
 	public static String BASE_FOLDER = "./examples/ctcomp/";
 
 	/**
@@ -69,26 +70,31 @@ public class SMTTestBatchExecutor {
 	}
 
 	public static void main(String[] args) throws IOException, InterruptedException, InvalidConfigurationException {
-		int numThreads = -1;
+		int numThreads = 32;
 		// Find all the files in the test folder
 		File file = new File(BASE_FOLDER);
+		Solvers[] solvers = {Solvers.SMTINTERPOL, Solvers.Z3, Solvers.PRINCESS};
 		File[] fileList = file.listFiles();
 		for (File str : fileList) {
 			// Handle only CTW files
 			if (str.getAbsolutePath().endsWith(".ctw")) {
-				// Try all the type of parameter ordering
-				for (Order o : Order.values()) {
-					KALI.ORDER = o;
-
-					// Repeat the same experiment without sorting the test contexts
-					KALI.SORT = false;
-					for (int i = 0; i < NUM_EXECUTION; i++)
-						callMain(numThreads, 2, str.getAbsolutePath(), false);
-
-					// Repeat the same experiment sorting the test contexts
-					KALI.SORT = true;
-					for (int i = 0; i < NUM_EXECUTION; i++)
-						callMain(numThreads, 2, str.getAbsolutePath(), false);
+				// Try all the solvers
+				for (Solvers s : solvers) {
+					TestContext.SMTSolver = s;
+					// Try all the type of parameter ordering
+					for (Order o : Order.values()) {
+						KALI.ORDER = o;
+	
+						// Repeat the same experiment without sorting the test contexts
+						KALI.SORT = false;
+						for (int i = 0; i < NUM_EXECUTION; i++)
+							callMain(numThreads, 2, str.getAbsolutePath(), false);
+	
+						// Repeat the same experiment sorting the test contexts
+						KALI.SORT = true;
+						for (int i = 0; i < NUM_EXECUTION; i++)
+							callMain(numThreads, 2, str.getAbsolutePath(), false);
+					}
 				}
 			}
 		}
