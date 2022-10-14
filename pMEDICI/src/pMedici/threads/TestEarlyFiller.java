@@ -90,49 +90,28 @@ public class TestEarlyFiller implements Runnable {
 
 			try {
 				oldTestsMutex.acquire();
-
+				
 				// if the Vector of the imported test suite is empty, the thread is stopped
 				if (oldTests.isEmpty()) {
 					oldTestsMutex.release();
 					break;
 				}
-
+				
 				// otherwise we take the last test and we insert it in the queue
 				else {
 					// Extracting the last element
 					Map<String, String> oldTest = oldTests.lastElement();
 					oldTests.remove((oldTests.size() - 1));
-					oldTestsMutex.release();
+					oldTestsMutex.release();				
 
-					/* Debug code */
-					if (PMediciPlusMT.PRINT_DEBUG) {
-						System.out.println("--------------------");
-						System.out.println("Current thread ID: " + Thread.currentThread().getId());
-						oldTest.forEach((name, value) -> {
-							System.out.print(name + ":" + value + ", ");
-						});
-						System.out.println("\n--------------------");
-					}
-
-					// Creating the tuple related to the current iteration
-					// we need to create a tuple because the method that verify
-					// the constraints accepts only the type Vector<Pair<Integer, Integer>>
-					Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>();
-
-					EList<Parameter> parameters = model.getParameters();
-					for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
-						Parameter param = parameters.get(tupleIndex);
-						// if the parameter of the new model is in the old test suite,
-						// its value is added in the corresponding position in the current tuple
-						String testParamValue;
-						if ((testParamValue = oldTest.get(param.getName())) != null) {
-
-							// since we imposed that values must be all boolean, we have only 0="false" or
-							// 1="true"
-							assert (testParamValue.equals("true") || testParamValue.equals("false"))
-									: "model parameters must be boolean";
-
-							tuple.add(new Pair<Integer, Integer>(tupleIndex, testParamValue.equals("true") ? 1 : 0));
+						/* Debug code */
+						if (PMediciPlusMT.PRINT_DEBUG) {
+							System.out.println("--------------------");
+							System.out.println("Current thread ID: " + Thread.currentThread().getId());
+							oldTest.forEach((name, value) -> {
+								System.out.print(name + ":" + value + ", ");
+							});
+							System.out.println("\n--------------------");
 						}
 
 						// Creating the tuple related to the current iteration
@@ -167,8 +146,7 @@ public class TestEarlyFiller implements Runnable {
 									}
 								}
 							}
-						} catch (InterruptedException e) {
-							System.out.println(e.getMessage());
+
 						}
 
 						// If we added at least one parameter test value to the tuple, then
@@ -215,5 +193,6 @@ public class TestEarlyFiller implements Runnable {
 		}
 
 	}
+
 
 }

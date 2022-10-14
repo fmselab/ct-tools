@@ -19,6 +19,7 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
@@ -26,7 +27,6 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
-import ctwedge.util.validator.SMTTestSuiteValidator;
 import kali.safeelements.ExtendedSemaphore;
 import kali.safeelements.SafeQueue;
 import kali.safeelements.TestContext;
@@ -53,9 +53,15 @@ public class KALI {
 	// if verbose print in the console otherwise print the data onfile
 	@Option(name = "-verbose", usage = "verbose output on the console")
 	private boolean verbose = false;
-
-	public static boolean SORT = true;
+	
+	@Option(name = "-sort", usage = "activate sort optimization (if not specified, sort is not activated)") boolean SORT = false;
+	
+	@Option(name = "-order", usage = "parameter ordering during tuple generation [IN_ORDER_SIZE_DESC, IN_ORDER_SIZE_ASC, RANDOM, AS_DECLARED] (if not specified, IN_ORDER_SIZE_DESC is used)")
+	private String ORDER_STR = "IN_ORDER_SIZE_DESC";	
 	public static Order ORDER = Order.IN_ORDER_SIZE_DESC;
+	
+	@Option(name = "-solver", usage = "solver to be used in test context [MATHSAT, SMTINTERPOL, Z3, PRINCESS, BOOLECTOR, CVC4, YICES2] (if not specified, SMTINTERPOL is used)")
+	private String SOLVER = "SMTINTERPOL";	
 
 	// receives other command line parameters than options
 	@Argument
@@ -103,6 +109,12 @@ public class KALI {
 
 		int nCovered = 0;
 		int totTuples = 0;
+		
+		// Set parameter ordering strategy
+		ORDER = Order.valueOf(ORDER_STR);
+		
+		// Set SMT solver to be used
+		TestContext.SMTSolver = Solvers.valueOf(SOLVER);
 
 		// Get current time
 		long start = System.currentTimeMillis();

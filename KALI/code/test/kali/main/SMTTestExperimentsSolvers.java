@@ -41,12 +41,8 @@ public class SMTTestExperimentsSolvers {
 				// Handle only CTW files
 				if (str.getAbsolutePath().endsWith(".ctw")) {
 					// Repeat the same experiment without sorting the test contexts
-					KALI.SORT = false;
-					KALI.ORDER = Order.IN_ORDER_SIZE_ASC;
-					//
 					for (Solvers s : solvers) {
-						TestContext.SMTSolver = s;
-						SMTTestBatchExecutor.callMain(numThreads, 2, str.getAbsolutePath(), false);
+						SMTTestBatchExecutor.callMain(numThreads, 2, str.getAbsolutePath(), false, s.toString(), Order.IN_ORDER_SIZE_ASC.toString(), false);
 					}
 				}
 			}
