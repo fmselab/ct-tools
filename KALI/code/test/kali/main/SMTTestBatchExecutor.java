@@ -33,9 +33,12 @@ public class SMTTestBatchExecutor {
 	 * @param strength: the strength of threads to be used
 	 * @param file: the file containing the combinatorial model
 	 * @param verbose: use verbose output (print on the console) if true, or print on file if false
+	 * @param solver: the solver to be used
+	 * @param ordering: the parameter ordering to be uses
+	 * @param sort: sort test contexts if grue
 	 * @throws IOException
 	 */
-	static void callMain(int threads, int strength, String file, boolean verbose) throws IOException {
+	static void callMain(int threads, int strength, String file, boolean verbose, String solver, String ordering, Boolean sort) throws IOException {
 		// Build the line argument
 		String args = "-n " + threads + (verbose ? " -verbose" : "") + " " + strength + " " + file;
 		System.out.println(Arrays.toString(args.split(" ")));
@@ -54,7 +57,7 @@ public class SMTTestBatchExecutor {
 			// Handle the timeout
 			FileWriter fw = new FileWriter(KALI.OUTPUT_TXT, true);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(file + ";NA;timeout;" + KALI.SORT + ";" + KALI.ORDER.toString() + ";" + threads + ";" + TestContext.SMTSolver);
+			bw.write(file + ";NA;timeout;" + sort + ";" + KALI.ORDER.toString() + ";" + threads + ";" + TestContext.SMTSolver);
 			bw.newLine();
 			bw.close();
 		} catch (InterruptedException e) {
@@ -74,26 +77,22 @@ public class SMTTestBatchExecutor {
 		// Find all the files in the test folder
 		File file = new File(BASE_FOLDER);
 		Solvers[] solvers = {Solvers.SMTINTERPOL, Solvers.Z3, Solvers.PRINCESS};
+		//Solvers[] solvers = {Solvers.Z3};
 		File[] fileList = file.listFiles();
 		for (File str : fileList) {
 			// Handle only CTW files
 			if (str.getAbsolutePath().endsWith(".ctw")) {
 				// Try all the solvers
 				for (Solvers s : solvers) {
-					TestContext.SMTSolver = s;
 					// Try all the type of parameter ordering
 					for (Order o : Order.values()) {
-						KALI.ORDER = o;
-	
 						// Repeat the same experiment without sorting the test contexts
-						KALI.SORT = false;
 						for (int i = 0; i < NUM_EXECUTION; i++)
-							callMain(numThreads, 2, str.getAbsolutePath(), false);
+							callMain(numThreads, 2, str.getAbsolutePath(), false, s.toString(), o.toString(), false);
 	
 						// Repeat the same experiment sorting the test contexts
-						KALI.SORT = true;
 						for (int i = 0; i < NUM_EXECUTION; i++)
-							callMain(numThreads, 2, str.getAbsolutePath(), false);
+							callMain(numThreads, 2, str.getAbsolutePath(), false, s.toString(), o.toString(), true);
 					}
 				}
 			}
