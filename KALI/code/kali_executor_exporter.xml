@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project KALI with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR file Export Wizard-->
+    <!--ANT 1.7 is required-->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="D:/AgHome/workspaces/research/cttools"/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/kali_batchexecutor.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="kali.main.SMTTestBatchExecutor"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ java-smt-3.14.3.jar common-0.3000-529-g6152d88.jar guava-31.1-jre.jar failureaccess-1.0.1.jar listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar error_prone_annotations-2.11.0.jar j2objc-annotations-1.3.jar checker-qual-3.22.0.jar spotbugs-annotations-4.7.0.jar jsr305-3.0.2.jar smtinterpol-2.5-1242-g5c50fb6d.jar princess_2.13-2022-07-01.jar scala-library-2.13.8.jar princess-parser_2.13-2022-07-01.jar princess-smt-parser_2.13-2022-07-01.jar scala-parser-combinators_2.13-1.1.2.jar java-cup-0.11a.jar animal-sniffer-annotations-1.18.jar org.eclipse.xtext.xbase.web-2.28.0.jar org.eclipse.xtext.web-2.28.0.jar org.eclipse.xtext.ide-2.28.0.jar org.eclipse.xtext-2.28.0.jar org.eclipse.xtext.util-2.28.0.jar reload4j-1.2.19.jar org.eclipse.equinox.common-3.13.0.jar org.eclipse.osgi-3.16.0.jar org.eclipse.emf.ecore.xmi-2.16.0.jar guice-5.0.1.jar javax.inject-1.jar aopalliance-1.0.jar antlr-runtime-3.2.jar org.eclipse.emf.ecore.change-2.14.0.jar org.eclipse.emf.ecore-2.28.0.jar org.eclipse.emf.common-2.26.0.jar org.eclipse.lsp4j-0.15.0.jar org.eclipse.lsp4j.generator-0.15.0.jar org.eclipse.lsp4j.jsonrpc-0.15.0.jar org.eclipse.xtext.common.types-2.28.0.jar asm-9.3.jar classgraph-4.8.138.jar org.eclipse.xtext.xbase.ide-2.28.0.jar org.eclipse.xtext.xbase-2.28.0.jar org.eclipse.xtext.web.servlet-2.28.0.jar gson-2.9.0.jar org.eclipse.xtend.lib-2.28.0.jar org.eclipse.xtext.xbase.lib-2.28.0.jar org.eclipse.xtend.lib.macro-2.28.0.jar jna-5.12.1.jar poi-5.2.3.jar commons-codec-1.15.jar commons-collections4-4.4.jar commons-math3-3.6.1.jar commons-io-2.11.0.jar SparseBitSet-1.2.jar log4j-api-2.18.0.jar org.eclipse.core.runtime-3.7.0.jar org.eclipse.osgi-3.7.1.jar org.eclipse.equinox.common-3.6.0.jar org.eclipse.core.jobs-3.5.100.jar org.eclipse.equinox.registry-3.5.101.jar org.eclipse.equinox.preferences-3.4.1.jar org.eclipse.core.contenttype-3.4.100.jar org.eclipse.equinox.app-1.3.100.jar log4j-core-2.19.0.jar args4j-2.33.jar javasmt-solver-z3-4.10.1-com.microsoft.z3.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="${dir.jarfile}/target/test-classes"/>
+            <fileset dir="${dir.jarfile}/target/classes"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/sosy-lab/java-smt/3.14.3" includes="java-smt-3.14.3.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/sosy-lab/common/0.3000-529-g6152d88" includes="common-0.3000-529-g6152d88.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/guava/guava/31.1-jre" includes="guava-31.1-jre.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/guava/failureaccess/1.0.1" includes="failureaccess-1.0.1.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava" includes="listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/errorprone/error_prone_annotations/2.11.0" includes="error_prone_annotations-2.11.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/j2objc/j2objc-annotations/1.3" includes="j2objc-annotations-1.3.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/checkerframework/checker-qual/3.22.0" includes="checker-qual-3.22.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/github/spotbugs/spotbugs-annotations/4.7.0" includes="spotbugs-annotations-4.7.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/code/findbugs/jsr305/3.0.2" includes="jsr305-3.0.2.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/de/uni-freiburg/informatik/ultimate/smtinterpol/2.5-1242-g5c50fb6d" includes="smtinterpol-2.5-1242-g5c50fb6d.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/io/github/uuverifiers/princess_2.13/2022-07-01" includes="princess_2.13-2022-07-01.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/scala-lang/scala-library/2.13.8" includes="scala-library-2.13.8.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/io/github/uuverifiers/princess-parser_2.13/2022-07-01" includes="princess-parser_2.13-2022-07-01.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/io/github/uuverifiers/princess-smt-parser_2.13/2022-07-01" includes="princess-smt-parser_2.13-2022-07-01.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/scala-lang/modules/scala-parser-combinators_2.13/1.1.2" includes="scala-parser-combinators_2.13-1.1.2.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/net/sf/squirrel-sql/thirdparty-non-maven/java-cup/0.11a" includes="java-cup-0.11a.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/codehaus/mojo/animal-sniffer-annotations/1.18" includes="animal-sniffer-annotations-1.18.jar"/>
+            <fileset dir="D:/AgHome/progettidaSVNGIT/ricerca/ct-tools/CTWedge/ctwedge.parent/ctwedge/target/classes"/>
+            <fileset dir="D:/AgHome/progettidaSVNGIT/ricerca/ct-tools/CTWedge/ctwedge.parent/ctwedge.util/target/classes"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.xbase.web/2.28.0" includes="org.eclipse.xtext.xbase.web-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.web/2.28.0" includes="org.eclipse.xtext.web-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.ide/2.28.0" includes="org.eclipse.xtext.ide-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext/2.28.0" includes="org.eclipse.xtext-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.util/2.28.0" includes="org.eclipse.xtext.util-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/ch/qos/reload4j/reload4j/1.2.19" includes="reload4j-1.2.19.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/platform/org.eclipse.equinox.common/3.13.0" includes="org.eclipse.equinox.common-3.13.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/platform/org.eclipse.osgi/3.16.0" includes="org.eclipse.osgi-3.16.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/emf/org.eclipse.emf.ecore.xmi/2.16.0" includes="org.eclipse.emf.ecore.xmi-2.16.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/inject/guice/5.0.1" includes="guice-5.0.1.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/javax/inject/javax.inject/1" includes="javax.inject-1.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/aopalliance/aopalliance/1.0" includes="aopalliance-1.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/antlr/antlr-runtime/3.2" includes="antlr-runtime-3.2.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/emf/org.eclipse.emf.ecore.change/2.14.0" includes="org.eclipse.emf.ecore.change-2.14.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/emf/org.eclipse.emf.ecore/2.28.0" includes="org.eclipse.emf.ecore-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/emf/org.eclipse.emf.common/2.26.0" includes="org.eclipse.emf.common-2.26.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/lsp4j/org.eclipse.lsp4j/0.15.0" includes="org.eclipse.lsp4j-0.15.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/lsp4j/org.eclipse.lsp4j.generator/0.15.0" includes="org.eclipse.lsp4j.generator-0.15.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/lsp4j/org.eclipse.lsp4j.jsonrpc/0.15.0" includes="org.eclipse.lsp4j.jsonrpc-0.15.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.common.types/2.28.0" includes="org.eclipse.xtext.common.types-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/ow2/asm/asm/9.3" includes="asm-9.3.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/io/github/classgraph/classgraph/4.8.138" includes="classgraph-4.8.138.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.xbase.ide/2.28.0" includes="org.eclipse.xtext.xbase.ide-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.xbase/2.28.0" includes="org.eclipse.xtext.xbase-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.web.servlet/2.28.0" includes="org.eclipse.xtext.web.servlet-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/google/code/gson/gson/2.9.0" includes="gson-2.9.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtend/org.eclipse.xtend.lib/2.28.0" includes="org.eclipse.xtend.lib-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtext/org.eclipse.xtext.xbase.lib/2.28.0" includes="org.eclipse.xtext.xbase.lib-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/xtend/org.eclipse.xtend.lib.macro/2.28.0" includes="org.eclipse.xtend.lib.macro-2.28.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/net/java/dev/jna/jna/5.12.1" includes="jna-5.12.1.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/apache/poi/poi/5.2.3" includes="poi-5.2.3.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/commons-codec/commons-codec/1.15" includes="commons-codec-1.15.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/apache/commons/commons-collections4/4.4" includes="commons-collections4-4.4.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/apache/commons/commons-math3/3.6.1" includes="commons-math3-3.6.1.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/commons-io/commons-io/2.11.0" includes="commons-io-2.11.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/com/zaxxer/SparseBitSet/1.2" includes="SparseBitSet-1.2.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/apache/logging/log4j/log4j-api/2.18.0" includes="log4j-api-2.18.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/osgi/org.eclipse.osgi/3.7.1" includes="org.eclipse.osgi-3.7.1.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/equinox/org.eclipse.equinox.common/3.6.0" includes="org.eclipse.equinox.common-3.6.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/core/org.eclipse.core.jobs/3.5.100" includes="org.eclipse.core.jobs-3.5.100.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/equinox/org.eclipse.equinox.registry/3.5.101" includes="org.eclipse.equinox.registry-3.5.101.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/equinox/org.eclipse.equinox.preferences/3.4.1" includes="org.eclipse.equinox.preferences-3.4.1.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/core/org.eclipse.core.contenttype/3.4.100" includes="org.eclipse.core.contenttype-3.4.100.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/eclipse/equinox/org.eclipse.equinox.app/1.3.100" includes="org.eclipse.equinox.app-1.3.100.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/apache/logging/log4j/log4j-core/2.19.0" includes="log4j-core-2.19.0.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/args4j/args4j/2.33" includes="args4j-2.33.jar"/>
+            <zipfileset dir="D:/programmi/maven/repo/org/sosy-lab/javasmt-solver-z3/4.10.1" includes="javasmt-solver-z3-4.10.1-com.microsoft.z3.jar"/>
+        </jar>
+    </target>
+</project>

@@ -1,7 +1,5 @@
 package kali.main;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
