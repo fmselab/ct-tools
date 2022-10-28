@@ -187,13 +187,9 @@ public class PMedici implements Callable<Integer> {
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
-
 		String tsAsCSV = Operations.translateOutputToString(testCases, model);
-		TestSuite testSuite = new TestSuite(tsAsCSV, model);
 		System.out.println(tsAsCSV);
-		testSuite.setStrength(strength);
 		long generationTime = (System.currentTimeMillis() - start);
-		testSuite.setGeneratorTime(generationTime);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();
@@ -201,13 +197,16 @@ public class PMedici implements Callable<Integer> {
 			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println("Time required for test suite generation: " + generationTime + " ms");
-			System.out.println("Number of tests generated before duplicate removal: " + tcList.size());
-			System.out.println("Number of tests generated after duplicate removal: " + testSuite.getTests().size());
 		}
 
 		// Join the tuple filler thread
 		tFillerThread.join();
-		// return the test suite
+		
+		// Create and return the test suite
+		TestSuite testSuite = new TestSuite(tsAsCSV, model);
+		testSuite.setStrength(strength);
+		testSuite.setGeneratorTime(generationTime);
+		
 		return testSuite;
 	}
 
