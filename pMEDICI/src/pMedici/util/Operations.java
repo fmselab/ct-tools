@@ -145,7 +145,7 @@ public class Operations {
 
 	/**
 	 * Updates the MDD by inserting all the constraints previously loaded in the
-	 * test mdoel
+	 * test model
 	 * 
 	 * @param manager:  the MDD manager
 	 * @param m:        the test model
