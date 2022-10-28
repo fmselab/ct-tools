@@ -299,7 +299,6 @@ public class TestContext {
 	 */
 	public String getTest(boolean printVector) {
 		String res = "";
-		// res = "[ ";
 		
 		if (printVector || !useConstraints || isComplete()) {
 			for (int i : test)
@@ -309,8 +308,6 @@ public class TestContext {
 				res += i + " ";
 			}
 		}
-		
-		// res += " --> T]";
 		
 		return res;
 	}
