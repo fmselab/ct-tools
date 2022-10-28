@@ -44,7 +44,6 @@ public class PMediciTestReduce {
 		Logger.getLogger(ParameterSwitchToPairStrings.class).setLevel(Level.OFF);
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
-		pMedici.PRINT_DEBUG = true;
 		pMedici.verb = true;
 		TestBuilder.LockTCOnlyOnWriting = false;
 		TestSuite testsuite = pMedici.generateTests(fileName,2, 1);
