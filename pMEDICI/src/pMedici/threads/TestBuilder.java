@@ -82,6 +82,11 @@ public class TestBuilder implements Runnable {
 	MDDManager manager;
 	
 	/**
+	 * Use verbose mode?
+	 */
+	boolean verb;
+	
+	/**
 	 * Builds a new test builder
 	 * 
 	 * @param baseMDD: the MDD containing the constraints
@@ -92,8 +97,9 @@ public class TestBuilder implements Runnable {
 	 * @param useConstraints: use the constraints?
 	 * @param manager: the MDD Manager
 	 * @param testContextMutex: the mutex semaphore for interacting with the test context list
+	 * @param verb: use verbose mode?
 	 */
-	public TestBuilder(int baseMDD, SafeQueue safeQueue, Vector<TestContext> tcList, boolean sort, int nParam, boolean useConstraints, MDDManager manager, ExtendedSemaphore testContextMutex) {
+	public TestBuilder(int baseMDD, SafeQueue safeQueue, Vector<TestContext> tcList, boolean sort, int nParam, boolean useConstraints, MDDManager manager, ExtendedSemaphore testContextMutex, boolean verb) {
 		this.baseMDD = baseMDD;
 		this.safeQueue = safeQueue;
 		this.tcList = tcList;
@@ -103,6 +109,7 @@ public class TestBuilder implements Runnable {
 		this.nUncoverable = 0;
 		this.useConstraints = useConstraints;
 		this.manager = manager;
+		this.verb = verb;
 	}
 	
 	/**
@@ -189,7 +196,7 @@ public class TestBuilder implements Runnable {
 				// If a tuple has been extracted
 				// Try to find a TestContext which implies this tuple
 				if (findImplied(tuple)) {
-					if (PMedici.PRINT_DEBUG) {
+					if (verb) {
 						System.out.println("The tuple " + Operations.printTuple(tuple) + " is already implied");
 					}
 					continue;
@@ -228,7 +235,7 @@ public class TestBuilder implements Runnable {
 				// Find if an already existing test context can cover the tuple
 				try {
 					if (findCompatible(tuple, orderedTcList)) {
-						if (PMedici.PRINT_DEBUG)
+						if (verb)
 							System.out.println("The tuple " + Operations.printTuple(tuple) + " has been covered by an already existing test context");
 						continue;
 					}
@@ -260,11 +267,11 @@ public class TestBuilder implements Runnable {
 						tcList.add(tc);
 						this.testContextMutex.release();
 						
-						if (PMedici.PRINT_DEBUG)
+						if (verb)
 							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
 						empty = null; // empty is no longer empty
 					} else {
-						if (PMedici.PRINT_DEBUG)
+						if (verb)
 							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " is not coverable");
 						nUncoverable++;
 						empty = tc; // empty is usable if needed

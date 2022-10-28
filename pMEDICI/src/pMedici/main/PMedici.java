@@ -171,7 +171,7 @@ public class PMedici implements Callable<Integer> {
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
 			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, m.getnParams(),
-					m.getUseConstraints(), manager, testContextsMutex));
+					m.getUseConstraints(), manager, testContextsMutex, verb));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
