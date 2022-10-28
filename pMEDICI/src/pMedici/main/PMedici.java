@@ -107,7 +107,7 @@ public class PMedici implements Callable<Integer> {
 		model = Utility.loadModelFromPath(fileName);
 		MediciCITGenerator gen = new MediciCITGenerator();
 		MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
-		return gen.translateModel(model, false);
+		return gen.translateModel(model, model.getConstraints().size() == 0);
 	}
 
 	/**
