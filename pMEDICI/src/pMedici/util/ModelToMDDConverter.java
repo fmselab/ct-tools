@@ -68,7 +68,6 @@ public class ModelToMDDConverter {
 	 * Returns the list of children for a given node
 	 * 
 	 * @param dim: the size of the variable
-	 * @param elem: the element to be set as accepted
 	 * @param nextNode: the next node 
 	 * @return the list of children for a given node
 	 */
