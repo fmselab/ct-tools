@@ -128,7 +128,7 @@ public class PMedici implements Callable<Integer> {
 		if (!fileName.equals("")) {
 			mediciModel = buildMediciModel(fileName);
 		} else {
-			assert false : "what to do if the filename is empty???";
+			assert false : "You must specify the name of the file containing the CTWedge model";
 		}
 		// Read the combinatorial model and get the MDD representing the model without
 		// constraints
