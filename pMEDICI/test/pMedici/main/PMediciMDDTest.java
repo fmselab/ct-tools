@@ -57,9 +57,6 @@ public class PMediciMDDTest {
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
 		SafeQueue.QUEUE_SIZE = 40;
-		pMedici.verb = true;
-		pMedici.generateTests("examples/MVM.ctw", 2, 0);
-		SafeQueue.QUEUE_SIZE = 100;
 		pMedici.generateTests("examples/MVM.ctw", 2, 0);
 	}
 	
@@ -72,6 +69,15 @@ public class PMediciMDDTest {
 		pMedici.verb = true;
 		pMedici.generateTests("examples/CTComp/MCAC_5.ctw", 2, 0);
 		SafeQueue.QUEUE_SIZE = 100;
+		pMedici.generateTests("examples/CTComp/MCAC_5.ctw", 2, 0);
+	}
+	
+	@Test
+	public void test5() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici pMedici = new PMedici();
+		pMedici.verb = false;
 		pMedici.generateTests("examples/CTComp/MCAC_5.ctw", 2, 0);
 	}
 

@@ -123,6 +123,9 @@ public class PMedici implements Callable<Integer> {
 	 */
 	public TestSuite generateTests(String fileName, int strength, int nThreads)
 			throws IOException, InterruptedException {
+		// Get current time
+		long start = System.currentTimeMillis();
+		
 		String mediciModel = "";
 		// Convert the model from CTWedge to Medici format
 		if (!fileName.equals("")) {
@@ -130,9 +133,17 @@ public class PMedici implements Callable<Integer> {
 		} else {
 			assert false : "You must specify the name of the file containing the CTWedge model";
 		}
+		
+		// FIXME remove
+		// System.out.println("Time after first translation: " + (System.currentTimeMillis() - start));
+		
 		// Read the combinatorial model and get the MDD representing the model without
 		// constraints
 		TestModel m = Operations.readModelFromReader(new BufferedReader(new StringReader(mediciModel)));
+		
+		// FIXME remove
+		// System.out.println("Time after second translation: " + (System.currentTimeMillis() - start));
+		
 		// Set the strength
 		m.setStrength(strength);
 
@@ -142,11 +153,11 @@ public class PMedici implements Callable<Integer> {
 		int nCovered = 0;
 		int totTuples = 0;
 
-		// Get current time
-		long start = System.currentTimeMillis();
-
 		// Add to the baseNode the constraints
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
+		
+		// FIXME remove
+		// System.out.println("Time after MDD translation: " + (System.currentTimeMillis() - start));
 
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
@@ -184,12 +195,18 @@ public class PMedici implements Callable<Integer> {
 			nCovered += tc.getNCovered();
 			testCases.add(tc.getTest(false));
 		}
+		
+		// FIXME remove
+		// System.out.println("Time after test generation: " + (System.currentTimeMillis() - start));
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
 		String tsAsCSV = Operations.translateOutputToString(testCases, model);
 		System.out.println(tsAsCSV);
 		long generationTime = (System.currentTimeMillis() - start);
+		
+		// FIXME remove
+		// System.out.println("Total time: " + generationTime);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();
