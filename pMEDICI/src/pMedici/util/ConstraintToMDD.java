@@ -1,5 +1,6 @@
 package pMedici.util;
 
+import java.util.List;
 import java.util.Stack;
 
 import org.colomoto.mddlib.MDDManager;
@@ -8,8 +9,8 @@ import org.eclipse.xtext.EcoreUtil2;
 
 import ctwedge.ctWedge.AndExpression;
 import ctwedge.ctWedge.AtomicPredicate;
-import ctwedge.ctWedge.Bool;
 import ctwedge.ctWedge.CitModel;
+import ctwedge.ctWedge.Constraint;
 import ctwedge.ctWedge.CtWedgeFactory;
 import ctwedge.ctWedge.EqualExpression;
 import ctwedge.ctWedge.ImpliesExpression;
@@ -34,15 +35,18 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	private MDDManager manager;
 	private CitModel model; 
 	private Stack<Integer> tPList;
+	private int[] bounds;
 	
 	public ConstraintToMDD(CitModel citModel, MDDManager manager) {
 		this.model = citModel;
 		valConverter = new ParameterValuesToInt(citModel);
 		this.manager = manager;
+		this.tPList = new Stack<Integer>();	
+		this.bounds = Operations.getBounds(model);
 	}
 	
 	@Override
-	public Void caseConstraint(ctwedge.ctWedge.Constraint object) {
+	public Void caseConstraint(Constraint object) {
 		tPList = new Stack<Integer>();
 		doSwitch(object);
 		return null; 
@@ -140,19 +144,17 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 
 	@Override
 	public Void caseAtomicPredicate(AtomicPredicate x) {
-		// in case the predicate is not in an EqualExpression
-		String name = x.getName();
-		Parameter paramByName = valConverter.getParamByName(name);
-		if (paramByName instanceof Bool) {
-			int base = valConverter.get(name);
-			int value = base + ParameterElementsGetterAsStrings.instance.doSwitch(paramByName).indexOf(ParameterElementsGetterAsStrings.TRUE_AS_STRING);
-			assert value != -1;
+		for (Parameter p : model.getParameters()) {
+			List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
+			int value = values.indexOf(x.getName());
 			int newNode;
-			try {
-				newNode = Operations.getTupleFromParameter(value, Operations.getBounds(model), model.getParameters().size(), manager);
-				tPList.push(newNode);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if (value != -1) {
+				try {
+					newNode = Operations.getTupleFromParameter(value, bounds, model.getParameters().size(), manager);
+					tPList.push(newNode);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return null;
