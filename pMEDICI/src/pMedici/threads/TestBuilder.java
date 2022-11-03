@@ -207,35 +207,24 @@ public class TestBuilder implements Runnable {
 				
 				// If no implied is found, then order the tests contexts in a way that the most different one (i.e., the best one) is the first
 				Vector<TestContext> orderedTcList = new Vector<TestContext>();
-				//try {
-					//this.testContextMutex.acquire();
-					orderedTcList = (Vector<TestContext>) tcList.clone();
-					orderedTcList = orderedTcList.stream().filter(tc -> tc.isCompatiblePartialCheck(tuple)).collect(Collectors.toCollection(Vector::new));
-					/*for (TestContext tc : tcList) {
-						if (tc.isCompatiblePartialCheck(tuple)) {
-							orderedTcList.add(tc);
-						}
-					}
-					this.testContextMutex.release();*/
-					if (orderedTcList.size() > 0 && sort) {
-						// Sort the orderedTestContext list
-						orderedTcList.sort(new Comparator<TestContext>() {
-							@Override
-							public int compare(TestContext o1, TestContext o2) {
-								try {
-									int o2NPaths = o2.getNPaths();
-									int o1NPaths = o1.getNPaths();
-									return Integer.compare(o2NPaths - o2.getNPaths(tuple), o1NPaths - o1.getNPaths(tuple));
-								} catch (InterruptedException e) {
-									System.out.println(e.getMessage());
-								}
-								return -1;
+				orderedTcList = (Vector<TestContext>) tcList.clone();
+				orderedTcList = orderedTcList.stream().filter(tc -> tc.isCompatiblePartialCheck(tuple)).collect(Collectors.toCollection(Vector::new));
+				if (orderedTcList.size() > 0 && sort) {
+					// Sort the orderedTestContext list
+					orderedTcList.sort(new Comparator<TestContext>() {
+						@Override
+						public int compare(TestContext o1, TestContext o2) {
+							try {
+								int o2NPaths = o2.getNPaths();
+								int o1NPaths = o1.getNPaths();
+								return Integer.compare(o2NPaths - o2.getNPaths(tuple), o1NPaths - o1.getNPaths(tuple));
+							} catch (InterruptedException e) {
+								System.out.println(e.getMessage());
 							}
-						});
-					}					
-				/*} catch (InterruptedException e) {
-					System.out.println(e.getMessage());
-				}*/
+							return -1;
+						}
+					});
+				}					
 				
 				// Find if an already existing test context can cover the tuple
 				try {
