@@ -238,7 +238,7 @@ public class Operations {
 			Stack<Integer> tPList = new Stack<Integer>();
 			// Get constraints from the string
 			Constraint cList = getConstraintFromString(translator.doSwitch(c));
-			while (!cList.constraint.isEmpty()) {
+			while (!cList.constraint.isEmpty()) { 
 				ConstraintElement ce = cList.getElement();
 				if (ce.isOperator()) {
 					int newNode;

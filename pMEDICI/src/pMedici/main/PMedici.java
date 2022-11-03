@@ -153,9 +153,11 @@ public class PMedici implements Callable<Integer> {
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		boolean sort = false;
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
-		for (int i = 0; i < nThreads; i++) {
-			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, model.getParameters().size(),
-					model.getConstraints().size()>0, manager, testContextsMutex, verb));
+		int nParams = model.getParameters().size();
+		boolean useConstraints = model.getConstraints().size()>0;
+		for (int i = 0; i < nThreads; i++) {			
+			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, nParams,
+					useConstraints, manager, testContextsMutex, verb));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
