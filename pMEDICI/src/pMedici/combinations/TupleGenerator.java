@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import ctwedge.ctWedge.CitModel;
+import pMedici.util.Operations;
 import pMedici.util.Pair;
 import pMedici.util.TestModel;
 
@@ -26,6 +28,19 @@ public class TupleGenerator {
 			map.put(param, values);
 		}
 		return getAllKWiseCombination(map, m.getStrength());
+	}
+	
+	public static Iterator<List<Pair<Integer, Integer>>> getAllKWiseCombination(CitModel m, int strength) {
+		Map<Integer, List<Integer>> map = new HashMap<>();
+		int[] bounds = Operations.getBounds(m);
+		for (int param = 0; param < bounds.length; param++) {
+			Vector<Integer> values = new Vector<>();
+			for (int val = 0; val < bounds[param]; val++) {
+				values.add(val);
+			}
+			map.put(param, values);
+		}
+		return getAllKWiseCombination(map, strength);
 	}
 
 	/**

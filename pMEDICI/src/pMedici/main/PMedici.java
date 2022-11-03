@@ -1,8 +1,6 @@
 package pMedici.main;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +24,6 @@ import pMedici.threads.TupleFiller;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
-import pMedici.util.TestModel;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -119,21 +116,12 @@ public class PMedici implements Callable<Integer> {
 		long start = System.currentTimeMillis();
 		CitModel model = null;
 		
-		String mediciModel = "";
-		// Convert the model from CTWedge to Medici format
+		// Read the model in CTWedge format
 		if (!fileName.equals("")) {
 			model = Utility.loadModelFromPath(fileName);
-			mediciModel = buildMediciModel(model);
 		} else {
 			assert false : "You must specify the name of the file containing the CTWedge model";
 		}
-		
-		// Read the combinatorial model and get the MDD representing the model without
-		// constraints
-		TestModel m = Operations.readModelFromReader(new BufferedReader(new StringReader(mediciModel)));
-		
-		// Set the strength
-		m.setStrength(strength);
 
 		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
@@ -142,13 +130,13 @@ public class PMedici implements Callable<Integer> {
 		int totTuples = 0;
 
 		// Add to the baseNode the constraints
-		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
+		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
 		
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
 
 		// Combination generator
-		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(m);
+		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(model, strength);
 
 		// Start the filler thread
 		TupleFiller tFiller = new TupleFiller(tg, tuples);
@@ -166,8 +154,8 @@ public class PMedici implements Callable<Integer> {
 		boolean sort = false;
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
-			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, m.getnParams(),
-					m.getUseConstraints(), manager, testContextsMutex, verb));
+			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, model.getParameters().size(),
+					model.getConstraints().size()>0, manager, testContextsMutex, verb));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
