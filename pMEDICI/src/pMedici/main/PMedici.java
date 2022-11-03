@@ -169,6 +169,8 @@ public class PMedici implements Callable<Integer> {
 		TupleFiller tFiller = new TupleFiller(tg, tuples);
 		Thread tFillerThread = new Thread(tFiller);
 		tFillerThread.start();
+		
+		while(!tuples.full()) {}
 
 		// Start all the TestBuilder threads
 		if (nThreads == 0)
