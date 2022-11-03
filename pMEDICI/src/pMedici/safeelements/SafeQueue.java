@@ -2,6 +2,7 @@ package pMedici.safeelements;
 
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 
 import pMedici.util.Pair;
 
@@ -9,6 +10,7 @@ public class SafeQueue {
 	
 	ConcurrentLinkedQueue<Vector<Pair<Integer, Integer>>> tupleList;
 	Boolean finished_inserting;
+	Semaphore isFull;
 	int nTuples;
 	
 	/**
@@ -23,6 +25,7 @@ public class SafeQueue {
 		finished_inserting = false;
 		tupleList = new ConcurrentLinkedQueue<Vector<Pair<Integer, Integer>>>();
 		nTuples = 0;
+		isFull = new Semaphore(QUEUE_SIZE);
 	}
 		
 	/**
@@ -31,8 +34,13 @@ public class SafeQueue {
 	 * @param tuple: the tuple to be added in the queue
 	 */
 	public void insert(Vector<Pair<Integer, Integer>> tuple) {
-		tupleList.add(tuple);
-		nTuples++;
+		try {
+			isFull.acquire();
+			tupleList.add(tuple);
+			nTuples++;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -41,7 +49,8 @@ public class SafeQueue {
 	 * @param tuple: the tuple to be added in the queue
 	 */
 	public void reinsert(Vector<Pair<Integer, Integer>> tuple) {
-		tupleList.add(tuple);
+		isFull.release();
+		tupleList.add(tuple);		
 	}
 
 	/**
@@ -50,6 +59,9 @@ public class SafeQueue {
 	 * @return the new tuple if available, otherwise returns null
 	 */
 	public Vector<Pair<Integer, Integer>> get() {
+		if (tupleList.size() > 0) {
+			isFull.release();
+		}
 		return tupleList.poll();
 	}
 

@@ -29,6 +29,7 @@ import ctwedge.util.ModelUtils;
 import ctwedge.util.TestSuite;
 import ctwedge.util.validator.SMTTestSuiteValidator;
 import pMedici.main.PMedici;
+import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
 import pMedici.threads.TestBuilder;
 
@@ -55,7 +56,38 @@ public class PMediciMDDTest {
 		// For avoid the AssertionError
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
+		SafeQueue.QUEUE_SIZE = 40;
 		pMedici.generateTests("examples/MVM.ctw", 2, 0);
+	}
+	
+	@Test
+	public void test4() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici pMedici = new PMedici();
+		SafeQueue.QUEUE_SIZE = 40;
+		pMedici.verb = true;
+		pMedici.generateTests("examples/CTComp/MCAC_5.ctw", 2, 0);
+		SafeQueue.QUEUE_SIZE = 100;
+		pMedici.generateTests("examples/CTComp/MCAC_5.ctw", 2, 0);
+	}
+	
+	@Test
+	public void test5() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici pMedici = new PMedici();
+		pMedici.verb = false;
+		pMedici.generateTests("examples/CTComp/MCAC_5.ctw", 2, 0);
+	}
+	
+	@Test
+	public void test6() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici pMedici = new PMedici();
+		pMedici.verb = false;
+		pMedici.generateTests("E:/GitHub/CIT_Benchmark_Generator/Benchmarks_FollowUp_CITCompetition_2022/CTWedge/MCAC_5.ctw", 2, 0);
 	}
 
 	@Test

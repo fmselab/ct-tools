@@ -1,14 +1,11 @@
 package pMedici.util;
 
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -18,10 +15,10 @@ import java.util.stream.Collectors;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
-import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
+import ctwedge.generator.medici.ConstraintToMediciIds;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.ParameterValuesToInt;
 import pMedici.safeelements.ExtendedSemaphore;
@@ -145,7 +142,7 @@ public class Operations {
 
 	/**
 	 * Updates the MDD by inserting all the constraints previously loaded in the
-	 * test mdoel
+	 * test model
 	 * 
 	 * @param manager:  the MDD manager
 	 * @param m:        the test model
@@ -217,6 +214,103 @@ public class Operations {
 			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
 		}
 		return baseNode;
+	}
+	
+	/**
+	 * Updates the MDD by inserting all the constraints previously loaded in the
+	 * test model
+	 * 
+	 * @param manager:  the MDD manager
+	 * @param m:        the test model
+	 * @param baseNode: the base MDD
+	 * @return the identifier of the MDD
+	 * @throws InterruptedException
+	 */
+	public static int updateMDDWithConstraints(MDDManager manager, CitModel m, int baseNode)
+			throws InterruptedException {
+		// Translator
+		ConstraintToMediciIds translator = new ConstraintToMediciIds(m);
+		int nParams = m.getParameters().size();
+		int[] bounds = Operations.getBounds(m);
+		// Fetch all the constraints
+		for (ctwedge.ctWedge.Constraint c : m.getConstraints()) {
+			// Fetch all the elements inside the constraint
+			Stack<Integer> tPList = new Stack<Integer>();
+			// Get constraints from the string
+			Constraint cList = getConstraintFromString(translator.doSwitch(c));
+			while (!cList.constraint.isEmpty()) { 
+				ConstraintElement ce = cList.getElement();
+				if (ce.isOperator()) {
+					int newNode;
+					int n1 = -1;
+					int n2 = -1;
+					switch (ce.operator) {
+					case "+":
+						// OR Operation
+						assert (tPList.size() >= 2);
+						n1 = tPList.pop();
+						n2 = tPList.pop();
+						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+						newNode = MDDBaseOperators.OR.combine(manager, n1, n2);
+						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+						tPList.push(newNode);
+						break;
+					case "*":
+						// AND Operation
+						assert (tPList.size() >= 2);
+						n1 = tPList.pop();
+						n2 = tPList.pop();
+						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+						newNode = MDDBaseOperators.AND.combine(manager, n1, n2);
+						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+						tPList.push(newNode);
+						break;
+					case "-":
+						// NOT Operation
+						assert (tPList.size() >= 1);
+						n1 = tPList.pop();
+						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+						newNode = manager.not(n1);
+						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+						tPList.push(newNode);
+						break;
+					}
+				} else {
+					// Convert the value in a MDD and store it into a list
+					int newNode = getTupleFromParameter(ce.value, bounds, nParams, manager);
+					tPList.push(newNode);
+				}
+			}
+
+			// At the end of the single constraint management, each constraint must
+			// correspond to a single node
+			if (tPList.size() != 1) {
+				System.out.println(tPList.size() + " - ERROR IN CONSTRAINTS DEFINITION \n");
+				return -1;
+			}
+
+			// Now the top of the stack must contain the complete constraint representation
+			// and we can update the base node
+			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+			baseNode = MDDBaseOperators.AND.combine(manager, baseNode, tPList.pop());
+			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+		}
+		return baseNode;
+	}
+
+	/**
+	 * Returns the bounds vector from a model
+	 * @param m the cit model
+	 * @return the bounds vector from a model
+	 */
+	public static int[] getBounds(CitModel m) {
+		int[] res = new int[m.getParameters().size()];
+		int i = 0;
+		for (Parameter p : m.getParameters()) {
+			res[i] = ParameterSize.eInstance.doSwitch(p);
+			i++;
+		}
+		return res;
 	}
 
 	/**
