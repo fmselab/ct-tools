@@ -1,7 +1,10 @@
 package pMedici.threads;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Vector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.colomoto.mddlib.MDDManager;
 
@@ -204,13 +207,16 @@ public class TestBuilder implements Runnable {
 				
 				// If no implied is found, then order the tests contexts in a way that the most different one (i.e., the best one) is the first
 				Vector<TestContext> orderedTcList = new Vector<TestContext>();
-				try {
-					this.testContextMutex.acquire();
-					for (TestContext tc : tcList) {
+				//try {
+					//this.testContextMutex.acquire();
+					orderedTcList = (Vector<TestContext>) tcList.clone();
+					orderedTcList = orderedTcList.stream().filter(tc -> tc.isCompatiblePartialCheck(tuple)).collect(Collectors.toCollection(Vector::new));
+					/*for (TestContext tc : tcList) {
 						if (tc.isCompatiblePartialCheck(tuple)) {
 							orderedTcList.add(tc);
 						}
 					}
+					this.testContextMutex.release();*/
 					if (orderedTcList.size() > 0 && sort) {
 						// Sort the orderedTestContext list
 						orderedTcList.sort(new Comparator<TestContext>() {
@@ -226,11 +232,10 @@ public class TestBuilder implements Runnable {
 								return -1;
 							}
 						});
-					}
-					this.testContextMutex.release();
-				} catch (InterruptedException e) {
+					}					
+				/*} catch (InterruptedException e) {
 					System.out.println(e.getMessage());
-				}
+				}*/
 				
 				// Find if an already existing test context can cover the tuple
 				try {
