@@ -1,8 +1,10 @@
 package pMedici.main;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -95,7 +97,7 @@ public class PMediciPlus {
 		// Set the strength (default was 0)
 		m.setStrength(strength);
 
-		String testSuite = generateTests(model, m, oldTests);
+		String testSuite = generateTests(model, model, oldTests);
 
 		// Export the test suite
 		pMedici.exporter.CSVExporter.export(testSuite, exportFilePath);
@@ -111,13 +113,17 @@ public class PMediciPlus {
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	public static String generateTests(CitModel model, TestModel m, Vector<Map<String, String>> oldTests) throws InterruptedException, IOException {
+	public static String generateTests(CitModel model, CitModel newModel, Vector<Map<String, String>> oldTests) throws InterruptedException, IOException {
 		// Get current time
 		long start = System.currentTimeMillis();
 		// Get the MDD representing the model without constraints
-		ModelToMDDConverter mc = new ModelToMDDConverter(m);
+		ModelToMDDConverter mc = new ModelToMDDConverter(newModel);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
+		
+		String modelCT = PMedici.buildMediciModel(newModel);
+		TestModel m = Operations.readModelFromReader(new BufferedReader(new StringReader(modelCT)));
+		
 
 		// Adding the constraints to the baseNode (baseMDD)
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);

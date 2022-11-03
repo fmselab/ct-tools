@@ -125,7 +125,7 @@ public class PMediciPlusMT {
 		m.setStrength(strength);
 
 		// Get the MDD representing the model without constraints
-		ModelToMDDConverter mc = new ModelToMDDConverter(m);
+		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
 

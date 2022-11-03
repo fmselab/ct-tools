@@ -3,8 +3,6 @@ package pMedici.main;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +15,9 @@ import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.TestSuite;
+import pMedici.combinations.TupleGenerator;
+import pMedici.experiments.pMEDICIExperimenter;
+import pMedici.experiments.pMEDICIPlusMTExperimenter;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -29,8 +30,6 @@ import pMedici.util.TestModel;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import pMedici.combinations.TupleGenerator;
-import pMedici.experiments.pMEDICIExperimenter;
 
 /**
  * Main class to call pMedici
@@ -93,16 +92,11 @@ public class PMedici implements Callable<Integer> {
 	/**
 	 * Covert from ctwedge to medici and returns the model as string
 	 * 
-	 * @param fileName the file containing the CTWedge model
+	 * @param model the CTWedge model
 	 * @return the MEDICI model as string
 	 * @throws IOException
 	 */
-	public String buildMediciModel(String fileName) throws IOException {
-		assert fileName.endsWith(".ctw");
-		assert Files.exists(Paths.get(fileName));
-		assert Files.isRegularFile(Paths.get(fileName));
-
-		model = Utility.loadModelFromPath(fileName);
+	public static String buildMediciModel(CitModel model) throws IOException {
 		MediciCITGenerator gen = new MediciCITGenerator();
 		MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
 		// If no constraints are present into the model, then we can ignore constraints
@@ -123,11 +117,13 @@ public class PMedici implements Callable<Integer> {
 			throws IOException, InterruptedException {
 		// Get current time
 		long start = System.currentTimeMillis();
+		CitModel model = null;
 		
 		String mediciModel = "";
 		// Convert the model from CTWedge to Medici format
 		if (!fileName.equals("")) {
-			mediciModel = buildMediciModel(fileName);
+			model = Utility.loadModelFromPath(fileName);
+			mediciModel = buildMediciModel(model);
 		} else {
 			assert false : "You must specify the name of the file containing the CTWedge model";
 		}
@@ -139,7 +135,7 @@ public class PMedici implements Callable<Integer> {
 		// Set the strength
 		m.setStrength(strength);
 
-		ModelToMDDConverter mc = new ModelToMDDConverter(m);
+		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
 		int nCovered = 0;

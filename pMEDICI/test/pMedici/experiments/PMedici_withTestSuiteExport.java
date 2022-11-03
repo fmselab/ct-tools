@@ -71,7 +71,7 @@ public class PMedici_withTestSuiteExport {
 		// Set the strength
 		m.setStrength(strength);
 
-		ModelToMDDConverter mc = new ModelToMDDConverter(m);
+		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
 		int nCovered = 0;
