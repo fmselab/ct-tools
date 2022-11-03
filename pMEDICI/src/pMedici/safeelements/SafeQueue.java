@@ -39,7 +39,6 @@ public class SafeQueue {
 			tupleList.add(tuple);
 			nTuples++;
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -61,7 +60,7 @@ public class SafeQueue {
 	 */
 	public Vector<Pair<Integer, Integer>> get() {
 		if (tupleList.size() > 0) {
-		isFull.release();
+			isFull.release();
 		}
 		return tupleList.poll();
 	}

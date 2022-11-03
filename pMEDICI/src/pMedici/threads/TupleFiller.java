@@ -35,9 +35,6 @@ public class TupleFiller implements Runnable {
 		while(tg.hasNext()) {
 			Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>(tg.next());
 			
-			// Wait if the queue is full
-			//while(queue.full());
-			
 			// Assuming only one is inserting
 			queue.insert(tuple);
 		}
