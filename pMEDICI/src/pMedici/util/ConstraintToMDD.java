@@ -47,8 +47,9 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	
 	@Override
 	public Void caseConstraint(Constraint object) {
-		tPList = new Stack<Integer>();
-		doSwitch(object);
+		//tPList = new Stack<Integer>();
+		//System.out.println("Clean");
+		//doSwitch(object);
 		return null; 
 	}
 
@@ -78,7 +79,7 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		doSwitch(or.getRight());
 		
 		// OR Operation
-		assert (tPList.size() >= 2);
+		assert (tPList.size() >= 2) : tPList.size();
 		Integer n1 = tPList.pop();
 		Integer n2 = tPList.pop();
 		try {
@@ -146,14 +147,18 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	public Void caseAtomicPredicate(AtomicPredicate x) {
 		int count = 0;
 		int index = 0;
+		
 		for (Parameter p : model.getParameters()) {
 			List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
 			int value = values.indexOf(x.getName());
+			if (value == -1)
+				value = values.indexOf(x.getBoolConst());
 			int newNode;
 			if (value != -1) {
 				try {
 					newNode = Operations.getTupleFromParameter(count + value, bounds, model.getParameters().size(), manager);
 					tPList.push(newNode);
+					System.out.println(newNode);
 					break;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -170,5 +175,9 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 			throw new RuntimeException(tPList.size() + " - ERROR IN CONSTRAINTS DEFINITION \n");
 		}
 		return tPList.pop();
+	}
+
+	public void reset() {
+		tPList = new Stack<Integer>();
 	}
 }
