@@ -4,17 +4,25 @@ import java.util.Stack;
 
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
+import org.eclipse.xtext.EcoreUtil2;
 
 import ctwedge.ctWedge.AndExpression;
 import ctwedge.ctWedge.AtomicPredicate;
 import ctwedge.ctWedge.Bool;
 import ctwedge.ctWedge.CitModel;
+import ctwedge.ctWedge.CtWedgeFactory;
 import ctwedge.ctWedge.EqualExpression;
+import ctwedge.ctWedge.ImpliesExpression;
+import ctwedge.ctWedge.ImpliesOperator;
+import ctwedge.ctWedge.NotExpression;
+import ctwedge.ctWedge.Operators;
 import ctwedge.ctWedge.OrExpression;
 import ctwedge.ctWedge.Parameter;
+import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import ctwedge.util.ParameterValuesToInt;
+import ctwedge.util.ext.NotConvertableModel;
 import pMedici.safeelements.ExtendedSemaphore;
 
 /**
@@ -24,21 +32,27 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 
 	private ParameterValuesToInt valConverter;
 	private MDDManager manager;
-
+	private CitModel model; 
+	private Stack<Integer> tPList;
+	
 	public ConstraintToMDD(CitModel citModel, MDDManager manager) {
+		this.model = citModel;
 		valConverter = new ParameterValuesToInt(citModel);
 		this.manager = manager;
 	}
 	
-	Stack<Integer> tPList;
 	@Override
 	public Void caseConstraint(ctwedge.ctWedge.Constraint object) {
 		tPList = new Stack<Integer>();
+		doSwitch(object);
 		return null; 
 	}
 
 	@Override
 	public Void caseAndExpression(AndExpression and){
+		doSwitch(and.getLeft());
+		doSwitch(and.getRight());
+		
 		// AND Operation
 		assert (tPList.size() >= 2);
 		Integer n1 = tPList.pop();
@@ -49,7 +63,6 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
 			tPList.push(newNode);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -57,47 +70,45 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 
 	@Override
 	public Void caseOrExpression(OrExpression or) {
+		doSwitch(or.getLeft());
+		doSwitch(or.getRight());
+		
+		// OR Operation
+		assert (tPList.size() >= 2);
+		Integer n1 = tPList.pop();
+		Integer n2 = tPList.pop();
+		try {
+			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+			int newNode = MDDBaseOperators.OR.combine(manager, n1, n2);
+			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+			tPList.push(newNode);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
-
+	
 	@Override
-	public Void caseEqualExpression(EqualExpression x) {
-		throw new RuntimeException();
-	}
-
-	@Override
-	public Void caseAtomicPredicate(AtomicPredicate x) {
-		// in case the predicate is not in an EqualExpression
-		String name = x.getName();
-		Parameter paramByName = valConverter.getParamByName(name);
-		if (paramByName instanceof Bool) {
-			int base = valConverter.get(name);
-			int value = base + ParameterElementsGetterAsStrings.instance.doSwitch(paramByName).indexOf(ParameterElementsGetterAsStrings.TRUE_AS_STRING);
-			assert value != -1;
-			tPList.push(value);
+	public Void caseNotExpression(NotExpression x) {
+		doSwitch(x.getPredicate());
+		
+		// NOT Operation
+		assert (tPList.size() >= 1);
+		Integer n1 = tPList.pop();
+		try {
+			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+			int newNode = manager.not(n1);
+			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+			tPList.push(newNode);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		throw new RuntimeException();
-		int newNode =  valConverter.get(null) getTupleFromParameter(value, bounds, nParams, manager);
-		tPList.push(newNode);
-		// in case the predicate is not in an EqualExpression
-		String name = x.getName();
-		Parameter paramByName = valConverter.getParamByName(name);
-		if (paramByName instanceof Bool) {
-			int base = valConverter.get(name);
-			int value = base + ParameterElementsGetterAsStrings.instance.doSwitch(paramByName).indexOf(ParameterElementsGetterAsStrings.TRUE_AS_STRING);
-			assert value != -1;
-			return Integer.toString(value);
-		}
-		return super.caseAtomicPredicate(x);
+		return null;
 	}
-
+	
+	@SuppressWarnings("deprecation")
 	@Override
-	public String caseNotExpression(NotExpression x) {
-		return doSwitch(x.getPredicate()) + " -";
-	}
-
-	@Override
-	public String caseImpliesExpression(ImpliesExpression impl) {
+	public Void caseImpliesExpression(ImpliesExpression impl) {
 		if (impl.getOp() == ImpliesOperator.IMPL) {
 			// convert to not A or B
 			NotExpression notL = CtWedgeFactory.eINSTANCE.createNotExpression();
@@ -117,13 +128,40 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	}
 	
 	@Override
-	public String caseRelationalExpression(RelationalExpression object) {
-		throw new NotConvertableModel("relational expression are not supported");
+	public Void caseRelationalExpression(RelationalExpression object) {
+		throw new NotConvertableModel("Relational expression are not supported");
 	}
-	
 
 	@Override
-	public String caseConstraint(Constraint x) {
-		return doSwitch(x);
+	public Void caseEqualExpression(EqualExpression x) {
+		doSwitch(x.getRight());
+		return null;
+	}
+
+	@Override
+	public Void caseAtomicPredicate(AtomicPredicate x) {
+		// in case the predicate is not in an EqualExpression
+		String name = x.getName();
+		Parameter paramByName = valConverter.getParamByName(name);
+		if (paramByName instanceof Bool) {
+			int base = valConverter.get(name);
+			int value = base + ParameterElementsGetterAsStrings.instance.doSwitch(paramByName).indexOf(ParameterElementsGetterAsStrings.TRUE_AS_STRING);
+			assert value != -1;
+			int newNode;
+			try {
+				newNode = Operations.getTupleFromParameter(value, Operations.getBounds(model), model.getParameters().size(), manager);
+				tPList.push(newNode);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public int returnMdd() {
+		if (tPList.size() != 1) {
+			throw new RuntimeException(tPList.size() + " - ERROR IN CONSTRAINTS DEFINITION \n");
+		}
+		return tPList.pop();
 	}
 }
