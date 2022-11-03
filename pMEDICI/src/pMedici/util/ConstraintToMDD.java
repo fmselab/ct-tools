@@ -22,7 +22,6 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import ctwedge.generator.util.ParameterElementsGetterAsStrings;
-import ctwedge.util.ParameterValuesToInt;
 import ctwedge.util.ext.NotConvertableModel;
 import pMedici.safeelements.ExtendedSemaphore;
 
@@ -31,7 +30,6 @@ import pMedici.safeelements.ExtendedSemaphore;
  */
 public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 
-	private ParameterValuesToInt valConverter;
 	private MDDManager manager;
 	private CitModel model; 
 	private Stack<Integer> tPList;
@@ -39,7 +37,6 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	
 	public ConstraintToMDD(CitModel citModel, MDDManager manager) {
 		this.model = citModel;
-		valConverter = new ParameterValuesToInt(citModel);
 		this.manager = manager;
 		this.tPList = new Stack<Integer>();	
 		this.bounds = Operations.getBounds(model);
@@ -151,8 +148,9 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		for (Parameter p : model.getParameters()) {
 			List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
 			int value = values.indexOf(x.getName());
-			if (value == -1)
+			if (value == -1) {
 				value = values.indexOf(x.getBoolConst());
+			}
 			int newNode;
 			if (value != -1) {
 				try {
