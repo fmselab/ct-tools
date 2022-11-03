@@ -223,6 +223,17 @@ public class TestContext {
 	 * @throws InterruptedException 
 	 */
 	public boolean addTuple(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
+		return addTuple(tuple, true);
+	}
+	
+	/**
+	 * This method adds a tuple to the partial test associated to the test context.
+	 * The tuple to be added must be compatible with the partial test
+	 * 
+	 * @param tuple: the tuple to be added
+	 * @throws InterruptedException 
+	 */
+	public boolean addTuple(Vector<Pair<Integer, Integer>> tuple, boolean increaseCovered) throws InterruptedException {
 		// If LockTCOnlyOnWriting, we try to acquire the mutex 
 		if (TestBuilder.LockTCOnlyOnWriting) {
 			if(this.testMutex.availablePermits() > 0) {
@@ -251,10 +262,11 @@ public class TestContext {
 
 		// Update the MDD, if constraints are available
 		if (useConstraints) {
-			updateMdd(tuple);
+			updateMdd(tuple, increaseCovered);
 		}
 		else {
-			nCovered++;
+			if (increaseCovered)
+				nCovered++;
 		}
 		
 		if (TestBuilder.LockTCOnlyOnWriting) 
@@ -270,6 +282,16 @@ public class TestContext {
 	 * @throws InterruptedException 
 	 */
 	private void updateMdd(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
+		updateMdd(tuple, true);
+	}
+	
+	/**
+	 * Updates the internal MDD structure by adding the new tuple
+	 * 
+	 * @param tuple: the tuple to be added
+	 * @throws InterruptedException 
+	 */
+	private void updateMdd(Vector<Pair<Integer, Integer>> tuple, boolean increaseCovered) throws InterruptedException {
 		// We must use a test context in a mutex mode
 		if (!IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
@@ -288,7 +310,8 @@ public class TestContext {
 		searcher.setNode(this.mdd);
 		assert (searcher.countPaths() > 0);
 		
-		nCovered++;
+		if (increaseCovered)
+			nCovered++;
 	}
 	
 	/**

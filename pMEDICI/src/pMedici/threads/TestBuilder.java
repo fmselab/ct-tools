@@ -28,7 +28,7 @@ public class TestBuilder implements Runnable {
 	public static boolean UseTryAcquireForFindImplies = false;
 	
 	// if true, during the TestEarlyFiller process, old test are partially kept if partially compatible
-	public static boolean KeepPartialOldTests = false;
+	public static boolean KeepPartialOldTests = true;
 	
 	/* -----------------------------------
 	 * END OPTIMIZATIONS
