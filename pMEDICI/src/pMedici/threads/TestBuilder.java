@@ -1,14 +1,11 @@
 package pMedici.threads;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.colomoto.mddlib.MDDManager;
 
-import pMedici.main.PMedici;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -190,6 +187,7 @@ public class TestBuilder implements Runnable {
 		return found;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		// Extract all the values

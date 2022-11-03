@@ -80,6 +80,15 @@ public class PMediciMDDTest {
 		pMedici.verb = false;
 		pMedici.generateTests("examples/CTComp/MCAC_5.ctw", 2, 0);
 	}
+	
+	@Test
+	public void test6() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici pMedici = new PMedici();
+		pMedici.verb = false;
+		pMedici.generateTests("E:/GitHub/CIT_Benchmark_Generator/Benchmarks_FollowUp_CITCompetition_2022/CTWedge/MCAC_5.ctw", 2, 0);
+	}
 
 	@Test
 	public void testValidity()

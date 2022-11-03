@@ -1,14 +1,11 @@
 package pMedici.util;
 
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -18,7 +15,6 @@ import java.util.stream.Collectors;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
-import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;

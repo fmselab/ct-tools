@@ -1,8 +1,6 @@
 package pMedici.main;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -134,15 +132,9 @@ public class PMedici implements Callable<Integer> {
 			assert false : "You must specify the name of the file containing the CTWedge model";
 		}
 		
-		// FIXME remove
-		// System.out.println("Time after first translation: " + (System.currentTimeMillis() - start));
-		
 		// Read the combinatorial model and get the MDD representing the model without
 		// constraints
 		TestModel m = Operations.readModelFromReader(new BufferedReader(new StringReader(mediciModel)));
-		
-		// FIXME remove
-		// System.out.println("Time after second translation: " + (System.currentTimeMillis() - start));
 		
 		// Set the strength
 		m.setStrength(strength);
@@ -156,9 +148,6 @@ public class PMedici implements Callable<Integer> {
 		// Add to the baseNode the constraints
 		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
 		
-		// FIXME remove
-		// System.out.println("Time after MDD translation: " + (System.currentTimeMillis() - start));
-
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
 
@@ -198,18 +187,12 @@ public class PMedici implements Callable<Integer> {
 			nCovered += tc.getNCovered();
 			testCases.add(tc.getTest(false));
 		}
-		
-		// FIXME remove
-		// System.out.println("Time after test generation: " + (System.currentTimeMillis() - start));
 
 		// Print test suite
 		System.out.println("-----TEST SUITE-----");
 		String tsAsCSV = Operations.translateOutputToString(testCases, model);
 		System.out.println(tsAsCSV);
 		long generationTime = (System.currentTimeMillis() - start);
-		
-		// FIXME remove
-		// System.out.println("Total time: " + generationTime);
 
 		if (verb) {
 			totTuples = tuples.getNTuples();

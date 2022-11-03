@@ -21,9 +21,6 @@ public class CSVImporter {
 	 * @throws IOException
 	 */
 	public static Vector<Map<String, String>> read(String csvFilePath) throws IOException {
-		// in each position of the vector there is one test case
-		Vector<Map<String, String>> tests = new Vector<Map<String, String>>();
-
 		// setting the environment for reading the file
 		File file = new File(csvFilePath);
 		FileReader fr = new FileReader(file);
