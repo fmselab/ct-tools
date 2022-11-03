@@ -144,18 +144,23 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 
 	@Override
 	public Void caseAtomicPredicate(AtomicPredicate x) {
+		int count = 0;
+		int index = 0;
 		for (Parameter p : model.getParameters()) {
 			List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
 			int value = values.indexOf(x.getName());
 			int newNode;
 			if (value != -1) {
 				try {
-					newNode = Operations.getTupleFromParameter(value, bounds, model.getParameters().size(), manager);
+					newNode = Operations.getTupleFromParameter(count + value, bounds, model.getParameters().size(), manager);
 					tPList.push(newNode);
+					break;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
+			count += bounds[index];
+			index++;
 		}
 		return null;
 	}
