@@ -45,6 +45,10 @@ public class PMedici implements Callable<Integer> {
 	/** Use the verbose mode */
 	@Option(names = "-verb", description = "Use the verbose mode.")
 	boolean verb;
+	
+	/** Load a previous test suite */
+	@Option(names = "-old", description = "CSV file containing the old test suite, with commas and header in the first row")
+	private String oldTs = "";
 
 	/**
 	 * Variable used to share the size of the generated test suite with the class
