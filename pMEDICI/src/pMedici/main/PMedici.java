@@ -143,9 +143,6 @@ public class PMedici implements Callable<Integer> {
 		Thread tFillerThread = new Thread(tFiller);
 		tFillerThread.start();
 		
-		// Test builder threads may start after the queue is completely full
-		while(!tuples.full()) {}
-
 		// Start all the TestBuilder threads
 		if (nThreads == 0)
 			nThreads = Runtime.getRuntime().availableProcessors();
