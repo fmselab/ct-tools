@@ -22,6 +22,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import ctwedge.generator.util.ParameterElementsGetterAsStrings;
+import ctwedge.services.CTWedgeGrammarAccess.BoolConstElements;
 import ctwedge.util.Pair;
 import ctwedge.util.ParameterValuesToInt;
 import ctwedge.util.ext.NotConvertableModel;
@@ -90,7 +91,10 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	public Void caseNotExpression(NotExpression x) {
 		// NOT Operation
 		doSwitch(x.getPredicate());
-		
+		return translateNot();
+	}
+
+	private Void translateNot() {
 		assert (tPList.size() >= 1);
 		Integer n1 = tPList.pop();
 		try {
@@ -139,8 +143,8 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 					(AtomicPredicate) x.getRight());
 			if (eqToInt.getFirst() == '-') {
 				NotExpression notL = CtWedgeFactory.eINSTANCE.createNotExpression();
-				notL.setPredicate(EcoreUtil2.clone(buildAtomicPredicateFromEqual(x)));
-				doSwitch(notL);
+				translateAtomicPredicate((AtomicPredicate)x.getRight(), ((AtomicPredicate)x.getLeft()).getName());
+				translateNot();
 			} else {
 				translateAtomicPredicate((AtomicPredicate)x.getRight(), ((AtomicPredicate)x.getLeft()).getName());
 			}
@@ -210,32 +214,9 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 
 	@Override
 	public Void caseAtomicPredicate(AtomicPredicate x) {
-		int count = 0;
-		int index = 0;
-		String parName = x.getName().split("__")[0];
-		
-		for (Parameter p : model.getParameters()) {
-			if (p.getName().equals(parName)) {
-				List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
-				
-				int value = values.indexOf(x.getName().split("__")[1]);
-				if (value == -1) {
-					value = values.indexOf(x.getBoolConst().split("__")[1]);
-				}
-				int newNode;
-				if (value != -1) {
-					try {
-						newNode = Operations.getTupleFromParameter(count + value, bounds, model.getParameters().size(), manager);
-						tPList.push(newNode);
-						break;
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			count += bounds[index];
-			index++;
-		}
+		AtomicPredicate atom = CtWedgeFactory.eINSTANCE.createAtomicPredicate();
+		atom.setBoolConst("true");
+		translateAtomicPredicate(atom, x.getName());
 		return null;
 	}
 	
