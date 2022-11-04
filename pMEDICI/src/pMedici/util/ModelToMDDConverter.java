@@ -36,6 +36,7 @@ public class ModelToMDDConverter {
 		// Creates all the variables
 		for (Parameter p : model.getParameters())  {
 			Integer nValues = ParameterSize.eInstance.doSwitch(p);
+			// TODO: Fix me in a better way?
 			// When only a value is available for the parameter, hack the MDD by faking a second one
 			if (nValues == 1)
 				nValues++;

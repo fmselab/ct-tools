@@ -10,7 +10,6 @@ import org.eclipse.xtext.EcoreUtil2;
 import ctwedge.ctWedge.AndExpression;
 import ctwedge.ctWedge.AtomicPredicate;
 import ctwedge.ctWedge.CitModel;
-import ctwedge.ctWedge.Constraint;
 import ctwedge.ctWedge.CtWedgeFactory;
 import ctwedge.ctWedge.EqualExpression;
 import ctwedge.ctWedge.Expression;
@@ -45,14 +44,6 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		this.tPList = new Stack<Integer>();	
 		this.bounds = Operations.getBounds(model);
 		this.valConverter = new ParameterValuesToInt(citModel);
-	}
-	
-	@Override
-	public Void caseConstraint(Constraint object) {
-		//tPList = new Stack<Integer>();
-		//System.out.println("Clean");
-		//doSwitch(object);
-		return null; 
 	}
 
 	@Override
@@ -151,8 +142,7 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 				notL.setPredicate(EcoreUtil2.clone(buildAtomicPredicateFromEqual(x)));
 				doSwitch(notL);
 			} else {
-				AtomicPredicate atom = buildAtomicPredicateFromEqual(x);
-				doSwitch(atom);
+				translateAtomicPredicate((AtomicPredicate)x.getRight(), ((AtomicPredicate)x.getLeft()).getName());
 			}
 		} else {
 			if (x.getOp() != Operators.EQ) throw new RuntimeException("equal expected"); 
@@ -188,17 +178,41 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		atom.setName(((AtomicPredicate)x.getLeft()).getName() + "__" + ((AtomicPredicate)x.getRight()).getName());
 		return atom;
 	}
+	
+	public void translateAtomicPredicate(AtomicPredicate x, String parName) {
+		int count = 0;
+		int index = 0;
+		for (Parameter p : model.getParameters()) {
+			if (p.getName().equals(parName)) {
+				List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
+				
+				int value = values.indexOf(x.getName());
+				if (value == -1) {
+					value = values.indexOf(x.getBoolConst());
+				}
+				int newNode;
+				if (value != -1) {
+					try {
+						newNode = Operations.getTupleFromParameter(count + value, bounds, model.getParameters().size(), manager);
+						tPList.push(newNode);
+						break;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} else {
+					throw new RuntimeException("Error during the translation of the AtomicPredicate");
+				}
+			}
+			count += bounds[index];
+			index++;
+		}
+	}
 
 	@Override
 	public Void caseAtomicPredicate(AtomicPredicate x) {
 		int count = 0;
 		int index = 0;
 		String parName = x.getName().split("__")[0];
-		
-		// FIXME: How to map on the correct value? It depends on the parameter, which is normally in the left side,
-		// while we here deal only with the right one
-		// It is wrong to use the following code, since the same value in different parameters (e.g., true or false 
-		// for booleans) has to be mapped differently
 		
 		for (Parameter p : model.getParameters()) {
 			if (p.getName().equals(parName)) {
