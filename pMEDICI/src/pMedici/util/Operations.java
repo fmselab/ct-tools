@@ -18,7 +18,6 @@ import org.colomoto.mddlib.operators.MDDBaseOperators;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.medici.ConstraintToMediciIds;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.ParameterValuesToInt;
 import pMedici.safeelements.ExtendedSemaphore;
@@ -227,75 +226,6 @@ public class Operations {
 	 */
 	public static int updateMDDWithConstraints(MDDManager manager, CitModel m, int baseNode)
 			throws InterruptedException {
-//		// Translator
-//		ConstraintToMediciIds translator = new ConstraintToMediciIds(m);
-//		int nParams = m.getParameters().size();
-//		int[] bounds = Operations.getBounds(m);
-//		// Fetch all the constraints
-//		for (ctwedge.ctWedge.Constraint c : m.getConstraints()) {
-//			// Fetch all the elements inside the constraint
-//			Stack<Integer> tPList = new Stack<Integer>();
-//			// Get constraints from the string
-//			Constraint cList = getConstraintFromString(translator.doSwitch(c));
-//			while (!cList.constraint.isEmpty()) { 
-//				ConstraintElement ce = cList.getElement();
-//				if (ce.isOperator()) {
-//					int newNode;
-//					int n1 = -1;
-//					int n2 = -1;
-//					switch (ce.operator) {
-//					case "+":
-//						// OR Operation
-//						assert (tPList.size() >= 2);
-//						n1 = tPList.pop();
-//						n2 = tPList.pop();
-//						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-//						newNode = MDDBaseOperators.OR.combine(manager, n1, n2);
-//						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-//						tPList.push(newNode);
-//						break;
-//					case "*":
-//						// AND Operation
-//						assert (tPList.size() >= 2);
-//						n1 = tPList.pop();
-//						n2 = tPList.pop();
-//						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-//						newNode = MDDBaseOperators.AND.combine(manager, n1, n2);
-//						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-//						tPList.push(newNode);
-//						break;
-//					case "-":
-//						// NOT Operation
-//						assert (tPList.size() >= 1);
-//						n1 = tPList.pop();
-//						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-//						newNode = manager.not(n1);
-//						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-//						tPList.push(newNode);
-//						break;
-//					}
-//				} else {
-//					// Convert the value in a MDD and store it into a list
-//					int newNode = getTupleFromParameter(ce.value, bounds, nParams, manager);
-//					tPList.push(newNode);
-//				}
-//			}
-//
-//			// At the end of the single constraint management, each constraint must
-//			// correspond to a single node
-//			if (tPList.size() != 1) {
-//				System.out.println(tPList.size() + " - ERROR IN CONSTRAINTS DEFINITION \n");
-//				return -1;
-//			}
-//
-//			// Now the top of the stack must contain the complete constraint representation
-//			// and we can update the base node
-//			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-//			baseNode = MDDBaseOperators.AND.combine(manager, baseNode, tPList.pop());
-//			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-//		}
-//		return baseNode;
-
 		// Translator
 		ConstraintToMDD translator = new ConstraintToMDD(m, manager);
 		// Fetch all the constraints

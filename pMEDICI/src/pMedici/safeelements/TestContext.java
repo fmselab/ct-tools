@@ -274,16 +274,6 @@ public class TestContext {
 		
 		return true;
 	}
-
-	/**
-	 * Updates the internal MDD structure by adding the new tuple
-	 * 
-	 * @param tuple: the tuple to be added
-	 * @throws InterruptedException 
-	 */
-	private void updateMdd(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
-		updateMdd(tuple, true);
-	}
 	
 	/**
 	 * Updates the internal MDD structure by adding the new tuple
