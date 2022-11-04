@@ -97,9 +97,9 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	
 	@Override
 	public Void caseNotExpression(NotExpression x) {
+		// NOT Operation
 		doSwitch(x.getPredicate());
 		
-		// NOT Operation
 		assert (tPList.size() >= 1);
 		Integer n1 = tPList.pop();
 		try {
@@ -148,10 +148,11 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 					(AtomicPredicate) x.getRight());
 			if (eqToInt.getFirst() == '-') {
 				NotExpression notL = CtWedgeFactory.eINSTANCE.createNotExpression();
-				notL.setPredicate(EcoreUtil2.clone(x.getRight()));
+				notL.setPredicate(EcoreUtil2.clone(buildAtomicPredicateFromEqual(x)));
 				doSwitch(notL);
 			} else {
-				doSwitch(x.getRight());
+				AtomicPredicate atom = buildAtomicPredicateFromEqual(x);
+				doSwitch(atom);
 			}
 		} else {
 			if (x.getOp() != Operators.EQ) throw new RuntimeException("equal expected"); 
@@ -181,10 +182,18 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		return null;
 	}
 
+	private AtomicPredicate buildAtomicPredicateFromEqual(EqualExpression x) {
+		AtomicPredicate atom = CtWedgeFactory.eINSTANCE.createAtomicPredicate();
+		atom.setBoolConst(((AtomicPredicate)x.getLeft()).getName() + "__" + ((AtomicPredicate)x.getRight()).getBoolConst());
+		atom.setName(((AtomicPredicate)x.getLeft()).getName() + "__" + ((AtomicPredicate)x.getRight()).getName());
+		return atom;
+	}
+
 	@Override
 	public Void caseAtomicPredicate(AtomicPredicate x) {
 		int count = 0;
 		int index = 0;
+		String parName = x.getName().split("__")[0];
 		
 		// FIXME: How to map on the correct value? It depends on the parameter, which is normally in the left side,
 		// while we here deal only with the right one
@@ -192,20 +201,22 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		// for booleans) has to be mapped differently
 		
 		for (Parameter p : model.getParameters()) {
-			List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
-			int value = values.indexOf(x.getName());
-			if (value == -1) {
-				value = values.indexOf(x.getBoolConst());
-			}
-			int newNode;
-			if (value != -1) {
-				try {
-					newNode = Operations.getTupleFromParameter(count + value, bounds, model.getParameters().size(), manager);
-					tPList.push(newNode);
-					System.out.println(newNode);
-					break;
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			if (p.getName().equals(parName)) {
+				List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
+				
+				int value = values.indexOf(x.getName().split("__")[1]);
+				if (value == -1) {
+					value = values.indexOf(x.getBoolConst().split("__")[1]);
+				}
+				int newNode;
+				if (value != -1) {
+					try {
+						newNode = Operations.getTupleFromParameter(count + value, bounds, model.getParameters().size(), manager);
+						tPList.push(newNode);
+						break;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			count += bounds[index];
