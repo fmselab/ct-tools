@@ -144,26 +144,15 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	public Void caseEqualExpression(EqualExpression x) {
 		if (x.getLeft() instanceof AtomicPredicate && x.getRight() instanceof AtomicPredicate) {
 			// Only the right part needs to be translated
-			// FIXME
-
-			
-			
-			
-			
-			
-			doSwitch(x.getRight());
-			
 			Pair<Character, Integer> eqToInt = valConverter.eqToInt((AtomicPredicate) x.getLeft(), x.getOp(),
 					(AtomicPredicate) x.getRight());
-//			// can be + n or - n
-//			assert eqToInt.getFirst() == '+' || eqToInt.getFirst() == '-';
-//			//
-//			if (eqToInt.getFirst() == '+')
-//				// ignore the +
-//				return eqToInt.getSecond().toString();
-//			else
-//				// postpone the not operator
-//				return eqToInt.getSecond().toString() + " -";
+			if (eqToInt.getFirst() == '-') {
+				NotExpression notL = CtWedgeFactory.eINSTANCE.createNotExpression();
+				notL.setPredicate(EcoreUtil2.clone(x.getRight()));
+				doSwitch(notL);
+			} else {
+				doSwitch(x.getRight());
+			}
 		} else {
 			if (x.getOp() != Operators.EQ) throw new RuntimeException("equal expected"); 
 			// If they are not atomic predicates, it means that the equal has been derived
@@ -196,6 +185,9 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	public Void caseAtomicPredicate(AtomicPredicate x) {
 		int count = 0;
 		int index = 0;
+		
+		// FIXME: How to map on the correct value? It depends on the parameter, which is normally in the left side,
+		// while we here deal only with the right one
 		
 		for (Parameter p : model.getParameters()) {
 			List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
