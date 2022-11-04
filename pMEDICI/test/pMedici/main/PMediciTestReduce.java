@@ -1,11 +1,10 @@
 package pMedici.main;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -13,7 +12,6 @@ import org.junit.Test;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.api.SolverException;
 
-import ctwedge.ctWedge.CitModel;
 import ctwedge.util.TestSuite;
 import ctwedge.util.validator.MinimalityTestSuiteValidator;
 import ctwedge.util.validator.ParameterSwitchToPairStrings;
