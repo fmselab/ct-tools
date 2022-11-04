@@ -2,6 +2,7 @@ package pMedici.main;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,15 +11,24 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.api.SolverException;
 
+import ctwedge.ctWedge.CitModel;
+import ctwedge.generator.util.Utility;
+import ctwedge.util.ModelUtils;
 import ctwedge.util.TestSuite;
 import ctwedge.util.validator.SMTTestSuiteValidator;
+import pMedici.main.PMedici;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
 import pMedici.threads.TestBuilder;
@@ -117,6 +127,29 @@ public class PMediciMDDTest {
 					}
 				});
 	}
+	
+	@Test
+	public void test7() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		// For avoid the AssertionError
+		TestContext.IN_TEST = true;
+		PMedici pMedici = new PMedici();
+		pMedici.verb = false;
+		pMedici.generateTests("/Users/andrea/Documents/GitHub/CIT_Benchmark_Generator/Benchmarks_FollowUp_CITCompetition_2022/CTWedge/UNIFORM_BOOLEAN_24.ctw", 2, 0);
+	}
+	
+	@Test
+	public void testAllFilesInNewCTComp() throws IOException {
+		Path path = Paths.get("/Users/andrea/Documents/GitHub/CIT_Benchmark_Generator/Benchmarks_FollowUp_CITCompetition_2022/");
+		Files.walk(path).filter(Files::isRegularFile).map(Path::toFile).filter(x -> (x.getName().endsWith(".ctw") && x.getName().startsWith("MCAC_") && !x.getName().startsWith("MCAC_43")))
+				.forEach(x -> {
+					System.err.println(x.getAbsolutePath());
+					try {
+						generateAndCheck(x.getAbsolutePath(), false);
+					} catch (IOException | InterruptedException | SolverException | InvalidConfigurationException e) {
+						e.printStackTrace();
+					}
+				});
+	}	
 
 	@Test
 	public void testOption() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
@@ -217,6 +250,8 @@ public class PMediciMDDTest {
 		} else {
 			fail("Not complete test suite");
 		}
+		
+		System.err.println("Generated " + ts.getTests().size() + " tests");
 		
 		// Force the garbage collector
 		System.gc();
