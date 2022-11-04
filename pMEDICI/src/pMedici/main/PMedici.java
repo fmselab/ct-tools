@@ -13,7 +13,6 @@ import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.TestSuite;
@@ -93,20 +92,6 @@ public class PMedici implements Callable<Integer> {
 	public Integer call() throws Exception {
 		generateTests(fileName, strength, nThreads);
 		return 0;
-	}
-
-	/**
-	 * Covert from ctwedge to medici and returns the model as string
-	 * 
-	 * @param model the CTWedge model
-	 * @return the MEDICI model as string
-	 * @throws IOException
-	 */
-	public static String buildMediciModel(CitModel model) throws IOException {
-		MediciCITGenerator gen = new MediciCITGenerator();
-		MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
-		// If no constraints are present into the model, then we can ignore constraints
-		return gen.translateModel(model, model.getConstraints().size() == 0);
 	}
 
 	/**

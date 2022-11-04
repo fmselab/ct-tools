@@ -1,7 +1,5 @@
 package pMedici.experiments;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,8 +9,8 @@ import java.util.Vector;
 import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
+import pMedici.combinations.TupleGenerator;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
@@ -21,8 +19,6 @@ import pMedici.threads.TupleFiller;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
-import pMedici.util.TestModel;
-import pMedici.combinations.TupleGenerator;
 
 public class PMedici_withTestSuiteExport {
 
@@ -51,25 +47,10 @@ public class PMedici_withTestSuiteExport {
 					"You must specify the strength and the model file name for generating a test suite");
 		}
 
-		// Convert the model from CTWedge to Medici format
+		// Read the combinatorial model
 		if (!fileName.equals("")) {
 			model = Utility.loadModelFromPath(fileName);
-			MediciCITGenerator gen = new MediciCITGenerator();
-			MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
-			String mediciModel = gen.translateModel(model, false);
-			File modelFile = new File("model.txt");
-			FileWriter wf = new FileWriter(modelFile);
-			wf.write(mediciModel);
-			wf.close();
-			fileName = "model.txt";
 		}
-
-		// Read the combinatorial model and get the MDD representing the model without
-		// constraints
-		TestModel m = Operations.readFile(fileName);
-
-		// Set the strength
-		m.setStrength(strength);
 
 		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
@@ -81,13 +62,13 @@ public class PMedici_withTestSuiteExport {
 		long start = System.currentTimeMillis();
 
 		// Add to the baseNode the constraints
-		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
+		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
 
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
 
 		// Combination generator
-		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(m);
+		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(model, strength);
 
 		// Start the filler thread
 		TupleFiller tFiller = new TupleFiller(tg, tuples);
@@ -101,8 +82,8 @@ public class PMedici_withTestSuiteExport {
 		boolean sort = false;
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
-			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, m.getnParams(),
-					m.getUseConstraints(), manager, testContextsMutex, verb));
+			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, model.getParameters().size(),
+					model.getConstraints().size()>0, manager, testContextsMutex, verb));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}

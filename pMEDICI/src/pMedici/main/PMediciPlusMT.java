@@ -1,7 +1,5 @@
 package pMedici.main;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +10,6 @@ import java.util.Vector;
 import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.generator.medici.MediciCITGenerator;
 import ctwedge.generator.util.Utility;
 import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
@@ -93,6 +90,7 @@ public class PMediciPlusMT {
 		if (args.length >= 4) {
 			strength = Integer.parseInt(args[0]);
 			evolvedModelPath = args[1];
+			model = Utility.loadModel(evolvedModelPath);
 			oldTestSuiteFilePath = args[2];
 			exportFilePath = args[3];
 			if (args.length > 4)
@@ -105,20 +103,7 @@ public class PMediciPlusMT {
 		// Get current time (required for calculations when verb==true)
 		long start = System.currentTimeMillis();
 
-		// Convert the CTWedge model to Medici format (exported in "model.txt" file)
-		if (!evolvedModelPath.equals("")) {
-			model = Utility.loadModelFromPath(evolvedModelPath);
-			MediciCITGenerator gen = new MediciCITGenerator();
-			MediciCITGenerator.OUTPUT_ON_STD_OUT_DURING_TRANSLATION = false;
-			String mediciModel = gen.translateModel(model, false);
-			File modelFile = new File("model.txt");
-			FileWriter wf = new FileWriter(modelFile);
-			wf.write(mediciModel);
-			wf.close();
-			evolvedModelPath = "model.txt";
-		}
-
-		// Read the combinatorial model (from the exported medici "model.txt")
+		// Read the combinatorial model
 		TestModel m = Operations.readFile(evolvedModelPath); // TestModel = model with constraints
 
 		// Set the strength (default was 0)
@@ -130,7 +115,7 @@ public class PMediciPlusMT {
 		int baseMDD = mc.getStartingNode();
 
 		// Adding the constraints to the baseNode (baseMDD)
-		baseMDD = Operations.updateMDDWithConstraints(manager, m, baseMDD);
+		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
 
 		/* pMEDICIplusMT algorithm */
 		

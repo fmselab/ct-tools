@@ -18,7 +18,6 @@ import org.colomoto.mddlib.operators.MDDBaseOperators;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.medici.ConstraintToMediciIds;
 import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.ParameterValuesToInt;
 import pMedici.safeelements.ExtendedSemaphore;

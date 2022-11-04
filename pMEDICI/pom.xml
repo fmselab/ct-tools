@@ -33,11 +33,6 @@
 			<version>1.0.0-SNAPSHOT</version>
 			<type>eclipse-plugin</type>
 		</dependency>
-		<dependency>
-			<groupId>ctwedge</groupId>
-			<artifactId>ctwedge.generator.medici</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 
 		<!-- Start dependecies for Apache POI (working with .xsls Excel files) -->
 		<dependency>
