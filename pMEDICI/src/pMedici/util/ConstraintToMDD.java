@@ -188,6 +188,8 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		
 		// FIXME: How to map on the correct value? It depends on the parameter, which is normally in the left side,
 		// while we here deal only with the right one
+		// It is wrong to use the following code, since the same value in different parameters (e.g., true or false 
+		// for booleans) has to be mapped differently
 		
 		for (Parameter p : model.getParameters()) {
 			List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
