@@ -35,7 +35,11 @@ public class ModelToMDDConverter {
 		
 		// Creates all the variables
 		for (Parameter p : model.getParameters())  {
-			mvf.add(p.getName(), ParameterSize.eInstance.doSwitch(p).byteValue());
+			Integer nValues = ParameterSize.eInstance.doSwitch(p);
+			// When only a value is available for the parameter, hack the MDD by faking a second one
+			if (nValues == 1)
+				nValues++;
+			mvf.add(p.getName(), nValues.byteValue());
 		}		
 		
 		// Returns the MDD manager with the needed variable factory and with 2 leaves (T -> 1, F -> 0)
@@ -60,7 +64,11 @@ public class ModelToMDDConverter {
 		MDDVariable[] vars = manager.getAllVariables();
 		for (int i = model.getParameters().size() - 1; i>= 0; i--) {
 			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-			newNode = vars[i].getNode(getChildrenList(ParameterSize.eInstance.doSwitch(model.getParameters().get(i)), newNode));
+			int size = ParameterSize.eInstance.doSwitch(model.getParameters().get(i));
+			// When only a value is available for the parameter, hack the MDD by faking a second one
+			if (size == 1)
+				size++;
+			newNode = vars[i].getNode(getChildrenList(size, newNode));
 			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
 		}
 		
