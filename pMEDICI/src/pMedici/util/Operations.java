@@ -56,8 +56,8 @@ public class Operations {
 	}
 
 	/**
-	 * Reads the combinatorial model from a reader and converts it into a
-	 * TestModel object
+	 * Reads the combinatorial model from a reader and converts it into a TestModel
+	 * object
 	 * 
 	 * @param reader: the reader
 	 * @return the TestModel object
@@ -70,7 +70,6 @@ public class Operations {
 		int nConstraints = 0;
 		String tempStr;
 		ArrayList<Constraint> constraintList = new ArrayList<Constraint>();
-
 
 		// The first line contains the strength
 		strength = Integer.parseInt(reader.readLine());
@@ -215,7 +214,7 @@ public class Operations {
 		}
 		return baseNode;
 	}
-	
+
 	/**
 	 * Updates the MDD by inserting all the constraints previously loaded in the
 	 * test model
@@ -228,71 +227,86 @@ public class Operations {
 	 */
 	public static int updateMDDWithConstraints(MDDManager manager, CitModel m, int baseNode)
 			throws InterruptedException {
+//		// Translator
+//		ConstraintToMediciIds translator = new ConstraintToMediciIds(m);
+//		int nParams = m.getParameters().size();
+//		int[] bounds = Operations.getBounds(m);
+//		// Fetch all the constraints
+//		for (ctwedge.ctWedge.Constraint c : m.getConstraints()) {
+//			// Fetch all the elements inside the constraint
+//			Stack<Integer> tPList = new Stack<Integer>();
+//			// Get constraints from the string
+//			Constraint cList = getConstraintFromString(translator.doSwitch(c));
+//			while (!cList.constraint.isEmpty()) { 
+//				ConstraintElement ce = cList.getElement();
+//				if (ce.isOperator()) {
+//					int newNode;
+//					int n1 = -1;
+//					int n2 = -1;
+//					switch (ce.operator) {
+//					case "+":
+//						// OR Operation
+//						assert (tPList.size() >= 2);
+//						n1 = tPList.pop();
+//						n2 = tPList.pop();
+//						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+//						newNode = MDDBaseOperators.OR.combine(manager, n1, n2);
+//						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+//						tPList.push(newNode);
+//						break;
+//					case "*":
+//						// AND Operation
+//						assert (tPList.size() >= 2);
+//						n1 = tPList.pop();
+//						n2 = tPList.pop();
+//						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+//						newNode = MDDBaseOperators.AND.combine(manager, n1, n2);
+//						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+//						tPList.push(newNode);
+//						break;
+//					case "-":
+//						// NOT Operation
+//						assert (tPList.size() >= 1);
+//						n1 = tPList.pop();
+//						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+//						newNode = manager.not(n1);
+//						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+//						tPList.push(newNode);
+//						break;
+//					}
+//				} else {
+//					// Convert the value in a MDD and store it into a list
+//					int newNode = getTupleFromParameter(ce.value, bounds, nParams, manager);
+//					tPList.push(newNode);
+//				}
+//			}
+//
+//			// At the end of the single constraint management, each constraint must
+//			// correspond to a single node
+//			if (tPList.size() != 1) {
+//				System.out.println(tPList.size() + " - ERROR IN CONSTRAINTS DEFINITION \n");
+//				return -1;
+//			}
+//
+//			// Now the top of the stack must contain the complete constraint representation
+//			// and we can update the base node
+//			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
+//			baseNode = MDDBaseOperators.AND.combine(manager, baseNode, tPList.pop());
+//			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
+//		}
+//		return baseNode;
+
 		// Translator
-		ConstraintToMediciIds translator = new ConstraintToMediciIds(m);
-		int nParams = m.getParameters().size();
-		int[] bounds = Operations.getBounds(m);
+		ConstraintToMDD translator = new ConstraintToMDD(m, manager);
 		// Fetch all the constraints
 		for (ctwedge.ctWedge.Constraint c : m.getConstraints()) {
-			// Fetch all the elements inside the constraint
-			Stack<Integer> tPList = new Stack<Integer>();
-			// Get constraints from the string
-			Constraint cList = getConstraintFromString(translator.doSwitch(c));
-			while (!cList.constraint.isEmpty()) { 
-				ConstraintElement ce = cList.getElement();
-				if (ce.isOperator()) {
-					int newNode;
-					int n1 = -1;
-					int n2 = -1;
-					switch (ce.operator) {
-					case "+":
-						// OR Operation
-						assert (tPList.size() >= 2);
-						n1 = tPList.pop();
-						n2 = tPList.pop();
-						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-						newNode = MDDBaseOperators.OR.combine(manager, n1, n2);
-						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-						tPList.push(newNode);
-						break;
-					case "*":
-						// AND Operation
-						assert (tPList.size() >= 2);
-						n1 = tPList.pop();
-						n2 = tPList.pop();
-						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-						newNode = MDDBaseOperators.AND.combine(manager, n1, n2);
-						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-						tPList.push(newNode);
-						break;
-					case "-":
-						// NOT Operation
-						assert (tPList.size() >= 1);
-						n1 = tPList.pop();
-						ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-						newNode = manager.not(n1);
-						ExtendedSemaphore.OPERATION_SEMAPHORE.release();
-						tPList.push(newNode);
-						break;
-					}
-				} else {
-					// Convert the value in a MDD and store it into a list
-					int newNode = getTupleFromParameter(ce.value, bounds, nParams, manager);
-					tPList.push(newNode);
-				}
-			}
-
-			// At the end of the single constraint management, each constraint must
-			// correspond to a single node
-			if (tPList.size() != 1) {
-				System.out.println(tPList.size() + " - ERROR IN CONSTRAINTS DEFINITION \n");
-				return -1;
-			}
-
+			translator.reset();
+			translator.doSwitch(c);
+			
 			// Now the top of the stack must contain the complete constraint representation
 			// and we can update the base node
 			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
-			baseNode = MDDBaseOperators.AND.combine(manager, baseNode, tPList.pop());
+			baseNode = MDDBaseOperators.AND.combine(manager, baseNode, translator.returnMdd());
 			ExtendedSemaphore.OPERATION_SEMAPHORE.release();
 		}
 		return baseNode;
@@ -300,6 +314,7 @@ public class Operations {
 
 	/**
 	 * Returns the bounds vector from a model
+	 * 
 	 * @param m the cit model
 	 * @return the bounds vector from a model
 	 */
@@ -323,7 +338,7 @@ public class Operations {
 	 * @return the corresponding index of a value read from file
 	 * @throws InterruptedException
 	 */
-	private static int getTupleFromParameter(int value, int[] bounds, int nParams, MDDManager manager)
+	static int getTupleFromParameter(int value, int[] bounds, int nParams, MDDManager manager)
 			throws InterruptedException {
 		int index = 0;
 		TupleConverter tc = new TupleConverter(manager);
@@ -362,7 +377,7 @@ public class Operations {
 	 * @return the first available path in the MDD
 	 */
 	public static int[] getPathInMDD(int node, MDDManager manager, int[] test) {
-		PathSearcher searcher = new PathSearcher(manager,1);
+		PathSearcher searcher = new PathSearcher(manager, 1);
 		searcher.setNode(node);
 		searcher.countPaths();
 		return searcher.getPath();
@@ -422,7 +437,8 @@ public class Operations {
 	 */
 	public static List<String> translateOutput(ArrayList<String> testCases, CitModel model) throws IOException {
 		List<String> csv_out = new ArrayList<>();
-		// creating an array of integers with size equal to the number of the parameters of CitModel
+		// creating an array of integers with size equal to the number of the parameters
+		// of CitModel
 		// in each position we will have the size of the corresponding parameter
 		int[] sizes = new int[model.getParameters().size()];
 		int count = 0;
@@ -433,13 +449,13 @@ public class Operations {
 			header += param.getName() + ";";
 			count++;
 		}
-		// remove 
+		// remove
 		header = header.substring(0, header.length() - 1);
 		csv_out.add(header);
 
 		// Other rows -> parameter values
 		// 1) Questo crea un oggetto che permette di mappare i parametri del
-		//    modello a numeri interi
+		// modello a numeri interi
 		ParameterValuesToInt valToInt = new ParameterValuesToInt(model);
 		for (String s : testCases) {
 			String row = "";
@@ -456,20 +472,21 @@ public class Operations {
 					val = previousCount + Integer.parseInt(values[i]);
 				}
 				// 2) Questo permette, da un valore intero, di ottenere
-				//    il valore della stringa ad esso corrispondente e lo
-				//    aggiunge a csv_out
+				// il valore della stringa ad esso corrispondente e lo
+				// aggiunge a csv_out
 				row += valToInt.convertInt(val).getSecond() + ";";
 			}
 			row = row.substring(0, row.length() - 1);
 			csv_out.add(row);
 		}
-		// remove duplicates if they are exactly the same 
+		// remove duplicates if they are exactly the same
 		csv_out = csv_out.stream().distinct().collect(Collectors.toList());
 		return csv_out;
 	}
-	
+
 	/**
-	 * Translates the output from MEDICI format to a CSV one and returns it as a String
+	 * Translates the output from MEDICI format to a CSV one and returns it as a
+	 * String
 	 * 
 	 * @param testCases: the test cases list
 	 * @param model:     the CIT Model
@@ -478,7 +495,7 @@ public class Operations {
 	 * @throws IOException
 	 */
 	public static String translateOutputToString(ArrayList<String> testCases, CitModel model) throws IOException {
-		return String.join("\n",translateOutput(testCases, model));
+		return String.join("\n", translateOutput(testCases, model));
 	}
 
 	/**
@@ -493,7 +510,7 @@ public class Operations {
 		int randomNum = rand.nextInt((max - min) + 1) + min;
 		return randomNum;
 	}
-	
+
 	/**
 	 * Deletes duplicates from a test suite in CSV format
 	 * 
@@ -503,29 +520,30 @@ public class Operations {
 	public static String deleteDuplicates(String testSuite) {
 		ArrayList<String> tests = new ArrayList<String>();
 		tests.addAll(Arrays.asList(testSuite.split("\n")));
-		
+
 		ArrayList<String> reducedTests = new ArrayList<String>();
-				
+
 		for (String element : tests) {
-            // If this element is not present in reducedTests we add it
-            if (!reducedTests.contains(element)) {
-            	reducedTests.add(element);
-            }
-        }
-		
+			// If this element is not present in reducedTests we add it
+			if (!reducedTests.contains(element)) {
+				reducedTests.add(element);
+			}
+		}
+
 		String reducedTestSuite = "";
 		for (String element : reducedTests) {
-			reducedTestSuite+=element+"\n";
+			reducedTestSuite += element + "\n";
 		}
-		
+
 		return reducedTestSuite;
-		
+
 	}
 
 	/**
 	 * Removes empty tests contexts, that do not cover any tuple
+	 * 
 	 * @param tcList the list of the test contexts
-	 * @return the polished list of test contexts 
+	 * @return the polished list of test contexts
 	 */
 	public static Vector<TestContext> removeEmpty(Vector<TestContext> tcList) {
 		tcList.removeIf(x -> x.getNCovered() == 0);
@@ -534,9 +552,10 @@ public class Operations {
 
 	/**
 	 * Removes useless tests contexts, that are implied by other test contexts
-	 * @param tcList the list of the test contexts
+	 * 
+	 * @param tcList   the list of the test contexts
 	 * @param manager: the MDD manager
-	 * @return the polished list of test contexts 
+	 * @return the polished list of test contexts
 	 */
 	public static Vector<TestContext> removeImplied(Vector<TestContext> tcList, MDDManager manager) {
 		tcList.removeIf(x -> isImpliedByTc(x, tcList, manager));
@@ -544,10 +563,11 @@ public class Operations {
 	}
 
 	/**
-	 * Checks whether the test context x is implied by one of the context in the tcList
+	 * Checks whether the test context x is implied by one of the context in the
+	 * tcList
 	 * 
-	 * @param x: the test context to be checked
-	 * @param tcList: the list of test contexts
+	 * @param x:       the test context to be checked
+	 * @param tcList:  the list of test contexts
 	 * @param manager: the MDD manager
 	 * @return true if at least one testcontext implying x is found
 	 */
@@ -558,12 +578,12 @@ public class Operations {
 			int mddNotX = manager.mnot(mddX, 1);
 			int mddTcAndNotX = MDDBaseOperators.AND.combine(manager, mddTC, mddNotX);
 			int mddImplies = manager.mnot(mddTcAndNotX, 1);
-			PathSearcher searcher = new PathSearcher(manager,1);
+			PathSearcher searcher = new PathSearcher(manager, 1);
 			searcher.setNode(mddImplies);
 			if (searcher.countPaths() == 0)
 				return true;
 		}
-		
+
 		return false;
 	}
 }

@@ -87,7 +87,7 @@ public class PMediciMDDTest {
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
 		pMedici.verb = false;
-		pMedici.generateTests("E:/GitHub/CIT_Benchmark_Generator/Benchmarks_FollowUp_CITCompetition_2022/CTWedge/MCAC_5.ctw", 2, 0);
+		pMedici.generateTests("E:/GitHub/CIT_Benchmark_Generator/Benchmarks_FollowUp_CITCompetition_2022/CTWedge/MCAC_16.ctw", 2, 0);
 	}
 
 	@Test
