@@ -10,7 +10,6 @@ import org.eclipse.xtext.EcoreUtil2;
 import ctwedge.ctWedge.AndExpression;
 import ctwedge.ctWedge.AtomicPredicate;
 import ctwedge.ctWedge.CitModel;
-import ctwedge.ctWedge.Constraint;
 import ctwedge.ctWedge.CtWedgeFactory;
 import ctwedge.ctWedge.EqualExpression;
 import ctwedge.ctWedge.Expression;
@@ -23,6 +22,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import ctwedge.generator.util.ParameterElementsGetterAsStrings;
+import ctwedge.services.CTWedgeGrammarAccess.BoolConstElements;
 import ctwedge.util.Pair;
 import ctwedge.util.ParameterValuesToInt;
 import ctwedge.util.ext.NotConvertableModel;
@@ -45,14 +45,6 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		this.tPList = new Stack<Integer>();	
 		this.bounds = Operations.getBounds(model);
 		this.valConverter = new ParameterValuesToInt(citModel);
-	}
-	
-	@Override
-	public Void caseConstraint(Constraint object) {
-		//tPList = new Stack<Integer>();
-		//System.out.println("Clean");
-		//doSwitch(object);
-		return null; 
 	}
 
 	@Override
@@ -99,7 +91,10 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 	public Void caseNotExpression(NotExpression x) {
 		// NOT Operation
 		doSwitch(x.getPredicate());
-		
+		return translateNot();
+	}
+
+	private Void translateNot() {
 		assert (tPList.size() >= 1);
 		Integer n1 = tPList.pop();
 		try {
@@ -148,11 +143,10 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 					(AtomicPredicate) x.getRight());
 			if (eqToInt.getFirst() == '-') {
 				NotExpression notL = CtWedgeFactory.eINSTANCE.createNotExpression();
-				notL.setPredicate(EcoreUtil2.clone(buildAtomicPredicateFromEqual(x)));
-				doSwitch(notL);
+				translateAtomicPredicate((AtomicPredicate)x.getRight(), ((AtomicPredicate)x.getLeft()).getName());
+				translateNot();
 			} else {
-				AtomicPredicate atom = buildAtomicPredicateFromEqual(x);
-				doSwitch(atom);
+				translateAtomicPredicate((AtomicPredicate)x.getRight(), ((AtomicPredicate)x.getLeft()).getName());
 			}
 		} else {
 			if (x.getOp() != Operators.EQ) throw new RuntimeException("equal expected"); 
@@ -188,25 +182,17 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 		atom.setName(((AtomicPredicate)x.getLeft()).getName() + "__" + ((AtomicPredicate)x.getRight()).getName());
 		return atom;
 	}
-
-	@Override
-	public Void caseAtomicPredicate(AtomicPredicate x) {
+	
+	public void translateAtomicPredicate(AtomicPredicate x, String parName) {
 		int count = 0;
 		int index = 0;
-		String parName = x.getName().split("__")[0];
-		
-		// FIXME: How to map on the correct value? It depends on the parameter, which is normally in the left side,
-		// while we here deal only with the right one
-		// It is wrong to use the following code, since the same value in different parameters (e.g., true or false 
-		// for booleans) has to be mapped differently
-		
 		for (Parameter p : model.getParameters()) {
 			if (p.getName().equals(parName)) {
 				List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
 				
-				int value = values.indexOf(x.getName().split("__")[1]);
+				int value = values.indexOf(x.getName());
 				if (value == -1) {
-					value = values.indexOf(x.getBoolConst().split("__")[1]);
+					value = values.indexOf(x.getBoolConst());
 				}
 				int newNode;
 				if (value != -1) {
@@ -217,11 +203,20 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+				} else {
+					throw new RuntimeException("Error during the translation of the AtomicPredicate");
 				}
 			}
 			count += bounds[index];
 			index++;
 		}
+	}
+
+	@Override
+	public Void caseAtomicPredicate(AtomicPredicate x) {
+		AtomicPredicate atom = CtWedgeFactory.eINSTANCE.createAtomicPredicate();
+		atom.setBoolConst("true");
+		translateAtomicPredicate(atom, x.getName());
 		return null;
 	}
 	
