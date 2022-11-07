@@ -22,7 +22,6 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
 import ctwedge.generator.util.ParameterElementsGetterAsStrings;
-import ctwedge.services.CTWedgeGrammarAccess.BoolConstElements;
 import ctwedge.util.Pair;
 import ctwedge.util.ParameterValuesToInt;
 import ctwedge.util.ext.NotConvertableModel;
@@ -142,7 +141,6 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 			Pair<Character, Integer> eqToInt = valConverter.eqToInt((AtomicPredicate) x.getLeft(), x.getOp(),
 					(AtomicPredicate) x.getRight());
 			if (eqToInt.getFirst() == '-') {
-				NotExpression notL = CtWedgeFactory.eINSTANCE.createNotExpression();
 				translateAtomicPredicate((AtomicPredicate)x.getRight(), ((AtomicPredicate)x.getLeft()).getName());
 				translateNot();
 			} else {
@@ -174,13 +172,6 @@ public class ConstraintToMDD extends CtWedgeSwitch<Void> {
 			doSwitch(orE);
 		}
 		return null;
-	}
-
-	private AtomicPredicate buildAtomicPredicateFromEqual(EqualExpression x) {
-		AtomicPredicate atom = CtWedgeFactory.eINSTANCE.createAtomicPredicate();
-		atom.setBoolConst(((AtomicPredicate)x.getLeft()).getName() + "__" + ((AtomicPredicate)x.getRight()).getBoolConst());
-		atom.setName(((AtomicPredicate)x.getLeft()).getName() + "__" + ((AtomicPredicate)x.getRight()).getName());
-		return atom;
 	}
 	
 	public void translateAtomicPredicate(AtomicPredicate x, String parName) {
