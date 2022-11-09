@@ -301,4 +301,12 @@ public class PMedici implements Callable<Integer> {
 	public void setOldTs(String oldTs) {
 		this.oldTs = oldTs;
 	}
+	
+	/**
+	 * Sets the expand mode
+	 * @param expand true if the expand mode (no tests have to be created) is used
+	 */
+	public void setExpand(boolean expand) {
+		this.expand = expand;
+	}
 }
