@@ -188,7 +188,7 @@ public class PMediciPlus {
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
 			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, newModel.getParameters().size(),
-					newModel.getConstraints().size()>0, manager, testContextsMutex, verb));
+					newModel.getConstraints().size()>0, manager, testContextsMutex, verb, false));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}

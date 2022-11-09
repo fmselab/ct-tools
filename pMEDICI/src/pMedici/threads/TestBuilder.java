@@ -77,6 +77,11 @@ public class TestBuilder implements Runnable {
 	boolean useConstraints;
 	
 	/**
+	 * Only expand tests and do not create new ones
+	 */
+	boolean expand;
+	
+	/**
 	 * The MDD Manager
 	 */
 	MDDManager manager;
@@ -98,8 +103,9 @@ public class TestBuilder implements Runnable {
 	 * @param manager: the MDD Manager
 	 * @param testContextMutex: the mutex semaphore for interacting with the test context list
 	 * @param verb: use verbose mode?
+	 * @param expand: use the expand mode?
 	 */
-	public TestBuilder(int baseMDD, SafeQueue safeQueue, Vector<TestContext> tcList, boolean sort, int nParam, boolean useConstraints, MDDManager manager, ExtendedSemaphore testContextMutex, boolean verb) {
+	public TestBuilder(int baseMDD, SafeQueue safeQueue, Vector<TestContext> tcList, boolean sort, int nParam, boolean useConstraints, MDDManager manager, ExtendedSemaphore testContextMutex, boolean verb, boolean expand) {
 		this.baseMDD = baseMDD;
 		this.safeQueue = safeQueue;
 		this.tcList = tcList;
@@ -110,6 +116,7 @@ public class TestBuilder implements Runnable {
 		this.useConstraints = useConstraints;
 		this.manager = manager;
 		this.verb = verb;
+		this.expand = expand;
 	}
 	
 	/**
@@ -237,41 +244,43 @@ public class TestBuilder implements Runnable {
 				
 				// Incompatible or not implied for every test context
 				// 	-> Not implied and not coverable: build a new test context
-				TestContext tc;
-				if (empty != null && RecycleUnusedTestContexts) {
-					tc = empty;
-				} else {
-					tc = new TestContext(baseMDD, nParam, useConstraints, manager);
-				}
-				
-				try {
-					tc.testMutex.acquire();
-					// Check if it is coverable by a new test context
-					if (tc.isCoverable(tuple)) {					
-						boolean added = tc.addTuple(tuple);
-						if (!added)
-							safeQueue.reinsert(tuple);
-						
-						tc.testMutex.release();
-						
-						// Add the new test context to the list
-						this.testContextMutex.acquire();
-						tcList.add(tc);
-						this.testContextMutex.release();
-						
-						if (verb)
-							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
-						empty = null; // empty is no longer empty
+				if (!expand) {
+					TestContext tc;
+					if (empty != null && RecycleUnusedTestContexts) {
+						tc = empty;
 					} else {
-						if (verb)
-							System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " is not coverable");
-						nUncoverable++;
-						empty = tc; // empty is usable if needed
-						tc.testMutex.release();
+						tc = new TestContext(baseMDD, nParam, useConstraints, manager);
 					}
-				} catch (InterruptedException e) {
-					System.out.println(e.getMessage());
-				}				
+					
+					try {
+						tc.testMutex.acquire();
+						// Check if it is coverable by a new test context
+						if (tc.isCoverable(tuple)) {					
+							boolean added = tc.addTuple(tuple);
+							if (!added)
+								safeQueue.reinsert(tuple);
+							
+							tc.testMutex.release();
+							
+							// Add the new test context to the list
+							this.testContextMutex.acquire();
+							tcList.add(tc);
+							this.testContextMutex.release();
+							
+							if (verb)
+								System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " has been covered by a new test context");
+							empty = null; // empty is no longer empty
+						} else {
+							if (verb)
+								System.out.println("The tuple " + pMedici.util.Operations.printTuple(tuple) + " is not coverable");
+							nUncoverable++;
+							empty = tc; // empty is usable if needed
+							tc.testMutex.release();
+						}
+					} catch (InterruptedException e) {
+						System.out.println(e.getMessage());
+					}	
+				}
 			}
 		}	
 	}	

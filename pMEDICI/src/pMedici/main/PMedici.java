@@ -49,6 +49,10 @@ public class PMedici implements Callable<Integer> {
 	/** Use the verbose mode */
 	@Option(names = "-verb", description = "Use the verbose mode.")
 	boolean verb;
+	
+	/** Use the expand mode */
+	@Option(names = "-expand", description = "Only complete partial tests, and do not create new ones. It is not active by default")
+	boolean expand = false;
 
 	/** Load a previous test suite */
 	@Option(names = "-old", description = "CSV file containing the old test suite, with commas and header in the first row")
@@ -157,7 +161,7 @@ public class PMedici implements Callable<Integer> {
 		boolean useConstraints = model.getConstraints().size() > 0;
 		for (int i = 0; i < nThreads; i++) {
 			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, nParams, useConstraints,
-					manager, testContextsMutex, verb));
+					manager, testContextsMutex, verb, expand));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
