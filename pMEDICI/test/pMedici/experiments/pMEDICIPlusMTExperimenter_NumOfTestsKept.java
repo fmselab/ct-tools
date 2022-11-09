@@ -81,6 +81,7 @@ public class pMEDICIPlusMTExperimenter_NumOfTestsKept {
 		String newTestSuite;
 
 		long startTime;
+		@SuppressWarnings("unused")
 		long endTime;
 
 		ConsoleManager consoleManger = new ConsoleManager(System.out);

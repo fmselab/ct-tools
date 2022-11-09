@@ -51,12 +51,12 @@ public class PMedici implements Callable<Integer> {
 	boolean verb;
 	
 	/** Use the expand mode */
-	@Option(names = "-expand", description = "Only complete partial tests, and do not create new ones. It is not active by default")
+	@Option(names = "-expand", description = "Only complete partial tests, and do not create new ones. It is not active by default.")
 	boolean expand = false;
 
 	/** Load a previous test suite */
 	@Option(names = "-old", description = "CSV file containing the old test suite, with commas and header in the first row")
-	public String oldTs = "";
+	String oldTs = "";
 
 	/**
 	 * Variable used to share the size of the generated test suite with the class
@@ -292,5 +292,13 @@ public class PMedici implements Callable<Integer> {
 	 */
 	public CitModel getModel() {
 		return this.model;
+	}
+	
+	/**
+	 * Sets the old test suite path
+	 * @param oldTs the path of the old test suite 
+	 */
+	public void setOldTs(String oldTs) {
+		this.oldTs = oldTs;
 	}
 }
