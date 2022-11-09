@@ -13,3 +13,4 @@ Repository containing all the CIT tools developed by fmselab
 - `pMEDICI`: a multi-threaded tool for generating combinatorial test suites, derived from `MEDICI`, presented in in [*Parallel Test Generation for Combinatorial Models
 Based on Multivalued Decision Diagrams*]()
 (Bombarda, Andrea, and Gargantini, Angelo) in 11th International Workshop on Combinatorial Testing (IWCT 2022)
+- `IncrementalCitGeneration`: experiments, based on `pMEDICI`, `ACTS` and `pMEDICI+`, about incremental test suites generation
