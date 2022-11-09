@@ -52,7 +52,7 @@ public class PMedici implements Callable<Integer> {
 
 	/** Load a previous test suite */
 	@Option(names = "-old", description = "CSV file containing the old test suite, with commas and header in the first row")
-	private String oldTs = "";
+	public String oldTs = "";
 
 	/**
 	 * Variable used to share the size of the generated test suite with the class
@@ -145,7 +145,7 @@ public class PMedici implements Callable<Integer> {
 		Vector<TestContext> tcList = new Vector<TestContext>();
 
 		// If old test suite file is specified, load it in the tcList
-		if (oldTs != "") {
+		if (!oldTs.equals("")) {
 			Vector<Map<String, String>> oldTests = CSVImporter.read(oldTs);
 			initializeTestContexts(model, manager, baseMDD, tcList, oldTests);
 		}
