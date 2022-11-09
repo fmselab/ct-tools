@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.Map.Entry;
 
 import org.junit.Test;
@@ -22,7 +23,8 @@ public class IWCT2023Test {
 
 	static int N_REP = 10;
 	static String PATH = "../ctwedge/ctwedge.parent/ctwedge.benchmarks/models/EMSE10/";
-	static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+	//static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+	static int[] PERCENTAGE_REMOVAL = { 50 };
 	static String TEMP_FILE_NAME = "temp.txt";
 	
 	@Test
@@ -38,6 +40,7 @@ public class IWCT2023Test {
 		TestContext.IN_TEST = true;
 		
 		for (File f : listOfFiles) {
+			if (!f.getAbsolutePath().endsWith(".ctw")) continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
 			// Repeat the experiments N_REP times
 			for (int i=0; i<N_REP; i++) {
@@ -53,7 +56,6 @@ public class IWCT2023Test {
 					}
 					// Save the test suite to file
 					TestSuite tsTemp = new TestSuite(toCSVcode(tempTs), model);
-					tsTemp.populateTestSuite();
 					t.generateOutput(tsTemp, TEMP_FILE_NAME);
 					// --------------------------------
 					// INCREMENTAL APPROACH
@@ -72,8 +74,10 @@ public class IWCT2023Test {
 					ts3.setGeneratorName("pMEDICI");
 					// Add the tests of the previous test suite and remove duplicates
 					ts3.getTests().addAll(tempTs);
-					// TODO: Remove duplicates
-					printStats(ts3, percentage, 2, output_file);
+					tempTs = ts3.getTests();
+					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
+					tsTemp = new TestSuite(toCSVcode(tempTs), model);
+					printStats(tsTemp, percentage, 2, output_file);
 				}
 			}
 		}
@@ -119,6 +123,7 @@ public class IWCT2023Test {
 	
 	@Test
 	public void testIncreaseCITCoverage() {
+		// TODO: Complete
 		fail("Not yet implemented");
 	}
 	
