@@ -22,7 +22,7 @@ import pMedici.safeelements.TestContext;
 public class IWCT2023Test {
 
 	static int N_REP = 10;
-	static String PATH = "../ctwedge/ctwedge.parent/ctwedge.benchmarks/models/EMSE10/";
+	static String PATH = "../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2022/CTWedge/";
 	//static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
 	static int[] PERCENTAGE_REMOVAL = { 50 };
 	static String TEMP_FILE_NAME = "temp.txt";
@@ -40,7 +40,7 @@ public class IWCT2023Test {
 		TestContext.IN_TEST = true;
 		
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw")) continue;
+			if (!f.getAbsolutePath().endsWith(".ctw") || f.getName().startsWith("NUMC_")) continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
 			// Repeat the experiments N_REP times
 			for (int i=0; i<N_REP; i++) {
@@ -55,7 +55,8 @@ public class IWCT2023Test {
 						tempTs.remove(random.nextInt(tempTs.size()));
 					}
 					// Save the test suite to file
-					TestSuite tsTemp = new TestSuite(toCSVcode(tempTs), model);
+					String csvCode = toCSVcode(tempTs);
+					TestSuite tsTemp = new TestSuite(csvCode, model);
 					t.generateOutput(tsTemp, TEMP_FILE_NAME);
 					// --------------------------------
 					// INCREMENTAL APPROACH
@@ -76,7 +77,7 @@ public class IWCT2023Test {
 					ts3.getTests().addAll(tempTs);
 					tempTs = ts3.getTests();
 					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
-					tsTemp = new TestSuite(toCSVcode(tempTs), model);
+					tsTemp = new TestSuite(csvCode, model);
 					printStats(tsTemp, percentage, 2, output_file);
 				}
 			}
@@ -94,6 +95,7 @@ public class IWCT2023Test {
 		TestContext.IN_TEST = true;
 		
 		for (File f : listOfFiles) {
+			if (!f.getAbsolutePath().endsWith(".ctw") || f.getName().startsWith("NUMC_")) continue;
 			// Repeat the experiments N_REP times
 			for (int i=0; i<N_REP; i++) {
 				// Generate test suite with pMEDICI for strength 2
