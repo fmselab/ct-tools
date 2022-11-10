@@ -78,12 +78,14 @@ public class IWCT2023Test {
 					pMEDICI.setOldTs("");
 					TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
 					// Add the tests of the previous test suite and remove duplicates
+					long start = System.currentTimeMillis();
 					ts3.getTests().addAll(tempTs);
 					tempTs = ts3.getTests();
 					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
 					tsTemp = new TestSuite(csvCode, model, ",");
 					tsTemp.setGeneratorName("pMEDICI");
-					printStats(tsTemp, percentage, 2, output_file);
+					tsTemp.setGeneratorTime(ts3.getGeneratorTime() + (System.currentTimeMillis() - start));
+					printStats(tsTemp, 0, 2, output_file);
 				}
 			}
 		}
