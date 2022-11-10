@@ -48,7 +48,7 @@ public class IWCT2023Test {
 				TestSuite ts1 = null;
 				try {
 					 ts1 = getACTSTestSuite(model, 2);
-				} catch (Exception e) {
+				} catch (Error e) {
 					continue;
 				}
 				// Remove a percentage of test cases
