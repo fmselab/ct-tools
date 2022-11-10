@@ -56,7 +56,7 @@ public class IWCT2023Test {
 					}
 					// Save the test suite to file
 					String csvCode = toCSVcode(tempTs);
-					TestSuite tsTemp = new TestSuite(csvCode, model);
+					TestSuite tsTemp = new TestSuite(csvCode, model, ",");
 					t.generateOutput(tsTemp, TEMP_FILE_NAME);
 					// --------------------------------
 					// INCREMENTAL APPROACH
@@ -77,7 +77,7 @@ public class IWCT2023Test {
 					ts3.getTests().addAll(tempTs);
 					tempTs = ts3.getTests();
 					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
-					tsTemp = new TestSuite(csvCode, model);
+					tsTemp = new TestSuite(csvCode, model, ",");
 					printStats(tsTemp, percentage, 2, output_file);
 				}
 			}
