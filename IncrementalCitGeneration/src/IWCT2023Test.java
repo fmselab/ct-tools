@@ -45,7 +45,12 @@ public class IWCT2023Test {
 			// Repeat the experiments N_REP times
 			for (int i=0; i<N_REP; i++) {
 				// Generate test suite with ACTS
-				TestSuite ts1 = getACTSTestSuite(model, 2);
+				TestSuite ts1 = null;
+				try {
+					 ts1 = getACTSTestSuite(model, 2);
+				} catch (Exception e) {
+					continue;
+				}
 				// Remove a percentage of test cases
 				for (int percentage : PERCENTAGE_REMOVAL) {
 					List<ctwedge.util.Test> tempTs = ts1.getTests();
@@ -72,12 +77,12 @@ public class IWCT2023Test {
 					// Generate the test suite from scratch with pMEDICI
 					pMEDICI.setOldTs("");
 					TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
-					ts3.setGeneratorName("pMEDICI");
 					// Add the tests of the previous test suite and remove duplicates
 					ts3.getTests().addAll(tempTs);
 					tempTs = ts3.getTests();
 					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
 					tsTemp = new TestSuite(csvCode, model, ",");
+					tsTemp.setGeneratorName("pMEDICI");
 					printStats(tsTemp, percentage, 2, output_file);
 				}
 			}
