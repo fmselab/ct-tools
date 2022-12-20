@@ -53,14 +53,15 @@ public class IWCT2023Test {
 				}
 				// Remove a percentage of test cases
 				for (int percentage : PERCENTAGE_REMOVAL) {
+					List<ctwedge.util.Test> tempTsActs = ts1.getTests();
 					List<ctwedge.util.Test> tempTs = ts1.getTests();
-					int nToBeRemoved = (int) (tempTs.size() * (percentage / 100.0));
+					int nToBeRemoved = (int) (tempTsActs.size() * (percentage / 100.0));
 					// Remove nToBeRemoved tests
 					for (int j = 0; j < nToBeRemoved; j++) {
-						tempTs.remove(random.nextInt(tempTs.size()));
+						tempTsActs.remove(random.nextInt(tempTsActs.size()));
 					}
 					// Save the test suite to file
-					String csvCode = toCSVcode(tempTs);
+					String csvCode = toCSVcode(tempTsActs);
 					TestSuite tsTemp = new TestSuite(csvCode, model, ",");
 					t.generateOutput(tsTemp, TEMP_FILE_NAME);
 					// --------------------------------
@@ -83,7 +84,7 @@ public class IWCT2023Test {
 					TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
 					// Add the tests of the previous test suite and remove duplicates
 					long start = System.currentTimeMillis();
-					ts3.getTests().addAll(tempTs);
+					ts3.getTests().addAll(tempTsActs);
 					tempTs = ts3.getTests();
 					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
 					tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
