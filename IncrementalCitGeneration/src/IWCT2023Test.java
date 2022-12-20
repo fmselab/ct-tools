@@ -21,8 +21,8 @@ import pMedici.safeelements.TestContext;
 
 public class IWCT2023Test {
 
-	static int N_REP = 10;
-	static String PATH = "../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2022/CTWedge/";
+	static int N_REP = 5;
+	static String PATH = "../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/CTWedge/";
 	//static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
 	static int[] PERCENTAGE_REMOVAL = { 50 };
 	static String TEMP_FILE_NAME = "temp.txt";
@@ -69,8 +69,12 @@ public class IWCT2023Test {
 					// Load the test suite into pMEDICI+ and generate the new test suite incrementally
 					pMEDICI.setOldTs("temp.txt");
 					TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
-					ts2.setGeneratorName("pMEDICI+");
-					printStats(ts2, percentage, 2, output_file);
+					tempTs = ts2.getTests();
+					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
+					tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
+					tsTemp.setGeneratorName("pMEDICI+");
+					tsTemp.setGeneratorTime(ts2.getGeneratorTime());
+					printStats(tsTemp, percentage, 2, output_file);
 					// --------------------------------
 					// TRADITIONAL APPROACH
 					// --------------------------------
@@ -82,7 +86,7 @@ public class IWCT2023Test {
 					ts3.getTests().addAll(tempTs);
 					tempTs = ts3.getTests();
 					tempTs = tempTs.stream().distinct().collect(Collectors.toList());
-					tsTemp = new TestSuite(csvCode, model, ",");
+					tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
 					tsTemp.setGeneratorName("pMEDICI");
 					tsTemp.setGeneratorTime(ts3.getGeneratorTime() + (System.currentTimeMillis() - start));
 					printStats(tsTemp, 0, 2, output_file);
