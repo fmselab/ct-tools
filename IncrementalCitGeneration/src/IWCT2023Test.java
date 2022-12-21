@@ -22,7 +22,7 @@ import pMedici.safeelements.TestContext;
 public class IWCT2023Test {
 
 	static int N_REP = 5;
-	static String PATH = "../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/CTWedge/";
+	static String PATH = "../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/CTWedge/";
 	//static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
 	static int[] PERCENTAGE_REMOVAL = { 50 };
 	static String TEMP_FILE_NAME = "temp.txt";
@@ -41,6 +41,7 @@ public class IWCT2023Test {
 		
 		for (File f : listOfFiles) {
 			if (!f.getAbsolutePath().endsWith(".ctw") || f.getName().startsWith("NUMC_")) continue;
+			
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
 			// Repeat the experiments N_REP times
 			for (int i=0; i<N_REP; i++) {
@@ -49,6 +50,7 @@ public class IWCT2023Test {
 				try {
 					 ts1 = getACTSTestSuite(model, 2);
 				} catch (Error e) {
+					System.err.println(e.getMessage());
 					continue;
 				}
 				// Remove a percentage of test cases
