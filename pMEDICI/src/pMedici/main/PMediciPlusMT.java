@@ -30,6 +30,7 @@ import pMedici.importer.CSVImporter;
  * @author Luca Parimbelli
  * 
  */
+@Deprecated
 public class PMediciPlusMT {
 
 	public static boolean PRINT_DEBUG = false;

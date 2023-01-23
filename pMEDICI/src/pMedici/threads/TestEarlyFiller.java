@@ -21,6 +21,7 @@ import pMedici.util.TestModel;
  * @author Luca Parimbelli
  *
  */
+@SuppressWarnings("deprecation")
 public class TestEarlyFiller implements Runnable {
 
 	/**

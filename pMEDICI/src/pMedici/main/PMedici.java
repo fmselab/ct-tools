@@ -1,5 +1,8 @@
 package pMedici.main;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +27,7 @@ import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
 import pMedici.safeelements.TestContext;
 import pMedici.threads.TestBuilder;
+import pMedici.threads.TestSuitePrinter;
 import pMedici.threads.TupleFiller;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
@@ -57,6 +61,18 @@ public class PMedici implements Callable<Integer> {
 	/** Load a previous test suite */
 	@Option(names = "-old", description = "CSV file containing the old test suite, with commas and header in the first row")
 	String oldTs = "";
+	
+	/** Stores partial test suites */
+	@Option(names = "-savePartialStep", description = "Step used for saving the partial test suites [ms]")
+	int savePartialStep = -1;
+	
+	/** Output path */
+	@Option(names = "-output", description = "The output path")
+	String path = "";
+	
+	/** Filename Prefix */
+	@Option(names = "-prefix", description = "Prefix to be used when saving files of the test suite")
+	String prefix = "";
 
 	/**
 	 * Variable used to share the size of the generated test suite with the class
@@ -165,6 +181,13 @@ public class PMedici implements Callable<Integer> {
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
+		
+		// Save partial tests?
+		if (savePartialStep > -1) {
+			Thread tBuilder = new Thread(new TestSuitePrinter(tcList, testContextsMutex, tuples, savePartialStep, model, prefix, path + model.getName()));
+			tBuilder.start();
+			tBuilder.join();
+		}
 
 		// Join all the test builder threads
 		for (int i = 0; i < nThreads; i++) {
@@ -190,6 +213,16 @@ public class PMedici implements Callable<Integer> {
 			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println("Time required for test suite generation: " + generationTime + " ms");
+			
+			// Save test suite to file
+			if (!prefix.equals("")) {
+				BufferedWriter bw = new BufferedWriter(
+						new FileWriter(new File(path + model.getName() + "/" + prefix + "final" + ".csv")));
+				bw.write(tsAsCSV);
+				bw.write("\n\n");
+				bw.write("Time required for test suite generation: " + generationTime + " ms");
+				bw.close();				
+			}
 		}
 
 		// Join the tuple filler thread

@@ -8,6 +8,7 @@ public class PMediciPlus_Invoker {
 	private static final String EVOLUTION_MODELS_OLDTESTS_INPUT_FOLDER = "../pMEDICI/evolutionModels_TestsCSV/";
 	private static final String EVOLUTION_MODELS_INCREMENTALTESTS_OUTPUT_FOLDER = "../pMEDICI/evolutionModels_IncrementalTestsCSV/";
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 //		Example of different PMedici version invocations:

@@ -19,6 +19,7 @@ import pMedici.main.PMediciPlusMT;
  * @author Luca Parimbelli
  *
  */
+@SuppressWarnings("deprecation")
 public class pMEDICIPlusMTExperimenter_NumOfTestsKept {
 	private static final String EVOLUTION_MODELS_INPUT_FOLDER = "../pMEDICI/evolutionModels/";
 	private static final String EVOLUTION_MODELS_OLDTESTS_INPUT_FOLDER = "../pMEDICI/evolutionModels_TestsCSV/";
