@@ -1,6 +1,6 @@
 # CT-Tools
 
-![FoselabCTLogo](relative%20img/logo_foselab.png?raw=true "Title")
+![FoselabCTLogo](https://github.com/fmselab/ct-tools/blob/main/img/logo_foselab.png?raw=true)
 
 Repository containing all the CIT tools developed by fmselab
 
