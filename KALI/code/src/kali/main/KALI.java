@@ -105,7 +105,6 @@ public class KALI {
 		// Read the combinatorial model and get the MDD representing the model without constraints
 		CitModel m = Utility.loadModelFromPath(fileName);
 
-		int nCovered = 0;
 		int totTuples = 0;
 		
 		// Set parameter ordering strategy
@@ -117,45 +116,14 @@ public class KALI {
 		// Get current time
 		long start = System.currentTimeMillis();
 
-		// Compute the position of each parameter
-		Map<String, Integer> paramPosition = new HashMap<String, Integer>();
-		paramPosition = Operations.setParamPosition(m);
-
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
-
-		// Combination generator
-		Map<String, List<Object>> elements = Operations.getElementsMap(m, ORDER);
-		Iterator<List<Pair<String, Object>>> tg = ModelUtils.getAllKWiseCombination(elements, strength);
-
-		// Start the filler thread
-		TupleFiller tFiller = new TupleFiller(tg, tuples);
-		Thread tFillerThread = new Thread(tFiller);
-		tFillerThread.start();
-
-		// Start all the TestBuilder threads
-		if (nThreads == -1) {
-			nThreads = Runtime.getRuntime().availableProcessors();
-			if (KALI.PRINT_DEBUG)
-				System.out.println("using " + nThreads + " threads");
-		}
-		
-		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
+		// test copntext list
 		Vector<TestContext> tcList = new Vector<TestContext>();
-		int nParams = m.getParameters().size();
-		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
-		for (int i = 0; i < nThreads; i++) {
-			Thread tBuilder = new Thread(
-					new TestBuilder(tuples, tcList, SORT, nParams, nParams > 0, testContextsMutex, paramPosition, m));
-			testBuilderThreads.add(tBuilder);
-			tBuilder.start();
-		}
 
-		// Join all the test builder threads
-		for (int i = 0; i < nThreads; i++) {
-			testBuilderThreads.get(i).join();
-		}
+		Thread tFillerThread = generateTestSuite(strength, m, tuples, tcList);
 
+		int nCovered = 0;
 		// Compute the summary values
 		System.out.println("-----TEST SUITE-----");
 		
@@ -202,9 +170,48 @@ public class KALI {
 			bw.newLine();
 			bw.close();
 		}
-
+		// TODO: non si puàò mettere prima?
 		// Join the tuple filler thread
 		tFillerThread.join();
+	}
+
+	private Thread generateTestSuite(Integer strength, CitModel m, SafeQueue tuples,
+			Vector<TestContext> tcList) throws InterruptedException {
+		// Compute the position of each parameter
+		Map<String, Integer> paramPosition = new HashMap<String, Integer>();
+		paramPosition = Operations.setParamPosition(m);
+
+		// Combination generator
+		Map<String, List<Object>> elements = Operations.getElementsMap(m, ORDER);
+		Iterator<List<Pair<String, Object>>> tg = ModelUtils.getAllKWiseCombination(elements, strength);
+
+		// Start the filler thread
+		TupleFiller tFiller = new TupleFiller(tg, tuples);
+		Thread tFillerThread = new Thread(tFiller);
+		tFillerThread.start();
+
+		// Start all the TestBuilder threads
+		if (nThreads == -1) {
+			nThreads = Runtime.getRuntime().availableProcessors();
+			if (KALI.PRINT_DEBUG)
+				System.out.println("using " + nThreads + " threads");
+		}
+		
+		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
+		int nParams = m.getParameters().size();
+		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
+		for (int i = 0; i < nThreads; i++) {
+			Thread tBuilder = new Thread(
+					new TestBuilder(tuples, tcList, SORT, nParams, nParams > 0, testContextsMutex, paramPosition, m));
+			testBuilderThreads.add(tBuilder);
+			tBuilder.start();
+		}
+
+		// Join all the test builder threads
+		for (int i = 0; i < nThreads; i++) {
+			testBuilderThreads.get(i).join();
+		}
+		return tFillerThread;
 	}
 
 }
