@@ -23,21 +23,21 @@ public class PMediciTestReduce {
 
 	@Test
 	public void test1() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		extracted("examples/CTComp/BOOLC_0.ctw");
+		generateAndCheck("examples/CTComp/BOOLC_0.ctw");
 
 	}
 	@Test
 	public void test2() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		extracted("examples/CTComp/MCAC_0.ctw");
+		generateAndCheck("examples/CTComp/MCAC_0.ctw");
 
 	}
 	@Test
 	public void testSimple() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		extracted("examples/BOOLC_4_Simple.ctw");
+		generateAndCheck("examples/BOOLC_4_Simple.ctw");
 
 	}
 
-	public void extracted(String fileName) throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	public void generateAndCheck(String fileName) throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
 		Logger.getLogger(MinimalityTestSuiteValidator.class).setLevel(Level.OFF);
 		Logger.getLogger(ParameterSwitchToPairStrings.class).setLevel(Level.OFF);
 		TestContext.IN_TEST = true;
@@ -46,6 +46,11 @@ public class PMediciTestReduce {
 		TestBuilder.LockTCOnlyOnWriting = false;
 		TestSuite testsuite = pMedici.generateTests(fileName,2, 1);
 		assertEquals(2, testsuite.getStrength());
+		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(testsuite);
+		assertTrue(validator.isValid());
+		System.out.println("the produced test suite is valid");	
+		assertTrue(validator.isComplete());
+		System.out.println("the produced test suite is complete");	
 		System.out.println("test suite size " + testsuite.getTests().size());
 		MinimalityTestSuiteValidator minimality = new MinimalityTestSuiteValidator(testsuite);
 		System.out.println("minimal ?" + minimality.isMinimal());
@@ -53,7 +58,7 @@ public class PMediciTestReduce {
 		assertNotNull(reducedTS.getModel());
 		System.out.println("reduced test size " + reducedTS.getTests().size() + " original " + testsuite.getTests().size());
 		// 
-		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(reducedTS);
+		validator = new SMTTestSuiteValidator(reducedTS);
 		assertTrue(validator.isComplete());
 		System.out.println("the reduced test suite is complete");		
 	}
