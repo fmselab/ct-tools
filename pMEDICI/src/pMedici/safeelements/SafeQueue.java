@@ -16,7 +16,7 @@ public class SafeQueue {
 	/**
 	 * The maximum size of the queue
 	 */
-	public static int QUEUE_SIZE = 40;
+	public static int QUEUE_SIZE = 100;
 	
 	/**
 	 * Creates the SafeQuene in which the producer can add new tuples and the consumer can extract one

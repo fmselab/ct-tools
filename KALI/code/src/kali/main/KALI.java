@@ -60,6 +60,9 @@ public class KALI {
 	
 	@Option(name = "-solver", usage = "solver to be used in test context [MATHSAT, SMTINTERPOL, Z3, PRINCESS, BOOLECTOR, CVC4, YICES2] (if not specified, SMTINTERPOL is used)")
 	private String SOLVER = "SMTINTERPOL";	
+	
+	@Option(name = "-r", usage = "randomize: start the test generation with a random test suite and then complete/fix it")
+	private boolean randomize = false;	
 
 	// receives other command line parameters than options
 	@Argument
@@ -85,7 +88,6 @@ public class KALI {
 				strength = Integer.parseInt(arguments.get(0));
 				if (strength < 2)
 					throw new CmdLineException(parser, "strength cannot be less than 2");
-				// TODO: We should check that the strength is lower than the number of parameters of the model
 			} catch (NumberFormatException nf) {
 				throw new CmdLineException(parser, "strength must be a number >= 2 " + nf.getLocalizedMessage());
 			}
@@ -104,7 +106,12 @@ public class KALI {
 		String fileName = arguments.get(1);
 		// Read the combinatorial model and get the MDD representing the model without constraints
 		CitModel m = Utility.loadModelFromPath(fileName);
-
+		// The chosen strength must be lower or equal to the number of parameters
+		if (m.getParameters().size() < strength) {
+			System.err.println("strength cannot be higher than the number of parameters");
+			return;
+		}
+			
 		int nCovered = 0;
 		int totTuples = 0;
 		
