@@ -78,7 +78,6 @@ public class KALI {
 	public TestSuite doMain(String[] args) throws IOException, InterruptedException {
 		HashSet<String> tests = new HashSet<String>();
 		String tsAsCSV = "";
-		int size = 0;
 		CmdLineParser parser = new CmdLineParser(this);
 		Integer strength = null;
 		try {
@@ -170,8 +169,7 @@ public class KALI {
 		for (TestContext tc : tcList) {
 			nCovered += tc.getNCovered();
 			try {
-				tsAsCSV += tc.getTest(false) + "\n";
-				size++;
+				tests.add(tc.getTest(false));
 			} catch (InterruptedException | SolverException e) {
 				System.out.println(e.getMessage());
 			}
@@ -181,8 +179,10 @@ public class KALI {
 		totTuples = tuples.getNTuples();
 
 		// Print the tests
-		System.out.println(tsAsCSV);
-		
+		tests.forEach(x -> {
+			System.out.println(x);
+		});
+
 		// Print the tests
 		long generationTime = System.currentTimeMillis() - start;
 		if (verbose) {
@@ -190,18 +190,21 @@ public class KALI {
 			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println("Time required for test suite generation: " + generationTime + " ms");
-			System.out.println("Generated " + size + " tests");
+			System.out.println("Generated " + tcList.size() + " tests");
 		} else {
 			FileWriter fw = new FileWriter(OUTPUT_TXT, true);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(fileName + ";" + size + ";" + generationTime + ";" + SORT + ";" + ORDER.toString() + ";"
+			bw.write(fileName + ";" + tests.size() + ";" + generationTime + ";" + SORT + ";" + ORDER.toString() + ";"
 					+ nThreads + ";" + TestContext.SMTSolver);
 			bw.newLine();
 			bw.close();
 		}
 
 		// Create and return the test suite
-		tsAsCSV = header.substring(0, header.length() - 1) + "\n" + tsAsCSV;
+		tsAsCSV = header.substring(0, header.length() - 1) + "\n";
+		for (String t : tests) {
+			tsAsCSV += t + "\n";
+		}
 		TestSuite testSuite = new TestSuite(tsAsCSV, m);
 		testSuite.setStrength(strength);
 		testSuite.setGeneratorTime(generationTime);
