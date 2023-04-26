@@ -43,11 +43,11 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.colomoto</groupId>
 			<artifactId>MDDlib</artifactId>
 			<version>0.4.1</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>ctwedge</groupId>
 			<artifactId>ctwedge.util</artifactId>

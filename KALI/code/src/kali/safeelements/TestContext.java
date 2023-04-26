@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
+import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import ctwedge.util.Pair;
 import kali.threads.TestBuilder;
 import kali.util.Operations;
@@ -35,66 +37,67 @@ import kali.util.TestCase;
 import kali.util.TupleConverter;
 
 public class TestContext {
-	
+
 	public static String UNDEF = "*";
-	
+
 	/**
-	 *  The smt solver to be used
+	 * The smt solver to be used
 	 */
 	public static Solvers SMTSolver = Solvers.SMTINTERPOL;
 
 	/**
-	 * The configuration to be used by the SMT solver 
+	 * The configuration to be used by the SMT solver
 	 */
-	public static Configuration config =Configuration.defaultConfiguration();
-	
+	public static Configuration config = Configuration.defaultConfiguration();
+
 	/**
 	 * The (partial) test containing the values already set
 	 */
 	Object[] test;
-	
+
 	/**
 	 * Are the constraints present?
 	 */
 	boolean useConstraints;
 
 	/**
-	 *  Number of tuples covered by this test context 
+	 * Number of tuples covered by this test context
 	 */
 	int nCovered;
-	
+
 	/**
 	 * The current boolean formula
 	 */
 	BooleanFormula currentFormula;
-	
+
 	/**
 	 * The context
 	 */
 	SolverContext context;
-	
+
 	/**
 	 * The semaphore for managing a test context in a mutex manner
 	 */
 	public ExtendedSemaphore testMutex;
-	
+
 	/**
 	 * The structure mapping the parameter on its position
 	 */
 	Map<String, Integer> paramPosition;
-	
+
 	/**
 	 * The Cit Model
 	 */
 	CitModel model;
-	
+
 	/**
 	 * Support structures to maintain the elements and the variables mapping
 	 */
 	HashMap<Parameter, List<Formula>> variablesList;
-	
+
 	/**
-	 * The Map storing each parameter and the corresponding formulas (one for each value of the enumerative)
+	 * The Map storing each parameter and the corresponding formulas (one for each
+	 * value of the enumerative)
 	 */
 	public Map<Parameter, Map<String, Formula>> declaredTypes = new HashMap<>();
 
@@ -102,27 +105,24 @@ public class TestContext {
 	 * The prover to be used when checking formulas
 	 */
 	ProverEnvironment prover;
-	
+
 	/**
 	 * Builds a new TestContext
 	 * 
-	 * @param nParams: the number of parameters of the combinatorial problem
+	 * @param nParams:        the number of parameters of the combinatorial problem
 	 * @param useConstraints: are constraints present?
-	 * @param paramPosition: structure mapping the parameter on its position
-	 * @param model: the Cit Model
-	 * @throws InvalidConfigurationException 
+	 * @param paramPosition:  structure mapping the parameter on its position
+	 * @param model:          the Cit Model
+	 * @throws InvalidConfigurationException
 	 */
-	public TestContext(int nParams, boolean useConstraints, Map<String, Integer> paramPosition, CitModel model) throws InvalidConfigurationException {
-		variablesList = new HashMap<Parameter,List<Formula>>();
+	public TestContext(int nParams, boolean useConstraints, Map<String, Integer> paramPosition, CitModel model)
+			throws InvalidConfigurationException {
+		variablesList = new HashMap<Parameter, List<Formula>>();
 		this.useConstraints = useConstraints;
 		this.test = new Object[nParams];
 		this.nCovered = 0;
-		this.context = SolverContextFactory.createSolverContext(
-				config,
-	            LogManager.createNullLogManager(),
-	            ShutdownNotifier.createDummy(),
-	            SMTSolver,
-	            NativeLibraries::loadLibrary);
+		this.context = SolverContextFactory.createSolverContext(config, LogManager.createNullLogManager(),
+				ShutdownNotifier.createDummy(), SMTSolver, NativeLibraries::loadLibrary);
 		this.model = model;
 		this.currentFormula = setupContext();
 		this.testMutex = new ExtendedSemaphore();
@@ -130,20 +130,21 @@ public class TestContext {
 		this.paramPosition = paramPosition;
 		this.prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
 	}
-	
+
 	/**
-	 * Checks whether the tuple given as parameter is coverable or not by the current context
+	 * Checks whether the tuple given as parameter is coverable or not by the
+	 * current context
 	 * 
 	 * @param tuple: the tuple to be checked
 	 * @return true if the tuple is coverable, false otherwise
-	 * @throws InterruptedException 
-	 * @throws SolverException 
+	 * @throws InterruptedException
+	 * @throws SolverException
 	 */
 	public boolean isCoverable(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-		
+
 		// Checks using the test vector
 		for (Pair<String, Object> t : tuple) {
 			Object valueInTest = test[this.paramPosition.get(t.getFirst())];
@@ -154,8 +155,9 @@ public class TestContext {
 				}
 			}
 		}
-		
-		// If the tuple is not compatible, then obviously is not coverable by the current TestContext
+
+		// If the tuple is not compatible, then obviously is not coverable by the
+		// current TestContext
 		if (!isCompatible(tuple, true)) {
 			return false;
 		}
@@ -164,19 +166,21 @@ public class TestContext {
 	}
 
 	/**
-	 * Checks whether the tuple given as parameter is compatible or not by the current context
+	 * Checks whether the tuple given as parameter is compatible or not by the
+	 * current context
 	 * 
-	 * @param tuple: the tuple to be checked
+	 * @param tuple:         the tuple to be checked
 	 * @param skipFirstStep: true if the check with the vector has already been done
 	 * @return true if the tuple is compatible, false otherwise
-	 * @throws InterruptedException 
-	 * @throws SolverException 
+	 * @throws InterruptedException
+	 * @throws SolverException
 	 */
-	private boolean isCompatible(Vector<Pair<String, Object>> tuple, boolean skipFirstStep) throws InterruptedException, SolverException {
+	private boolean isCompatible(Vector<Pair<String, Object>> tuple, boolean skipFirstStep)
+			throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-		
+
 		// First phase - Check without the SAT Solver
 		if (!skipFirstStep) {
 			for (Pair<String, Object> t : tuple) {
@@ -190,16 +194,18 @@ public class TestContext {
 			}
 		}
 
-		// Now, if constraints are available check with the SAT in order to verify if it is compatible even with the constraints
+		// Now, if constraints are available check with the SAT in order to verify if it
+		// is compatible even with the constraints
 		// Otherwise, it is compatible by default
 		if (!useConstraints)
 			return true;
 
 		return verifyWithSMT(tuple);
 	}
-	
+
 	/**
-	 * Checks whether the tuple given as parameter is compatible or not by the current test context without using the SAT Solver
+	 * Checks whether the tuple given as parameter is compatible or not by the
+	 * current test context without using the SAT Solver
 	 * 
 	 * @param tuple: the tuple to be checked
 	 * @return true if the tuple is compatible, false otherwise
@@ -208,7 +214,7 @@ public class TestContext {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.LockTCOnlyOnWriting && !TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-		
+
 		for (Pair<String, Object> t : tuple) {
 			Object valueInTest = test[this.paramPosition.get(t.getFirst())];
 			if (!valueInTest.equals(UNDEF)) {
@@ -223,32 +229,36 @@ public class TestContext {
 	}
 
 	/**
-	 * Verify with the use of the SMT Solver if the tuple is compatible with this test context
+	 * Verify with the use of the SMT Solver if the tuple is compatible with this
+	 * test context
 	 * 
 	 * @param tuple: the tuple to be checked
 	 * @return true if the tuple is compatible, false otherwise
-	 * @throws InterruptedException 
-	 * @throws SolverException 
+	 * @throws InterruptedException
+	 * @throws SolverException
 	 */
 	private boolean verifyWithSMT(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-				
+
 		// Create a formula representing the tuple
 		BooleanFormula tupleFormula = getFormulaFromTuple(tuple);
-		
+
 		// Try computing the intersection (AND)
-		// ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
-		BooleanFormula newFormula = context.getFormulaManager().getBooleanFormulaManager().and(currentFormula, tupleFormula);
+		// ProverEnvironment prover =
+		// context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
+		BooleanFormula newFormula = context.getFormulaManager().getBooleanFormulaManager().and(currentFormula,
+				tupleFormula);
 		prover.push();
 		prover.addConstraint(newFormula);
-		
-		// If the context is not SAT, it means that the tuple can't be added to this context
+
+		// If the context is not SAT, it means that the tuple can't be added to this
+		// context
 		boolean unsat = prover.isUnsat();
-		return !unsat;		
+		return !unsat;
 	}
-	
+
 	/**
 	 * Returns the number of tuples covered by this test context
 	 * 
@@ -257,10 +267,10 @@ public class TestContext {
 	public int getNCovered() {
 		return nCovered;
 	}
-	
+
 	/**
-	 * Checks if a tuple is implied (already contained in the partial test of the TestContext).
-	 * It does not require the use of a SAT Solver
+	 * Checks if a tuple is implied (already contained in the partial test of the
+	 * TestContext). It does not require the use of a SAT Solver
 	 * 
 	 * @param tuple: the tuple to be checked
 	 * @return true if the tuple is implied, false otherwise
@@ -269,7 +279,7 @@ public class TestContext {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.LockTCOnlyOnWriting && !TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-		
+
 		// Check if it is implied
 		for (Pair<String, Object> t : tuple) {
 			// If the values are not equal (undef or valid and different), it is not implied
@@ -277,27 +287,27 @@ public class TestContext {
 				return false;
 			}
 		}
-		
+
 		nCovered++;
 		return true;
 	}
-	
+
 	/**
 	 * This method adds a tuple to the partial test associated to the test context.
 	 * The tuple to be added must be compatible with the partial test
 	 * 
 	 * @param tuple: the tuple to be added
 	 * @return true if the tuple has been added, false otherwise
-	 * @throws InterruptedException 
-	 * @throws SolverException 
+	 * @throws InterruptedException
+	 * @throws SolverException
 	 */
 	public boolean addTuple(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		boolean added = true;
-		
+
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-		
+
 		// Add the tuple to the partial test
 		for (Pair<String, Object> t : tuple) {
 			test[this.paramPosition.get(t.getFirst())] = t.getSecond();
@@ -306,11 +316,10 @@ public class TestContext {
 		// Update the context, if constraints are available
 		if (useConstraints) {
 			added = updateContext(tuple);
-		}
-		else {
+		} else {
 			nCovered++;
 		}
-		
+
 		return added;
 	}
 
@@ -319,46 +328,49 @@ public class TestContext {
 	 * 
 	 * @param tuple: the tuple to be added
 	 * @return true if the update succeed, false otherwise
-	 * @throws InterruptedException 
-	 * @throws SolverException 
+	 * @throws InterruptedException
+	 * @throws SolverException
 	 */
 	private boolean updateContext(Vector<Pair<String, Object>> tuple) throws InterruptedException, SolverException {
 		// We must use a test context in a mutex mode
 		if (!TestBuilder.IN_TEST)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
-				
+
 		// Create a formula representing the tuple
 		BooleanFormula tupleFormula = getFormulaFromTuple(tuple);
-		
+
 		// Add the formula to the context in order to cover the new tuple
 		currentFormula = context.getFormulaManager().getBooleanFormulaManager().and(currentFormula, tupleFormula);
-		
+
 		// Create the new prover
-		// ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
+		// ProverEnvironment prover =
+		// context.newProverEnvironment(ProverOptions.GENERATE_UNSAT_CORE);
 		prover.push();
 		prover.addConstraint(currentFormula);
-		
+
 		// Now verify that the cardinality is still greater than 0
-		if(prover.isUnsat()) {
+		if (prover.isUnsat()) {
 			return false;
 		}
 
 		nCovered++;
 		return true;
 	}
-	
+
 	/**
 	 * Returns the test derived from this test context
 	 * 
-	 * @param printVector: if true the test in the vector is printed (to be used when no constraints are available), otherwise the test is extracted from the context
+	 * @param printVector: if true the test in the vector is printed (to be used
+	 *                     when no constraints are available), otherwise the test is
+	 *                     extracted from the context
 	 * @return the string representing the test derived from this test context
-	 * @throws InterruptedException 
-	 * @throws SolverException 
+	 * @throws InterruptedException
+	 * @throws SolverException
 	 */
 	public String getTest(boolean printVector) throws InterruptedException, SolverException {
 		String res = "";
-		//res = "[ ";
-		
+		// res = "[ ";
+
 		if (printVector || !useConstraints || isComplete()) {
 			for (Object i : test)
 				res += i.toString() + ";";
@@ -368,16 +380,16 @@ public class TestContext {
 			prover.addConstraint(currentFormula);
 			if (!prover.isUnsat()) {
 				Model proverModel = prover.getModel();
-				// We need to sort the parameters and extract only values 
+				// We need to sort the parameters and extract only values
 				List<ValueAssignment> finalTest = proverModel.asList().stream().collect(Collectors.toList());
 				List<TestCase> filteredFinalTest = new ArrayList<TestCase>();
-				
+
 				// First, if enumeratives are present, only those TRUE must be retained
 				for (ValueAssignment va : finalTest) {
 					String paramName = Operations.getCorrespondingKey(va.getName(), paramPosition);
 					if (!paramPosition.containsKey(va.getName()) && paramName != null) {
 						if (va.getValue().equals(true)) {
-							String value = va.getName().toString().substring(paramName.length()+1);
+							String value = va.getName().toString().substring(paramName.length() + 1);
 							filteredFinalTest.add(new TestCase(paramName, value));
 						}
 					} else {
@@ -385,27 +397,50 @@ public class TestContext {
 					}
 				}
 				
+				// Complete the final test
+				for (Parameter p : model.getParameters()) {
+					boolean set = false;
+					for (TestCase t : filteredFinalTest) {
+						if (t.getParamName().equals(p.getName())) {
+							set = true;
+							break;
+						}
+					}
+					if (!set) {
+						String value = "";
+						if (!test[paramPosition.get(p.getName())].toString().equals("*")) {
+							value = test[paramPosition.get(p.getName())].toString();
+						} else {
+							List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
+							value = values.get((new Random()).nextInt(values.size()));
+						}
+						filteredFinalTest.add(new TestCase(p.getName(), value));
+					}
+				}
+
 				Collections.sort(filteredFinalTest, new Comparator<TestCase>() {
 					@Override
 					public int compare(TestCase o1, TestCase o2) {
 						return paramPosition.get(o1.getParamName()).compareTo(paramPosition.get(o2.getParamName()));
-					}				
+					}
 				});
-				
+
+				assert filteredFinalTest.size() == model.getParameters().size() : "Found " + filteredFinalTest.size()
+						+ " parameters instead of " + model.getParameters().size();
+
 				for (TestCase va : filteredFinalTest) {
 					res += va.getValue() + ";";
 				}
-			}
-			else {
+			} else {
 				throw new RuntimeException("The context is UNSAT");
 			}
 		}
-		
-		//res += " --> T]";
-		
-		return res.substring(0, res.length()-1);
+
+		// res += " --> T]";
+
+		return res.substring(0, res.length() - 1);
 	}
-	
+
 	/**
 	 * Checks whether the test is complete or not
 	 * 
@@ -417,16 +452,17 @@ public class TestContext {
 				return false;
 		return true;
 	}
-	
-	/**
-	 * Updates the context with all the parameters of the combinatorial model, and creates a boolean formula representing
-	 * the conjunction of all the constraints
 
-	 * @return the boolean formula representing the conjunction of all the constraints
+	/**
+	 * Updates the context with all the parameters of the combinatorial model, and
+	 * creates a boolean formula representing the conjunction of all the constraints
+	 * 
+	 * @return the boolean formula representing the conjunction of all the
+	 *         constraints
 	 * @throws InvalidConfigurationException
 	 */
-	private BooleanFormula setupContext() throws InvalidConfigurationException {		
-		// The formula representing the constraints		
+	private BooleanFormula setupContext() throws InvalidConfigurationException {
+		// The formula representing the constraints
 		return Operations.createCtxFromModel(model, this, variablesList);
 	}
 
@@ -438,7 +474,7 @@ public class TestContext {
 	public CitModel getModel() {
 		return model;
 	}
-	
+
 	/**
 	 * Convert the tuple in a boolean formula
 	 * 
@@ -446,17 +482,18 @@ public class TestContext {
 	 * @return: the BooleanFormula corresponding to the tuple
 	 */
 	public BooleanFormula getFormulaFromTuple(Vector<Pair<String, Object>> tuple) {
-		
+
 		Map<Parameter, String> tupleMap = new HashMap<Parameter, String>();
 		tuple.forEach((x) -> {
 			tupleMap.put(model.getParameters().get(this.paramPosition.get(x.getFirst())), x.getSecond().toString());
-		}); 
-		
+		});
+
 		return TupleConverter.extractFormulaFromTuple(this, variablesList, tupleMap);
 	}
-	
+
 	/**
-	 * Return the completeness grade (number of elements not yet assigned). Used when sorting TestContexts
+	 * Return the completeness grade (number of elements not yet assigned). Used
+	 * when sorting TestContexts
 	 * 
 	 * @return the completeness grade of the test context
 	 */
@@ -469,7 +506,7 @@ public class TestContext {
 				counter++;
 		return counter;
 	}
-	
+
 	/**
 	 * Get the current logical context
 	 * 
@@ -478,12 +515,12 @@ public class TestContext {
 	public SolverContext getContext() {
 		return this.context;
 	}
-	
+
 	/**
 	 * Closes the SMT logical context
 	 */
-	public void close(){
+	public void close() {
 		context.close();
 	}
-	
+
 }

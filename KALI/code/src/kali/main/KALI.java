@@ -25,6 +25,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
+import ctwedge.util.TestSuite;
 import kali.safeelements.ExtendedSemaphore;
 import kali.safeelements.SafeQueue;
 import kali.safeelements.TestContext;
@@ -39,7 +40,7 @@ public class KALI {
 	 * The file in which the output should be saved
 	 */
 	static String OUTPUT_TXT = "output.txt";
-	
+
 	public static Boolean PRINT_DEBUG = false;
 
 	/**
@@ -51,15 +52,19 @@ public class KALI {
 	// if verbose print in the console otherwise print the data onfile
 	@Option(name = "-verbose", usage = "verbose output on the console")
 	private boolean verbose = false;
-	
-	@Option(name = "-sort", usage = "activate sort optimization (if not specified, sort is not activated)") boolean SORT = false;
-	
+
+	@Option(name = "-sort", usage = "activate sort optimization (if not specified, sort is not activated)")
+	boolean SORT = false;
+
 	@Option(name = "-order", usage = "parameter ordering during tuple generation [IN_ORDER_SIZE_DESC, IN_ORDER_SIZE_ASC, RANDOM, AS_DECLARED] (if not specified, IN_ORDER_SIZE_DESC is used)")
-	private String ORDER_STR = "IN_ORDER_SIZE_DESC";	
+	private String ORDER_STR = "IN_ORDER_SIZE_DESC";
 	public static Order ORDER = Order.IN_ORDER_SIZE_DESC;
-	
+
 	@Option(name = "-solver", usage = "solver to be used in test context [MATHSAT, SMTINTERPOL, Z3, PRINCESS, BOOLECTOR, CVC4, YICES2] (if not specified, SMTINTERPOL is used)")
-	private String SOLVER = "SMTINTERPOL";	
+	private String SOLVER = "SMTINTERPOL";
+
+	@Option(name = "-r", usage = "randomize: start the test generation with a random test suite and then complete/fix it")
+	private boolean randomize = false;
 
 	// receives other command line parameters than options
 	@Argument
@@ -70,8 +75,9 @@ public class KALI {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void doMain(String[] args) throws IOException, InterruptedException {
-		
+	public TestSuite doMain(String[] args) throws IOException, InterruptedException {
+		HashSet<String> tests = new HashSet<String>();
+		String tsAsCSV = "";
 		CmdLineParser parser = new CmdLineParser(this);
 		Integer strength = null;
 		try {
@@ -85,7 +91,6 @@ public class KALI {
 				strength = Integer.parseInt(arguments.get(0));
 				if (strength < 2)
 					throw new CmdLineException(parser, "strength cannot be less than 2");
-				// TODO: We should check that the strength is lower than the number of parameters of the model
 			} catch (NumberFormatException nf) {
 				throw new CmdLineException(parser, "strength must be a number >= 2 " + nf.getLocalizedMessage());
 			}
@@ -99,87 +104,36 @@ public class KALI {
 			// Print the list of available options
 			parser.printUsage(System.err);
 			System.err.println();
-			return;
+			return null;
 		}
 		String fileName = arguments.get(1);
-		// Read the combinatorial model and get the MDD representing the model without constraints
+		// Read the combinatorial model and get the MDD representing the model without
+		// constraints
 		CitModel m = Utility.loadModelFromPath(fileName);
+		// The chosen strength must be lower or equal to the number of parameters
+		if (m.getParameters().size() < strength) {
+			System.err.println("strength cannot be higher than the number of parameters");
+			return null;
+		}
 
+		int nCovered = 0;
 		int totTuples = 0;
-		
+
 		// Set parameter ordering strategy
 		ORDER = Order.valueOf(ORDER_STR);
-		
+
 		// Set SMT solver to be used
 		TestContext.SMTSolver = Solvers.valueOf(SOLVER);
 
 		// Get current time
 		long start = System.currentTimeMillis();
 
-		// Shared object between producer and consumer
-		SafeQueue tuples = new SafeQueue();
-		// test copntext list
-		Vector<TestContext> tcList = new Vector<TestContext>();
-
-		Thread tFillerThread = generateTestSuite(strength, m, tuples, tcList);
-
-		int nCovered = 0;
-		// Compute the summary values
-		System.out.println("-----TEST SUITE-----");
-		
-		// First row -> parameter names
-		String header = "";
-		for (Parameter param : m.getParameters()) {
-			header += param.getName() + ";";
-		}
-		System.out.println(header.substring(0, header.length()-1));
-		
-		HashSet<String> tests = new HashSet<String>();
-		
-		// Remove empty contexts
-		tcList.removeIf(x -> x.getNCovered() == 0);
-		
-		for (TestContext tc : tcList) {
-			nCovered += tc.getNCovered();
-			try {
-				tests.add(tc.getTest(false));
-			} catch (InterruptedException | SolverException e) {
-				System.out.println(e.getMessage());
-			}
-			// Close the context
-			tc.close();			
-		}
-		totTuples = tuples.getNTuples();
-		
-		// Print the tests
-		tests.forEach(x -> {System.out.println(x);});
-
-		// Print the tests
-		if (verbose) {
-			System.out.println("Covered: " + nCovered + " tuples");
-			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
-			System.out.println("Total number of tuples: " + totTuples + " tuples");
-			System.out.println(
-					"Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
-			System.out.println("Generated " + tcList.size() + " tests");
-		} else {
-			FileWriter fw = new FileWriter(OUTPUT_TXT, true);
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(fileName + ";" + tests.size() + ";" + (System.currentTimeMillis() - start) + ";" + SORT + ";"
-					+ ORDER.toString() + ";" + nThreads + ";" + TestContext.SMTSolver);
-			bw.newLine();
-			bw.close();
-		}
-		// TODO: non si puàò mettere prima?
-		// Join the tuple filler thread
-		tFillerThread.join();
-	}
-
-	private Thread generateTestSuite(Integer strength, CitModel m, SafeQueue tuples,
-			Vector<TestContext> tcList) throws InterruptedException {
 		// Compute the position of each parameter
 		Map<String, Integer> paramPosition = new HashMap<String, Integer>();
 		paramPosition = Operations.setParamPosition(m);
+
+		// Shared object between producer and consumer
+		SafeQueue tuples = new SafeQueue();
 
 		// Combination generator
 		Map<String, List<Object>> elements = Operations.getElementsMap(m, ORDER);
@@ -196,8 +150,72 @@ public class KALI {
 			if (KALI.PRINT_DEBUG)
 				System.out.println("using " + nThreads + " threads");
 		}
-		
+
+		// Generate test cases
+		Vector<TestContext> tcList = testGeneration(m, paramPosition, tuples, tFillerThread);
+		// Remove empty contexts
+		tcList.removeIf(x -> x.getNCovered() == 0);
+
+		// Compute the summary values
+		System.out.println("-----TEST SUITE-----");
+
+		// First row -> parameter names
+		String header = "";
+		for (Parameter param : m.getParameters()) {
+			header += param.getName() + ";";
+		}
+		System.out.println(header.substring(0, header.length() - 1));
+
+		for (TestContext tc : tcList) {
+			nCovered += tc.getNCovered();
+			try {
+				tests.add(tc.getTest(false));
+			} catch (InterruptedException | SolverException e) {
+				System.out.println(e.getMessage());
+			}
+			// Close the context
+			tc.close();
+		}
+		totTuples = tuples.getNTuples();
+
+		// Print the tests
+		tests.forEach(x -> {
+			System.out.println(x);
+		});
+
+		// Print the tests
+		long generationTime = System.currentTimeMillis() - start;
+		if (verbose) {
+			System.out.println("Covered: " + nCovered + " tuples");
+			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
+			System.out.println("Total number of tuples: " + totTuples + " tuples");
+			System.out.println("Time required for test suite generation: " + generationTime + " ms");
+			System.out.println("Generated " + tcList.size() + " tests");
+		} else {
+			FileWriter fw = new FileWriter(OUTPUT_TXT, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(fileName + ";" + tests.size() + ";" + generationTime + ";" + SORT + ";" + ORDER.toString() + ";"
+					+ nThreads + ";" + TestContext.SMTSolver);
+			bw.newLine();
+			bw.close();
+		}
+
+		// Create and return the test suite
+		tsAsCSV = header.substring(0, header.length() - 1) + "\n";
+		for (String t : tests) {
+			tsAsCSV += t + "\n";
+		}
+		TestSuite testSuite = new TestSuite(tsAsCSV, m);
+		testSuite.setStrength(strength);
+		testSuite.setGeneratorTime(generationTime);
+
+		return testSuite;
+	}
+
+	private Vector<TestContext> testGeneration(CitModel m, Map<String, Integer> paramPosition, SafeQueue tuples,
+			Thread tFillerThread) throws InterruptedException {
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
+		Vector<TestContext> tcList = new Vector<TestContext>();
 		int nParams = m.getParameters().size();
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
@@ -211,7 +229,10 @@ public class KALI {
 		for (int i = 0; i < nThreads; i++) {
 			testBuilderThreads.get(i).join();
 		}
-		return tFillerThread;
+
+		// Join the tuple filler thread
+		tFillerThread.join();
+		return tcList;
 	}
 
 }

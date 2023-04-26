@@ -52,7 +52,6 @@ public class TupleConverter {
 				// Get the left side of the comparison
 				Formula leftSide = null;
 				for (Entry<Parameter, List<Formula>> e : variables.entrySet()) {
-					assert e.getValue().size() == 1;
 					if (e.getKey().getName().equals(p.getName()))
 						leftSide = e.getValue().get(0);
 				}
