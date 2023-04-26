@@ -29,6 +29,7 @@ public class KALIValidityTest {
 		KALI kali_tool = new KALI();
 		TestSuite ts = kali_tool.doMain(new String[]{"2", CT_COMP_PATH + "NUMC_0.ctw"});
 		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(ts);
+		System.out.println(validator.howManyTestAreValid() + " valid tests out of " + ts.getTests().size());
 		assertTrue(validator.howManyTestAreValid() == ts.getTests().size());
 		assertTrue(validator.isValid());
 		System.out.println("the produced test suite is valid");

@@ -30,7 +30,6 @@ import org.sosy_lab.java_smt.api.SolverException;
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.ParameterElementsGetterAsStrings;
-import ctwedge.generator.util.Utility;
 import ctwedge.util.Pair;
 import kali.threads.TestBuilder;
 import kali.util.Operations;
@@ -408,8 +407,14 @@ public class TestContext {
 						}
 					}
 					if (!set) {
-						List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
-						filteredFinalTest.add(new TestCase(p.getName(), values.get((new Random()).nextInt(values.size()))));
+						String value = "";
+						if (!test[paramPosition.get(p.getName())].toString().equals("*")) {
+							value = test[paramPosition.get(p.getName())].toString();
+						} else {
+							List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
+							value = values.get((new Random()).nextInt(values.size()));
+						}
+						filteredFinalTest.add(new TestCase(p.getName(), value));
 					}
 				}
 
