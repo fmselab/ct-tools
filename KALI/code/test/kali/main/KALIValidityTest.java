@@ -28,7 +28,7 @@ public class KALIValidityTest {
 	
 	@Test
 	public void testUniform() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		testFileWithPrefix("UNFORM_");
+		testFileWithPrefix("UNIFORM_");
 	}
 	
 	@Test
@@ -78,7 +78,7 @@ public class KALIValidityTest {
 	}
 
 	private void testFileWithPrefix(String prefix) throws IOException {
-		Files.walk(Paths.get(CT_COMP_PATH)).filter(Files::isRegularFile).filter(x -> x.getFileName().toString().contains(prefix)).forEach(x -> {
+		Files.walk(Paths.get(CT_COMP_PATH)).filter(x -> x.getFileName().toString().contains(prefix)).forEach(x -> {
 			try {
 				System.out.println("Generating test cases for " + x.getFileName().toString());
 				testSingleFile(x.getFileName().toString());
