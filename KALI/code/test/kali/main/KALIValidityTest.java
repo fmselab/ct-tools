@@ -15,6 +15,9 @@ import ctwedge.util.TestSuite;
 import ctwedge.util.validator.SMTTestSuiteValidator;
 import kali.threads.TestBuilder;
 
+/* Checks the validity and completeness of all the benchmarks in which the tools
+ * failed during the CT-Competition 2023 
+ */
 public class KALIValidityTest {
 
 	static String CT_COMP_PATH = "../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/";
@@ -23,26 +26,69 @@ public class KALIValidityTest {
 		TestBuilder.IN_TEST = true;
 	}
 	
-	/* Checks the validity and completeness of all the benchmarks in which the tools
-	 * failed during the CT-Competition 2023 
-	 */
 	@Test
-	public void test1() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		Files.walk(Paths.get(CT_COMP_PATH)).filter(Files::isRegularFile).forEach(x -> {
+	public void testUniform() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("UNFORM_");
+	}
+	
+	@Test
+	public void testMCA() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("MCA_");
+	}
+	
+	@Test
+	public void testIndustrial() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("INDUSTRIAL_");
+	}
+	
+	
+	
+	
+	
+	
+	
+	@Test
+	public void testHIGHLYCONSTRAINED() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("HIGHLY_CONSTRAINED");
+	}
+	
+	@Test
+	public void testBOOLC() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("BOOLC_");
+	}
+	
+	@Test
+	public void testNUMC() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("NUMC_");
+	}
+	
+	@Test
+	public void testMCAC() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("MCAC_");
+	}
+	
+	@Test
+	public void testCNF() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("CNF_");
+	}
+	
+	@Test
+	public void testFM() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("FM_");
+	}
+
+	private void testFileWithPrefix(String prefix) throws IOException {
+		Files.walk(Paths.get(CT_COMP_PATH)).filter(Files::isRegularFile).filter(x -> x.getFileName().toString().contains(prefix)).forEach(x -> {
 			try {
 				System.out.println("Generating test cases for " + x.getFileName().toString());
 				testSingleFile(x.getFileName().toString());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SolverException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidConfigurationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
