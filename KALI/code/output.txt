@@ -24,3 +24,10 @@ F:\Dati-Andrea\GitHub\ct-tools\KALI\code\.\examples\ctcomp\ADD_BOOLC_0.ctw;63;23
 F:\Dati-Andrea\GitHub\ct-tools\KALI\code\.\examples\ctcomp\ADD_BOOLC_0.ctw;54;2083;true;RANDOM;32;SMTINTERPOL
 F:\Dati-Andrea\GitHub\ct-tools\KALI\code\.\examples\ctcomp\ADD_BOOLC_0.ctw;0;4006;false;AS_DECLARED;32;Z3
 examples/bool2.ctw;26;732;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+examples/bool2.ctw;20;1043;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+examples/bool2.ctw;15;810;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;30;1135;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;30;1126;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;402;9189;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;323;8448;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;323;6647;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL

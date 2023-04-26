@@ -25,6 +25,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
+import ctwedge.util.TestSuite;
 import kali.safeelements.ExtendedSemaphore;
 import kali.safeelements.SafeQueue;
 import kali.safeelements.TestContext;
@@ -73,7 +74,7 @@ public class KALI {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void doMain(String[] args) throws IOException, InterruptedException {
+	public TestSuite doMain(String[] args) throws IOException, InterruptedException {
 		
 		CmdLineParser parser = new CmdLineParser(this);
 		Integer strength = null;
@@ -101,7 +102,7 @@ public class KALI {
 			// Print the list of available options
 			parser.printUsage(System.err);
 			System.err.println();
-			return;
+			return null;
 		}
 		String fileName = arguments.get(1);
 		// Read the combinatorial model and get the MDD representing the model without constraints
@@ -109,7 +110,7 @@ public class KALI {
 		// The chosen strength must be lower or equal to the number of parameters
 		if (m.getParameters().size() < strength) {
 			System.err.println("strength cannot be higher than the number of parameters");
-			return;
+			return null;
 		}
 			
 		int nCovered = 0;
@@ -161,7 +162,10 @@ public class KALI {
 		// Join all the test builder threads
 		for (int i = 0; i < nThreads; i++) {
 			testBuilderThreads.get(i).join();
-		}
+		}		
+
+		// Join the tuple filler thread
+		tFillerThread.join();
 
 		// Compute the summary values
 		System.out.println("-----TEST SUITE-----");
@@ -194,24 +198,33 @@ public class KALI {
 		tests.forEach(x -> {System.out.println(x);});
 
 		// Print the tests
+		long generationTime = System.currentTimeMillis() - start;
 		if (verbose) {
 			System.out.println("Covered: " + nCovered + " tuples");
 			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println(
-					"Time required for test suite generation: " + (System.currentTimeMillis() - start) + " ms");
+					"Time required for test suite generation: " + generationTime + " ms");
 			System.out.println("Generated " + tcList.size() + " tests");
 		} else {
 			FileWriter fw = new FileWriter(OUTPUT_TXT, true);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(fileName + ";" + tests.size() + ";" + (System.currentTimeMillis() - start) + ";" + SORT + ";"
+			bw.write(fileName + ";" + tests.size() + ";" + generationTime + ";" + SORT + ";"
 					+ ORDER.toString() + ";" + nThreads + ";" + TestContext.SMTSolver);
 			bw.newLine();
 			bw.close();
 		}
+		
+		// Create and return the test suite
+		String tsAsCSV = header.substring(0, header.length()-1) + "\n";
+		for (String t : tests) {
+			tsAsCSV += t + "\n";
+		}
+		TestSuite testSuite = new TestSuite(tsAsCSV, m);
+		testSuite.setStrength(strength);
+		testSuite.setGeneratorTime(generationTime);
 
-		// Join the tuple filler thread
-		tFillerThread.join();
+		return testSuite;
 	}
 
 }
