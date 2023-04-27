@@ -187,7 +187,7 @@ public class Operations {
 				List<Formula> list = variables.get(p);
 				BooleanFormula constraint = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
 
-				// If the size is greater than 1, only one value per time can be true
+				// Ranges must be single-variable
 				if (list.size() == 1) {
 					for (Formula f : list) {
 						BooleanFormula subFormula = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
@@ -253,7 +253,7 @@ public class Operations {
 				BooleanFormula constraint = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
 
 				// If the size is greater than 1, only one value per time can be true
-				if (list.size() > 1) {
+				if (list.size() >= 1) {
 					for (Formula f : list) {
 						BooleanFormula subFormula = sContext.getFormulaManager().getBooleanFormulaManager().makeTrue();
 						for (Formula f1 : list) {

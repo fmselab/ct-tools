@@ -45,6 +45,10 @@ public class KALIValidityTest {
 		testFileWithPrefix("BOOLC_");
 	}
 
+	@Test
+	public void testFM() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("FM_");
+	}
 	
 	
 	
@@ -68,11 +72,6 @@ public class KALIValidityTest {
 	@Test
 	public void testCNF() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
 		testFileWithPrefix("CNF_");
-	}
-	
-	@Test
-	public void testFM() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		testFileWithPrefix("FM_");
 	}
 
 	private void testFileWithPrefix(String prefix) throws IOException {
