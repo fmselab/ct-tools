@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
@@ -41,7 +40,11 @@ public class KALIValidityTest {
 		testFileWithPrefix("INDUSTRIAL_");
 	}
 	
-	
+	@Test
+	public void testBOOLC() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+		testFileWithPrefix("BOOLC_");
+	}
+
 	
 	
 	
@@ -50,11 +53,6 @@ public class KALIValidityTest {
 	@Test
 	public void testHIGHLYCONSTRAINED() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
 		testFileWithPrefix("HIGHLY_CONSTRAINED");
-	}
-	
-	@Test
-	public void testBOOLC() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		testFileWithPrefix("BOOLC_");
 	}
 	
 	@Test

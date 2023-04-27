@@ -270,28 +270,25 @@ public class ConstraintTranslator extends CtWedgeSwitch<Formula> {
 		logger.debug("Parsing left");
 		// If the left part is an enumerative, the equal must be handled here
 		if (object.getLeft() instanceof AtomicPredicate && isEnumerative((AtomicPredicate)object.getLeft())) {
-			
-			// "P1 = P2" or "P1 != P2" 
-			if (object.getRight() instanceof AtomicPredicate && isEnumerative((AtomicPredicate)object.getRight())) {
-				throw new RuntimeException("Comparison between parameters is not allowed");
-			} 
 			// "P1 = v1" or "P1 != v1" 
-			else {
-				Map<String, Formula> formulaMap = getFormulaMap((AtomicPredicate)object.getLeft());
-				for (Entry<String, Formula> e : formulaMap.entrySet()) {
-					if (e.getKey().equals(((AtomicPredicate)object.getLeft()).getName() + "_" + ((AtomicPredicate)object.getRight()).getName())) {
-						leftVal = e.getValue();
-					}
+			Map<String, Formula> formulaMap = getFormulaMap((AtomicPredicate)object.getLeft());
+			for (Entry<String, Formula> e : formulaMap.entrySet()) {
+				if (e.getKey().equals(((AtomicPredicate)object.getLeft()).getName() + "_" + ((AtomicPredicate)object.getRight()).getName())) {
+					leftVal = e.getValue();
 				}
+			}
+			
+			if (leftVal == null) {
+				throw new RuntimeException("Comparison between parameters is not allowed");
+			}
 
-				switch (object.getOp()) {
-				case EQ:
-					return leftVal;
-				case NE:					
-					return bmgr.not((BooleanFormula)leftVal);
-				default:
-					throw new RuntimeException("This should never happen");
-				}
+			switch (object.getOp()) {
+			case EQ:
+				return leftVal;
+			case NE:					
+				return bmgr.not((BooleanFormula)leftVal);
+			default:
+				throw new RuntimeException("This should never happen");
 			}
 		}
 		

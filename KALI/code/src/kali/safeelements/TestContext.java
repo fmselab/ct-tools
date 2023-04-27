@@ -256,6 +256,7 @@ public class TestContext {
 		// If the context is not SAT, it means that the tuple can't be added to this
 		// context
 		boolean unsat = prover.isUnsat();
+		prover.pop();
 		return !unsat;
 	}
 
@@ -408,7 +409,7 @@ public class TestContext {
 					}
 					if (!set) {
 						String value = "";
-						if (!test[paramPosition.get(p.getName())].toString().equals("*")) {
+						if (!test[paramPosition.get(p.getName())].toString().equals(UNDEF)) {
 							value = test[paramPosition.get(p.getName())].toString();
 						} else {
 							List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
