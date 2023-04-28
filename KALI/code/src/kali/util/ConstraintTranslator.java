@@ -25,6 +25,7 @@ import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import ctwedge.ctWedge.*;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
+import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import kali.safeelements.TestContext;
 
 /**
@@ -232,8 +233,15 @@ public class ConstraintTranslator extends CtWedgeSwitch<Formula> {
 	 * @return true if an atomic predicate is an enumerative function, false otherwise
 	 */
 	private boolean isEnumerative(AtomicPredicate atom) {
+		// Check regular enumeratives
 		for (Entry<Parameter, List<Formula>> e : variables.entrySet()) {
-			if (e.getKey().getName().equals(atom.getName()) && e.getValue().size() > 1) {
+			if (e.getKey().getName().equals(atom.getName()) && e.getValue().size() >1) {
+				return true;
+			}
+		}
+		// Enumeratives may also be single-valued
+		for (Entry<Parameter, List<Formula>> e : variables.entrySet()) {
+			if (e.getKey().getName().equals(atom.getName()) && e.getValue().size() == 1 && ParameterElementsGetterAsStrings.instance.doSwitch(e.getKey()).size()==1) {
 				return true;
 			}
 		}
@@ -243,7 +251,7 @@ public class ConstraintTranslator extends CtWedgeSwitch<Formula> {
 	/**
 	 * Return the mapping between values and formulas
 	 * 
-	 * @param atom: the atomic predicare
+	 * @param atom: the atomic predicate
 	 * @return the mapping between values and formulas
 	 */
 	private Map<String, Formula> getFormulaMap(AtomicPredicate atom) {
