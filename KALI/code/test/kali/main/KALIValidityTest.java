@@ -50,13 +50,9 @@ public class KALIValidityTest {
 		testFileWithPrefix("FM_");
 	}
 	
-	
-	
-	
-	
 	@Test
 	public void testHIGHLYCONSTRAINED() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
-		testFileWithPrefix("HIGHLY_CONSTRAINED");
+		testFileWithPrefix("HIGHLY_CONSTRAINED_");
 	}
 	
 	@Test
