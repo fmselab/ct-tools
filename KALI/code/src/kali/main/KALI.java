@@ -13,15 +13,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.emf.common.util.EList;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
+import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
@@ -232,6 +235,57 @@ public class KALI {
 
 		// Join the tuple filler thread
 		tFillerThread.join();
+		return tcList;
+	}
+
+	private Vector<TestContext> preprocessTestSeeds(CitModel m, Map<String, Integer> paramPosition, SafeQueue tuples,
+			Thread tFillerThread, List<String> testSeeds) throws InterruptedException, SolverException, InvalidConfigurationException {
+		Vector<TestContext> tcList = new Vector<TestContext>();
+		int nParams = m.getParameters().size();
+		boolean useConstraints = m.getConstraints().size() > 0;
+		// Fetch all the old tests and create new test contexts
+		for (String oldTest : testSeeds) {
+			// New test context
+			TestContext tc = new TestContext(nParams, useConstraints, paramPosition, m);
+			String[] values = oldTest.split(";");
+
+			// Creating the tuple related to the current iteration: we need to create a
+			// tuple because the method that verify
+			// the constraints accepts only the type Vector<Pair<String, Object>>
+			Vector<Pair<String, Object>> tupleNew = new Vector<Pair<String, Object>>();
+
+			EList<Parameter> parameters = m.getParameters();
+			for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
+				Parameter param = parameters.get(tupleIndex);
+				// If the parameter of the new model is in the old test suite,
+				// its value is added in the corresponding position in the current tuple
+				String testParamValue;
+
+				if ((testParamValue = values[paramPosition.get(param.getName())]) != null) {
+					if (testParamValue != "") {
+						tupleNew.add(new Pair<String, Object>(param.getName(), testParamValue));
+
+						// Verify assignment per assignment
+						if (!tupleNew.isEmpty()) {
+							if (tc.isCoverable(tupleNew)) {
+								tc.addTuple(tupleNew);
+							}
+						}
+					}
+				}
+			}
+
+			// If we added at least one parameter test value to the tuple, then the new
+			// test context can be kept
+			if (!tupleNew.isEmpty())
+				tcList.add(tc);
+
+		}
+
+		if (verbose) {
+			System.out.println("Created " + tcList.size() + " test contexts from test seeds");
+		}
+
 		return tcList;
 	}
 
