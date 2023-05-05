@@ -36,6 +36,7 @@ import kali.threads.TestBuilder;
 import kali.threads.TupleFiller;
 import kali.util.Operations;
 import kali.util.Order;
+import scala.util.Random;
 
 public class KALI {
 
@@ -138,6 +139,20 @@ public class KALI {
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
 
+		// If the randomization has to be used, then generate random tests and
+		// preprocess them as seeds
+		Vector<TestContext> tcSeedsList = new Vector<TestContext>();
+		if (randomize) {
+			List<String> testSeeds = new ArrayList<String>();
+			try {
+				testSeeds = generateRandomTests(m);
+				tcSeedsList = preprocessTestSeeds(m, paramPosition, testSeeds);
+			} catch (InterruptedException | SolverException | InvalidConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		// Combination generator
 		Map<String, List<Object>> elements = Operations.getElementsMap(m, ORDER);
 		Iterator<List<Pair<String, Object>>> tg = ModelUtils.getAllKWiseCombination(elements, strength);
@@ -155,7 +170,7 @@ public class KALI {
 		}
 
 		// Generate test cases
-		Vector<TestContext> tcList = testGeneration(m, paramPosition, tuples, tFillerThread);
+		Vector<TestContext> tcList = testGeneration(m, paramPosition, tuples, tFillerThread, tcSeedsList);
 		// Remove empty contexts
 		tcList.removeIf(x -> x.getNCovered() == 0);
 
@@ -216,9 +231,12 @@ public class KALI {
 	}
 
 	private Vector<TestContext> testGeneration(CitModel m, Map<String, Integer> paramPosition, SafeQueue tuples,
-			Thread tFillerThread) throws InterruptedException {
+			Thread tFillerThread, Vector<TestContext> tcSeedsList) throws InterruptedException {
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
+		// If seeds have been used, append them to the test context list
+		tcList.addAll(tcSeedsList);
+		
 		int nParams = m.getParameters().size();
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
@@ -238,8 +256,8 @@ public class KALI {
 		return tcList;
 	}
 
-	private Vector<TestContext> preprocessTestSeeds(CitModel m, Map<String, Integer> paramPosition, SafeQueue tuples,
-			Thread tFillerThread, List<String> testSeeds) throws InterruptedException, SolverException, InvalidConfigurationException {
+	private Vector<TestContext> preprocessTestSeeds(CitModel m, Map<String, Integer> paramPosition,
+			List<String> testSeeds) throws InterruptedException, SolverException, InvalidConfigurationException {
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		int nParams = m.getParameters().size();
 		boolean useConstraints = m.getConstraints().size() > 0;
@@ -254,6 +272,7 @@ public class KALI {
 			// the constraints accepts only the type Vector<Pair<String, Object>>
 			Vector<Pair<String, Object>> tupleNew = new Vector<Pair<String, Object>>();
 
+			// TODO: What to do with enumeratives??
 			EList<Parameter> parameters = m.getParameters();
 			for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
 				Parameter param = parameters.get(tupleIndex);
@@ -287,6 +306,34 @@ public class KALI {
 		}
 
 		return tcList;
+	}
+	
+
+	private List<String> generateRandomTests(CitModel m) {
+		List<String> resList = new ArrayList<String>();
+		List<List<String>> paramValues = new ArrayList<List<String>>();
+		int NTEST = 10;
+		Random r = new Random();
+		
+		// Visit the possible values
+		for (Parameter p : m.getParameters()) {
+			// Get all values
+			List<String> valuesList = ParameterElementsGetterAsStrings.instance.doSwitch(p);
+			paramValues.add(valuesList);
+		}
+		
+		for (int i=0; i<NTEST; i++) {
+			String thisTest = "";
+			for (int j=0; j<paramValues.size(); j++) {
+				// Get all values
+				List<String> valuesList = paramValues.get(j);
+				
+				// Extract a random value
+				thisTest += valuesList.get(r.nextInt(valuesList.size())) + ";";
+			}
+			resList.add(thisTest);			
+		}
+		return resList;
 	}
 
 }
