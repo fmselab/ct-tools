@@ -143,12 +143,11 @@ public class KALI {
 		// preprocess them as seeds
 		Vector<TestContext> tcSeedsList = new Vector<TestContext>();
 		if (randomize) {
-			List<String> testSeeds = new ArrayList<String>();
+			HashSet<String> testSeeds = new HashSet<String>();
 			try {
 				testSeeds = generateRandomTests(m);
 				tcSeedsList = preprocessTestSeeds(m, paramPosition, testSeeds);
 			} catch (InterruptedException | SolverException | InvalidConfigurationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -257,7 +256,7 @@ public class KALI {
 	}
 
 	private Vector<TestContext> preprocessTestSeeds(CitModel m, Map<String, Integer> paramPosition,
-			List<String> testSeeds) throws InterruptedException, SolverException, InvalidConfigurationException {
+			HashSet<String> testSeeds) throws InterruptedException, SolverException, InvalidConfigurationException {
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		int nParams = m.getParameters().size();
 		boolean useConstraints = m.getConstraints().size() > 0;
@@ -272,7 +271,6 @@ public class KALI {
 			// the constraints accepts only the type Vector<Pair<String, Object>>
 			Vector<Pair<String, Object>> tupleNew = new Vector<Pair<String, Object>>();
 
-			// TODO: What to do with enumeratives??
 			EList<Parameter> parameters = m.getParameters();
 			for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
 				Parameter param = parameters.get(tupleIndex);
@@ -293,6 +291,7 @@ public class KALI {
 					}
 				}
 			}
+			tc.resetCovered();
 
 			// If we added at least one parameter test value to the tuple, then the new
 			// test context can be kept
@@ -309,10 +308,10 @@ public class KALI {
 	}
 	
 
-	private List<String> generateRandomTests(CitModel m) {
-		List<String> resList = new ArrayList<String>();
+	private HashSet<String> generateRandomTests(CitModel m) {
+		HashSet<String> resList = new HashSet<String>();
 		List<List<String>> paramValues = new ArrayList<List<String>>();
-		int NTEST = 10;
+		int NTEST = 1000;
 		Random r = new Random();
 		
 		// Visit the possible values

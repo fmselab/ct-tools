@@ -523,5 +523,12 @@ public class TestContext {
 	public void close() {
 		context.close();
 	}
+	
+	/**
+	 * Resets the number of covered tuple (used when randomly generating the test seeds)
+	 */
+	public void resetCovered() {
+		nCovered=0;
+	}
 
 }
