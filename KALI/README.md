@@ -18,13 +18,15 @@ KALI is a multi-threaded tool for generating combinatorial test suites, based on
 		- `.\aggregated_best.csv`: the aggregated data produced by the script `data_aggregator.py`, excluding the timeouts
 - `tool`: the folder containing the tool
 	- `KALI.jar`: the executable JAR for the KALI tool
+	
+Dowload the jar file: https://github.com/fmselab/ct-tools/raw/main/KALI/tool/KALI.jar
 
 ## How to generate test cases with KALI
 Provided that you have the executable JAR of KALI, it can be executed with the following command
 
-`java -jar KALI.jar [strength] [CTWedge Model]`
+`java -jar KALI.jar [options] [strength] [CTWedge Model]`
 
-Moreover, additional parameters can be set through the command line:
+Additional options can be set through the command line:
 - `-n [int]` sets the number of threads used for test generation. By default, the number of threads is automatically determined by the HW architecture;
 - `-verbose` sets the verbose mode, which prints additional information on the console. By default KALI execute in non-verbose mode;
 - `-sort` activates the sort optimization. By default it is non active;
