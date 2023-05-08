@@ -144,7 +144,7 @@ public class KALI {
 		if (randomize) {
 			HashSet<String> testSeeds = new HashSet<String>();
 			try {
-				testSeeds = RandomTestGenerator.generateRandomTests(m);
+				testSeeds = new RandomTestGenerator(m).generateRandomTests();
 				tcSeedsList = preprocessTestSeeds(m, paramPosition, testSeeds);
 			} catch (InterruptedException | SolverException | InvalidConfigurationException e) {
 				e.printStackTrace();

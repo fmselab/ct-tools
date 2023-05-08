@@ -12,30 +12,32 @@ import scala.util.Random;
 public class RandomTestGenerator {
 
 	static int NTEST = 1000;
+	List<List<String>> paramValues;
 
-	
-	public static HashSet<String> generateRandomTests(CitModel m) {
-		HashSet<String> resList = new HashSet<String>();
-		List<List<String>> paramValues = new ArrayList<List<String>>();
-		Random r = new Random();
-		
+	public RandomTestGenerator(CitModel m) {
+		paramValues = new ArrayList<List<String>>();
 		// Visit the possible values
 		for (Parameter p : m.getParameters()) {
 			// Get all values
 			List<String> valuesList = ParameterElementsGetterAsStrings.instance.doSwitch(p);
 			paramValues.add(valuesList);
 		}
-		
-		for (int i=0; i<NTEST; i++) {
+	}
+
+	public HashSet<String> generateRandomTests() {
+		HashSet<String> resList = new HashSet<String>();
+		Random r = new Random();
+
+		for (int i = 0; i < NTEST; i++) {
 			String thisTest = "";
-			for (int j=0; j<paramValues.size(); j++) {
+			for (int j = 0; j < paramValues.size(); j++) {
 				// Get all values
 				List<String> valuesList = paramValues.get(j);
-				
+
 				// Extract a random value
 				thisTest += valuesList.get(r.nextInt(valuesList.size())) + ";";
 			}
-			resList.add(thisTest);			
+			resList.add(thisTest);
 		}
 		return resList;
 	}
