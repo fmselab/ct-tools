@@ -80,8 +80,6 @@ public class KALI {
 
 	@SuppressWarnings("deprecation")
 	public TestSuite doMain(String[] args) throws IOException, InterruptedException {
-		HashSet<String> tests = new HashSet<String>();
-		String tsAsCSV = "";
 		CmdLineParser parser = new CmdLineParser(this);
 		Integer strength = null;
 		try {
@@ -120,21 +118,23 @@ public class KALI {
 			return null;
 		}
 
-		int nCovered = 0;
-		int totTuples = 0;
-
 		// Set parameter ordering strategy
 		ORDER = Order.valueOf(ORDER_STR);
 
 		// Set SMT solver to be used
 		TestContext.SMTSolver = Solvers.valueOf(SOLVER);
 
+		return testGeneration(strength, fileName, m);
+	}
+
+	
+	TestSuite testGeneration(Integer strength, String fileName, CitModel m)
+			throws InterruptedException, IOException {
 		// Get current time
 		long start = System.currentTimeMillis();
 
 		// Compute the position of each parameter
-		Map<String, Integer> paramPosition = new HashMap<String, Integer>();
-		paramPosition = Operations.setParamPosition(m);
+		Map<String, Integer> paramPosition = Operations.setParamPosition(m);
 
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
@@ -173,9 +173,12 @@ public class KALI {
 		// Remove empty contexts
 		tcList.removeIf(x -> x.getNCovered() == 0);
 
+		// print the test suite and convert to test suite as ctwedge object
 		// Compute the summary values
+		HashSet<String> tests = new HashSet<String>();
+		int nCovered = 0;
+		int totTuples = 0;
 		System.out.println("-----TEST SUITE-----");
-
 		// First row -> parameter names
 		String header = "";
 		for (Parameter param : m.getParameters()) {
@@ -216,9 +219,8 @@ public class KALI {
 			bw.newLine();
 			bw.close();
 		}
-
 		// Create and return the test suite
-		tsAsCSV = header.substring(0, header.length() - 1) + "\n";
+	 String tsAsCSV = header.substring(0, header.length() - 1) + "\n";
 		for (String t : tests) {
 			tsAsCSV += t + "\n";
 		}
