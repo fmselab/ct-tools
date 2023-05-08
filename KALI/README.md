@@ -1,5 +1,6 @@
 # KALI
-Replication package and repository for the paper "Multi-thread Combinatorial Test Generation with SMT solvers"
+
+KALI is a multi-threaded tool for generating combinatorial test suites, based on a choosable SMT solver.
 
 ## Folder content
 
@@ -15,6 +16,8 @@ Replication package and repository for the paper "Multi-thread Combinatorial Tes
 		- `.\best_results.csv`: the data containing, for each model, the best execution of each test generator
 		- `.\aggregated_best.csv`: the aggregated data produced by the script `data_aggregator.py`
 		- `.\aggregated_best.csv`: the aggregated data produced by the script `data_aggregator.py`, excluding the timeouts
+- `tool`: the folder containing the tool
+	- `KALI.jar`: the executable JAR for the KALI tool
 
 ## How to generate test cases with KALI
 Provided that you have the executable JAR of KALI, it can be executed with the following command
