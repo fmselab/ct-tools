@@ -1,5 +1,7 @@
 # KALI
 
+KALI is a multi-threaded tool for generating combinatorial test suites, based on a choosable SMT solver.
+
 ## Folder content
 
 - `code`: the source code of the KALI tool
