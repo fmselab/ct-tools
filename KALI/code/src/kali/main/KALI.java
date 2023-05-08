@@ -24,7 +24,6 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
@@ -36,7 +35,7 @@ import kali.threads.TestBuilder;
 import kali.threads.TupleFiller;
 import kali.util.Operations;
 import kali.util.Order;
-import scala.util.Random;
+import kali.util.RandomTestGenerator;
 
 public class KALI {
 
@@ -145,7 +144,7 @@ public class KALI {
 		if (randomize) {
 			HashSet<String> testSeeds = new HashSet<String>();
 			try {
-				testSeeds = generateRandomTests(m);
+				testSeeds = RandomTestGenerator.generateRandomTests(m);
 				tcSeedsList = preprocessTestSeeds(m, paramPosition, testSeeds);
 			} catch (InterruptedException | SolverException | InvalidConfigurationException e) {
 				e.printStackTrace();
@@ -307,34 +306,6 @@ public class KALI {
 		}
 
 		return tcList;
-	}
-	
-
-	private HashSet<String> generateRandomTests(CitModel m) {
-		HashSet<String> resList = new HashSet<String>();
-		List<List<String>> paramValues = new ArrayList<List<String>>();
-		int NTEST = 1000;
-		Random r = new Random();
-		
-		// Visit the possible values
-		for (Parameter p : m.getParameters()) {
-			// Get all values
-			List<String> valuesList = ParameterElementsGetterAsStrings.instance.doSwitch(p);
-			paramValues.add(valuesList);
-		}
-		
-		for (int i=0; i<NTEST; i++) {
-			String thisTest = "";
-			for (int j=0; j<paramValues.size(); j++) {
-				// Get all values
-				List<String> valuesList = paramValues.get(j);
-				
-				// Extract a random value
-				thisTest += valuesList.get(r.nextInt(valuesList.size())) + ";";
-			}
-			resList.add(thisTest);			
-		}
-		return resList;
 	}
 
 }
