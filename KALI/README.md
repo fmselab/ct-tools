@@ -1,5 +1,4 @@
 # KALI
-Replication package and repository for the paper "Multi-thread Combinatorial Test Generation with SMT solvers"
 
 ## Folder content
 
