@@ -6,6 +6,7 @@ pMEDICI is a multi-threaded tool for generating combinatorial test suites, based
 
 - `code`: the source code of the pMEDICI tool
 	- `.\examples`: some CTWedge model that can be used for testing pMEDICI
+	- `.\colomoto`: the colomoto mddlib, modified in order to solve some problem with single-valued parameters
 
 - `tool`: the folder containing the tool
 	- `pMEDICI.jar`: the executable JAR for the pMEDICI tool
