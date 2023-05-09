@@ -662,7 +662,7 @@ public class pMEDICIPlusMTExperimenter_NumOfTestsKept {
 
 		// Exporting the data to the .xlsx file
 		FileOutputStream outputStream = new FileOutputStream(
-				"experimentData/pMEDICIMT_Incremental_Generation_NumOfTestsKeptWithinTheEvolution.xlsx");
+				"../data_experiments/IncrementalGeneration/pMEDICIMT_Incremental_Generation_NumOfTestsKeptWithinTheEvolution.xlsx");
 		workbook.write(outputStream);
 
 		workbook.close();

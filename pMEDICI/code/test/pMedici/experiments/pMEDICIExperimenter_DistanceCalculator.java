@@ -28,7 +28,7 @@ public class pMEDICIExperimenter_DistanceCalculator {
 
 	private static final String EVOLUTION_MODELS_INPUT_FOLDER = "../pMEDICI/evolutionModels/";
 	private static final String EVOLUTION_MODELS_OLDTESTS_INPUT_FOLDER = "../pMEDICI/evolutionModels_TestsCSV/";
-	private static final String EVOLUTION_MODELS_INCREMENTALTESTS_OUTPUT_FOLDER = "../pMEDICI/evolutionModels_TestsCSV_pMEDICI/";
+	private static final String EVOLUTION_MODELS_INCREMENTALTESTS_OUTPUT_FOLDER = "../data_experiments/SPLInc/pMEDICI/";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -682,7 +682,7 @@ public class pMEDICIExperimenter_DistanceCalculator {
 		System.out.println("Number of threads utilized: " + PMediciPlusMT.threadsNum);
 
 		// Exporting the data to the .xlsx file
-		FileOutputStream outputStream = new FileOutputStream("experimentData/pMEDICINormal_Distances.xlsx");
+		FileOutputStream outputStream = new FileOutputStream("../data_experiments/IncrementalGeneration/pMEDICINormal_Distances.xlsx");
 		workbook.write(outputStream);
 
 		workbook.close();
