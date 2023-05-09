@@ -27,7 +27,7 @@
 						<configuration>
 							<finalName>pMEDICI</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
-							<outputDirectory>dist</outputDirectory>
+							<outputDirectory>../tool/dist</outputDirectory>
 							<archive>
 								<manifest>
 									<mainClass>

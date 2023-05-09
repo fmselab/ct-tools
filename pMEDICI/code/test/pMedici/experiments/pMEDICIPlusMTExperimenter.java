@@ -1075,7 +1075,7 @@ public class pMEDICIPlusMTExperimenter {
 
 		// Exporting the data to the .xlsx file
 		FileOutputStream outputStream = new FileOutputStream(
-				"experimentData/pMEDICIMT_Incremental_Generation_2Threads_noMergeDuplicatedTests5.xlsx");
+				"../data_experiments/IncrementalGeneration/pMEDICIMT_Incremental_Generation_2Threads_noMergeDuplicatedTests5.xlsx");
 		workbook.write(outputStream);
 
 		workbook.close();

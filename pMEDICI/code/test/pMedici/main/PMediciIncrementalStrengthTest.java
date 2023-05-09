@@ -38,7 +38,7 @@ public class PMediciIncrementalStrengthTest {
 	public void testTraditional(String modelName) throws IOException, InterruptedException {
 		TestContext.IN_TEST = true;
 		String[] args = new String[] { "5", "examples/CTComp/" + modelName, "-savePartialStep", "100", "-prefix",
-				"traditional_5_", "-output", "./IncrementalTest/", "-verb" };
+				"traditional_5_", "-output", "../data_experiments/IncrementalStrengthGeneration/", "-verb" };
 		PMedici pMedici = new PMedici();
 		new CommandLine(pMedici).execute(args);
 	}
@@ -56,12 +56,12 @@ public class PMediciIncrementalStrengthTest {
 			String[] args;
 			if (i == 2)
 				args = new String[] { Integer.toString(i), "examples/CTComp/" + modelName, "-savePartialStep", "100",
-						"-prefix", "incremental_" + i + "_", "-output", "./IncrementalTest/", "-verb" };
+						"-prefix", "incremental_" + i + "_", "-output", "../data_experiments/IncrementalStrengthGeneration/", "-verb" };
 			else
 				args = new String[] { Integer.toString(i), "examples/CTComp/" + modelName, "-savePartialStep", "100",
 						"-prefix", "incremental_" + i + "_", "-old",
-						"./IncrementalTest/" + modelName + "/incremental_" + (i-1) + "_final.csv", "-output",
-						"./IncrementalTest/", "-verb" };
+						"../data_experiments/IncrementalStrengthGeneration/" + modelName + "/incremental_" + (i-1) + "_final.csv", "-output",
+						"../data_experiments/IncrementalStrengthGeneration/", "-verb" };
 			PMedici pMedici = new PMedici();
 			new CommandLine(pMedici).execute(args);
 		}
@@ -79,14 +79,14 @@ public class PMediciIncrementalStrengthTest {
 
 		// Strength 2
 		String[] args = new String[] { "2", "examples/CTComp/" + modelName, "-savePartialStep", "100", "-prefix",
-				"incrementalStep_" + 2 + "_", "-output", "./IncrementalTest/", "-verb" };
+				"incrementalStep_" + 2 + "_", "-output", "../data_experiments/IncrementalStrengthGeneration/", "-verb" };
 		PMedici pMedici = new PMedici();
 		new CommandLine(pMedici).execute(args);
 
 		// Strength 5
 		args = new String[] { "2", "examples/CTComp/" + modelName, "-savePartialStep", "100", "-prefix",
-				"incrementalStep_" + 5 + "_", "-old", "./IncrementalTest/" + modelName + "/incrementalStep_2_final.csv",
-				"-output", "./IncrementalTest/", "-verb" };
+				"incrementalStep_" + 5 + "_", "-old", "../data_experiments/IncrementalStrengthGeneration/" + modelName + "/incrementalStep_2_final.csv",
+				"-output", "../data_experiments/IncrementalStrengthGeneration/", "-verb" };
 		pMedici = new PMedici();
 		new CommandLine(pMedici).execute(args);
 	}

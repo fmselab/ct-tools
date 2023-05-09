@@ -688,7 +688,7 @@ public class pMEDICIPlusMTExperimenter_DistanceCalculator {
 		System.out.println("Number of threads utilized: " + PMediciPlusMT.threadsNum);
 
 		// Exporting the data to the .xlsx file
-		FileOutputStream outputStream = new FileOutputStream("experimentData/pMEDICIMT_Distances.xlsx");
+		FileOutputStream outputStream = new FileOutputStream("../data_experiments/IncrementalGeneration/pMEDICIMT_Distances.xlsx");
 		workbook.write(outputStream);
 
 		workbook.close();

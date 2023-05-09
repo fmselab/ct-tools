@@ -1012,7 +1012,7 @@ public class pMEDICIExperimenter {
 
 		// Exporting the data to the .xlsx file
 		FileOutputStream outputStream = new FileOutputStream(
-				"experimentData/pMEDICI_Generation_from_scratch_noMergeDuplicatedTests.xlsx");
+				"../data_experiments/IncrementalGeneration/pMEDICI_Generation_from_scratch_noMergeDuplicatedTests.xlsx");
 		workbook.write(outputStream);
 
 		workbook.close();
