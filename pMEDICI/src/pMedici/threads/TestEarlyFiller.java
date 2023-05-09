@@ -3,15 +3,20 @@ package pMedici.threads;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.colomoto.mddlib.MDDManager;
 import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
+import pMedici.main.PMedici;
 import pMedici.main.PMediciPlusMT;
-import pMedici.safeelements.ExtendedSemaphore;
-import pMedici.safeelements.TestContext;
+import pMedici.util.ExtendedSemaphore;
 import pMedici.util.Pair;
+import pMedici.util.TestContext;
 import pMedici.util.TestModel;
 
 /**
@@ -21,8 +26,10 @@ import pMedici.util.TestModel;
  * @author Luca Parimbelli
  *
  */
-@SuppressWarnings("deprecation")
 public class TestEarlyFiller implements Runnable {
+	
+	Logger logger = LogManager.getRootLogger();
+	
 
 	/**
 	 * The {@link Vector} of the imported test cases from CSV
@@ -106,7 +113,7 @@ public class TestEarlyFiller implements Runnable {
 					oldTestsMutex.release();				
 
 						/* Debug code */
-						if (PMediciPlusMT.PRINT_DEBUG) {
+						if (logger.getLevel().isGreaterOrEqual(Level.DEBUG)) {
 							System.out.println("--------------------");
 							System.out.println("Current thread ID: " + Thread.currentThread().getId());
 							oldTest.forEach((name, value) -> {

@@ -6,7 +6,7 @@ import java.util.List;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterElementsGetterAsStrings;
+import ctwedge.util.ParameterElementsGetterAsStrings;
 import scala.util.Random;
 
 public class RandomTestGenerator {

@@ -6,10 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
-import org.sosy_lab.java_smt.api.SolverException;
 
-import pMedici.safeelements.TestContext;
+import pMedici.util.TestContext;
 import picocli.CommandLine;
 
 public class PMediciIncrementalStrengthTest {

@@ -21,8 +21,8 @@ import ctwedge.ctWedge.Element;
 import ctwedge.ctWedge.Enumerative;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.ctWedge.Range;
-import ctwedge.generator.util.ParameterSize;
 import ctwedge.util.Pair;
+import ctwedge.util.ParameterSize;
 import kali.safeelements.TestContext;
 
 public class Operations {

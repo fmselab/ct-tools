@@ -1,4 +1,4 @@
-package pMedici.combinations;
+package pMedici.util;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,8 +10,9 @@ import java.util.List;
 import org.junit.Test;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.generator.util.Utility;
+import ctwedge.util.ext.Utility;
 import pMedici.util.Pair;
+import pMedici.util.TupleGenerator;
 
 public class TupleIteratorTest {
 

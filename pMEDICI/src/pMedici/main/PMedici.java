@@ -13,25 +13,26 @@ import java.util.concurrent.Callable;
 
 import org.colomoto.mddlib.MDDManager;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterElementsGetterAsStrings;
-import ctwedge.generator.util.Utility;
+import ctwedge.util.ParameterElementsGetterAsStrings;
 import ctwedge.util.TestSuite;
-import pMedici.combinations.TupleGenerator;
+import ctwedge.util.ext.Utility;
 import pMedici.experiments.pMEDICIExperimenter;
 import pMedici.experiments.pMEDICIPlusMTExperimenter;
 import pMedici.importer.CSVImporter;
-import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
-import pMedici.safeelements.TestContext;
 import pMedici.threads.TestBuilder;
 import pMedici.threads.TestSuitePrinter;
 import pMedici.threads.TupleFiller;
+import pMedici.util.ExtendedSemaphore;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
+import pMedici.util.TestContext;
+import pMedici.util.TupleGenerator;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -52,7 +53,7 @@ public class PMedici implements Callable<Integer> {
 
 	/** Use the verbose mode */
 	@Option(names = "-verb", description = "Use the verbose mode.")
-	boolean verb;
+	public static boolean verb;
 	
 	/** Use the expand mode */
 	@Option(names = "-expand", description = "Only complete partial tests, and do not create new ones. It is not active by default.")

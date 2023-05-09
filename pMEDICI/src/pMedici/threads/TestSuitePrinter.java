@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import ctwedge.ctWedge.CitModel;
-import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
-import pMedici.safeelements.TestContext;
+import pMedici.util.ExtendedSemaphore;
 import pMedici.util.Operations;
+import pMedici.util.TestContext;
 
 public class TestSuitePrinter implements Runnable {
 

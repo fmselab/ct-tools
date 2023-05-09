@@ -29,8 +29,8 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import ctwedge.util.Pair;
+import ctwedge.util.ParameterElementsGetterAsStrings;
 import kali.threads.TestBuilder;
 import kali.util.Operations;
 import kali.util.TestCase;

@@ -12,7 +12,7 @@ import ctwedge.ctWedge.OrExpression;
 import ctwedge.ctWedge.PlusMinus;
 import ctwedge.ctWedge.RelationalExpression;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
-import ctwedge.generator.util.Utility;
+import ctwedge.util.ext.Utility;
 
 public class ConstraintComplexityEvaluator extends CtWedgeSwitch<Integer> {
 	

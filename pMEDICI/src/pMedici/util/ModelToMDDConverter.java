@@ -7,8 +7,7 @@ import org.colomoto.mddlib.MDDVariableFactory;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterSize;
-import pMedici.safeelements.ExtendedSemaphore;
+import ctwedge.util.ParameterSize;
 
 public class ModelToMDDConverter {
 

@@ -25,7 +25,7 @@ import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import ctwedge.ctWedge.*;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
-import ctwedge.generator.util.ParameterElementsGetterAsStrings;
+import ctwedge.util.ParameterElementsGetterAsStrings;
 import kali.safeelements.TestContext;
 
 /**

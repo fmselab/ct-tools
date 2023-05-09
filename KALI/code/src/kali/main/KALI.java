@@ -24,10 +24,10 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
 import ctwedge.util.TestSuite;
+import ctwedge.util.ext.Utility;
 import kali.safeelements.ExtendedSemaphore;
 import kali.safeelements.SafeQueue;
 import kali.safeelements.TestContext;

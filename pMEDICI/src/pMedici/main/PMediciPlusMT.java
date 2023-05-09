@@ -10,18 +10,18 @@ import java.util.Vector;
 import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.generator.util.Utility;
-import pMedici.safeelements.ExtendedSemaphore;
+import ctwedge.util.ext.Utility;
 import pMedici.safeelements.SafeQueue;
-import pMedici.safeelements.TestContext;
 import pMedici.threads.TestBuilder;
 import pMedici.threads.TestEarlyFiller;
 import pMedici.threads.TupleFiller;
+import pMedici.util.ExtendedSemaphore;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
+import pMedici.util.TestContext;
 import pMedici.util.TestModel;
-import pMedici.combinations.TupleGenerator;
+import pMedici.util.TupleGenerator;
 import pMedici.importer.CSVImporter;
 
 /**

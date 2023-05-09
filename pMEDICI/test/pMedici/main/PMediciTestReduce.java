@@ -9,41 +9,39 @@ import java.io.IOException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
-import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.util.TestSuite;
 import ctwedge.util.validator.MinimalityTestSuiteValidator;
 import ctwedge.util.validator.ParameterSwitchToPairStrings;
 import ctwedge.util.validator.SMTTestSuiteValidator;
-import pMedici.safeelements.TestContext;
-import pMedici.threads.TestBuilder;
+import ctwedge.util.validator.ValidatorException;
+import pMedici.util.TestContext;
 
 public class PMediciTestReduce {
 
 	@Test
-	public void test1() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	public void test1() throws IOException, InterruptedException, ValidatorException{
 		generateAndCheck("examples/CTComp/BOOLC_0.ctw");
 
 	}
 	@Test
-	public void test2() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	public void test2() throws IOException, InterruptedException, ValidatorException{
 		generateAndCheck("examples/CTComp/MCAC_0.ctw");
 
 	}
 	@Test
-	public void testSimple() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	public void testSimple() throws IOException, InterruptedException, ValidatorException{
 		generateAndCheck("examples/BOOLC_4_Simple.ctw");
 
 	}
 
-	public void generateAndCheck(String fileName) throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	public void generateAndCheck(String fileName) throws IOException, InterruptedException, ValidatorException {
 		Logger.getLogger(MinimalityTestSuiteValidator.class).setLevel(Level.OFF);
 		Logger.getLogger(ParameterSwitchToPairStrings.class).setLevel(Level.OFF);
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
 		pMedici.verb = true;
-		TestBuilder.LockTCOnlyOnWriting = false;
+		TestContext.LockTCOnlyOnWriting = false;
 		TestSuite testsuite = pMedici.generateTests(fileName,2, 1);
 		assertEquals(2, testsuite.getStrength());
 		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(testsuite);

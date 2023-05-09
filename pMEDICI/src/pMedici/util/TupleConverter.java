@@ -5,8 +5,6 @@ import java.util.Vector;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.MDDVariable;
 
-import pMedici.safeelements.ExtendedSemaphore;
-
 /**
  * Utility class for converting a tuple in the corresponding MDD
  */

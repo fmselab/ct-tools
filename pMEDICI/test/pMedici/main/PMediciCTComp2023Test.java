@@ -10,34 +10,33 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
-import org.sosy_lab.java_smt.api.SolverException;
+
 
 import ctwedge.util.TestSuite;
 import ctwedge.util.validator.MinimalityTestSuiteValidator;
 import ctwedge.util.validator.ParameterSwitchToPairStrings;
 import ctwedge.util.validator.SMTTestSuiteValidator;
-import pMedici.safeelements.TestContext;
-import pMedici.threads.TestBuilder;
+import ctwedge.util.validator.ValidatorException;
+import pMedici.util.TestContext;
 
 public class PMediciCTComp2023Test {
 	@Test
-	public void testCNF12() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	public void testCNF12() throws IOException, InterruptedException, ValidatorException{
 		generateAndCheckValidity("./examples/CTComp2023/CNF_12.ctw");	
 	}
 	
 	@Test
-	public void testMCAC18() throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	public void testMCAC18() throws IOException, InterruptedException, ValidatorException{
 		generateAndCheckValidity("./examples/CTComp2023/MCAC_18.ctw");	
 	}
 
-	private void generateAndCheckValidity(String fileName) throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+	private void generateAndCheckValidity(String fileName) throws IOException, InterruptedException, ValidatorException{
 		Logger.getLogger(MinimalityTestSuiteValidator.class).setLevel(Level.OFF);
 		Logger.getLogger(ParameterSwitchToPairStrings.class).setLevel(Level.OFF);
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
 		pMedici.verb = true;
-		TestBuilder.LockTCOnlyOnWriting = false;
+		TestContext.LockTCOnlyOnWriting = false;
 		TestSuite testsuite = pMedici.generateTests(fileName,2, 1);
 		assertEquals(2, testsuite.getStrength());		
 		

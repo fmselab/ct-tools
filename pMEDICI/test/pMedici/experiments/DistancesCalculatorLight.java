@@ -9,9 +9,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.generator.util.Utility;
 import ctwedge.util.Test;
 import ctwedge.util.TestSuite;
+import ctwedge.util.ext.Utility;
 
 /**
  * Light version of CTWedge project's <i>DistancesCalculator<i> used to calculate

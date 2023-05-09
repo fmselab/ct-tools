@@ -12,17 +12,17 @@ import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.Utility;
-import pMedici.combinations.TupleGenerator;
+import ctwedge.util.ext.Utility;
 import pMedici.importer.CSVImporter;
-import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
-import pMedici.safeelements.TestContext;
 import pMedici.threads.TestBuilder;
 import pMedici.threads.TupleFiller;
+import pMedici.util.ExtendedSemaphore;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
+import pMedici.util.TestContext;
+import pMedici.util.TupleGenerator;
 
 /**
  * Non-multithread version of pMEDICI+. 

@@ -1,4 +1,4 @@
-package pMedici.safeelements;
+package pMedici.util;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -6,11 +6,6 @@ import java.util.Vector;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
-
-import pMedici.threads.TestBuilder;
-import pMedici.util.Operations;
-import pMedici.util.Pair;
-import pMedici.util.TupleConverter;
 
 public class TestContext {
 	
@@ -46,6 +41,8 @@ public class TestContext {
 	 * The semaphore for managing a test context in a mutex manner
 	 */
 	public ExtendedSemaphore testMutex;
+	// if true, a test context is locked only when writing
+	public static boolean LockTCOnlyOnWriting = true;
 	
 	/**
 	 * Builds a new TestContext
@@ -74,7 +71,7 @@ public class TestContext {
 	 */
 	public boolean isCoverable(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
+		if (!IN_TEST && !TestContext.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Checks using the test vector
@@ -106,7 +103,7 @@ public class TestContext {
 	 */
 	private boolean isCompatible(Vector<Pair<Integer, Integer>> tuple, boolean skipFirstStep) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
+		if (!IN_TEST && !TestContext.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// First phase - Check without the MDD
@@ -162,7 +159,7 @@ public class TestContext {
 	 */
 	public boolean verifyWithMDD(Vector<Pair<Integer, Integer>> tuple) throws InterruptedException {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
+		if (!IN_TEST && !TestContext.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 				
 		// Create an MDD representing the tuple
@@ -200,7 +197,7 @@ public class TestContext {
 	 */
 	public boolean isImplied(Vector<Pair<Integer, Integer>> tuple) {
 		// We must use a test context in a mutex mode
-		if (!IN_TEST && !TestBuilder.LockTCOnlyOnWriting)
+		if (!IN_TEST && !TestContext.LockTCOnlyOnWriting)
 			assert (this.testMutex.lockedByCaller() || nCovered == 0);
 		
 		// Check if it is implied
@@ -235,7 +232,7 @@ public class TestContext {
 	 */
 	public boolean addTuple(Vector<Pair<Integer, Integer>> tuple, boolean increaseCovered) throws InterruptedException {
 		// If LockTCOnlyOnWriting, we try to acquire the mutex 
-		if (TestBuilder.LockTCOnlyOnWriting) {
+		if (TestContext.LockTCOnlyOnWriting) {
 			if(this.testMutex.availablePermits() > 0) {
 				if (!this.testMutex.tryAcquire())
 					return false;
@@ -269,7 +266,7 @@ public class TestContext {
 				nCovered++;
 		}
 		
-		if (TestBuilder.LockTCOnlyOnWriting) 
+		if (TestContext.LockTCOnlyOnWriting) 
 			this.testMutex.release();
 		
 		return true;

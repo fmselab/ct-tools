@@ -1,4 +1,4 @@
-package pMedici.combinations;
+package pMedici.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,13 +8,12 @@ import java.util.Map;
 import java.util.Vector;
 
 import ctwedge.ctWedge.CitModel;
-import pMedici.util.Operations;
-import pMedici.util.Pair;
-import pMedici.util.TestModel;
+import ctwedge.util.CombinationGeneratorList;
+import ctwedge.util.TupleIterator;
 
 // TODO: there is a similar class and methods in ctwedge.utils - remove duplicates?
-// A the type of the paramters
-// B the typle of the values of the paramters
+// A the type of the parameters
+// B the typle of the values of the parameters
 public class TupleGenerator {
 
 	public static Iterator<List<Pair<Integer, Integer>>> getAllKWiseCombination(TestModel m) {

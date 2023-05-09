@@ -12,6 +12,7 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.util.TestSuite;
 import ctwedge.util.validator.SMTTestSuiteValidator;
+import ctwedge.util.validator.ValidatorException;
 import kali.threads.TestBuilder;
 
 /* Checks the validity and completeness of all the benchmarks in which the tools
@@ -83,12 +84,14 @@ public class KALIValidityTest {
 				e.printStackTrace();
 			} catch (InvalidConfigurationException e) {
 				e.printStackTrace();
+			} catch (ValidatorException e) {
+				e.printStackTrace();
 			}
 		});
 	}
 
 	private void testSingleFile(String fileName)
-			throws IOException, InterruptedException, SolverException, InvalidConfigurationException {
+			throws IOException, InterruptedException, SolverException, InvalidConfigurationException, ValidatorException {
 		TestBuilder.IN_TEST = true;
 		KALI kali_tool = new KALI();
 		TestSuite ts = kali_tool.doMain(new String[]{"2", CT_COMP_PATH + fileName});

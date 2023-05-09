@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 
 import org.colomoto.mddlib.MDDManager;
 
-import pMedici.safeelements.ExtendedSemaphore;
 import pMedici.safeelements.SafeQueue;
-import pMedici.safeelements.TestContext;
+import pMedici.util.ExtendedSemaphore;
 import pMedici.util.Operations;
 import pMedici.util.Pair;
+import pMedici.util.TestContext;
 
 public class TestBuilder implements Runnable {
 	
@@ -20,9 +20,6 @@ public class TestBuilder implements Runnable {
 	
 	// if true, when a test context is created but not filled, then it can be reused the next time
 	public static boolean RecycleUnusedTestContexts = true;
-	
-	// if true, a test context is locked only when writing
-	public static boolean LockTCOnlyOnWriting = true;
 	
 	// if true, the lock while checking if a tuple is implied is only performed with tryAcquire 
 	public static boolean UseTryAcquireForFindImplies = false;
@@ -129,7 +126,7 @@ public class TestBuilder implements Runnable {
 		boolean found = false;
 		for (int i=0; i<this.tcList.size(); i++) {
 			// Try to acquire the mutex if the lock even during reading is required
-			if (!LockTCOnlyOnWriting)
+			if (!TestContext.LockTCOnlyOnWriting)
 				if (UseTryAcquireForFindImplies) {
 					if (!tcList.get(i).testMutex.tryAcquire())
 						continue;
@@ -150,7 +147,7 @@ public class TestBuilder implements Runnable {
 			}
 			
 			// In any case free this context if the lock has been acquired
-			if (!LockTCOnlyOnWriting)
+			if (!TestContext.LockTCOnlyOnWriting)
 				tcList.get(i).testMutex.release();
 			
 			if (found)
@@ -172,7 +169,7 @@ public class TestBuilder implements Runnable {
 		for (int i=0; i<orderedList.size(); i++) {
 			
 			// Try to acquire the mutex if it is needed
-			if (!LockTCOnlyOnWriting)
+			if (!TestContext.LockTCOnlyOnWriting)
 				if (orderedList.get(i).testMutex.tryAcquire()) 
 					assert(orderedList.get(i).testMutex.lockedByCaller());
 				else
@@ -184,7 +181,7 @@ public class TestBuilder implements Runnable {
 			}
 			
 			// If the context has been locked, free it
-			if (!LockTCOnlyOnWriting)
+			if (!TestContext.LockTCOnlyOnWriting)
 				orderedList.get(i).testMutex.release();
 			
 			// If the tuple has been added, stop the iteration

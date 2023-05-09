@@ -1,4 +1,4 @@
-package pMedici.safeelements;
+package pMedici.util;
 
 import java.util.concurrent.Semaphore;
 
