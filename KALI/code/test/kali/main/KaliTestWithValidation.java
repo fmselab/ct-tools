@@ -1,6 +1,6 @@
 package kali.main;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -23,8 +23,8 @@ public class KaliTestWithValidation {
 		// generate the test with kali
 		TestSuite ts = new KALI().testGeneration(2, fileName, m);
 		// check the validity
-		//		
-		SMTTestSuiteValidator validator;
+		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(ts);
+		assertTrue(validator.isValid());
 	}
 
 }

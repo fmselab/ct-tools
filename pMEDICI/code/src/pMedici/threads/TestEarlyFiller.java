@@ -6,14 +6,11 @@ import java.util.Vector;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.colomoto.mddlib.MDDManager;
 import org.eclipse.emf.common.util.EList;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import pMedici.main.PMedici;
-import pMedici.main.PMediciPlusMT;
 import pMedici.util.ExtendedSemaphore;
 import pMedici.util.Pair;
 import pMedici.util.TestContext;

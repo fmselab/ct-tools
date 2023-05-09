@@ -11,8 +11,6 @@ import org.junit.Test;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.util.ext.Utility;
-import pMedici.util.Pair;
-import pMedici.util.TupleGenerator;
 
 public class TupleIteratorTest {
 

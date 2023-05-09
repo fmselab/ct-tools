@@ -1,6 +1,5 @@
 package org.colomoto.mddlib.logicalfunction.operators;
 
-import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.logicalfunction.FunctionNode;
 import org.colomoto.mddlib.logicalfunction.FunctionParser;
 

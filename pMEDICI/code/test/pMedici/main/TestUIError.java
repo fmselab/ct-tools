@@ -1,6 +1,5 @@
 package pMedici.main;
 
-import static org.junit.Assert.*;
 
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.junit.Test;
