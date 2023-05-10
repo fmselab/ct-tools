@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -516,18 +517,46 @@ public class Operations {
 	}
 
 	/**
+	 * Given a CITModel, it returns the ratio (i.e., the ratio between all tuples
+	 * and those applicable)
+	 * 
+	 * @param model the CIT model
+	 * @return the ratio
+	 * @throws InterruptedException
+	 */
+	public static double getTupleValidityRatioFromModel(CitModel model) throws InterruptedException {
+		ModelToMDDConverter mc = new ModelToMDDConverter(model);
+		MDDManager manager = mc.getMDD();
+		int baseMDD = mc.getStartingNode();
+		int totTuple = 0;
+		int compatiblePairs = 0;
+		// Add to the baseNode the constraints
+		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
+		// All tuples
+		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(model, 2);
+		TestContext tc = new TestContext(baseMDD, model.getParameters().size(), true, manager);
+		while (tg.hasNext()) {
+			Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>(tg.next());
+			if (tc.verifyWithMDD(tuple))
+				compatiblePairs++;
+			totTuple++;
+		}
+		return (double)compatiblePairs/totTuple;
+	}
+
+	/**
 	 * Given a CITModel, it returns the ratio (i.e., the ratio between initial
 	 * cardinality and cardinality after having applied the constraints)
 	 * 
 	 * @param model the CIT model
 	 * @return the ratio
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	public static double getTestValidityRatioFromModel(CitModel model) throws InterruptedException {
 		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
-		
+
 		// Compute the initial cardinality
 		PathSearcher searcher = new PathSearcher(manager, 1);
 		searcher.setNode(baseMDD);
@@ -535,11 +564,11 @@ public class Operations {
 
 		// Add to the baseNode the constraints
 		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
-		
+
 		searcher = new PathSearcher(manager, 1);
 		searcher.setNode(baseMDD);
 		double finalCardinality = searcher.countPaths();
-		
-		return finalCardinality/initialCardinality;
+
+		return finalCardinality / initialCardinality;
 	}
 }
