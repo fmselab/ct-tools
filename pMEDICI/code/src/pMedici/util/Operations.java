@@ -230,7 +230,7 @@ public class Operations {
 		for (ctwedge.ctWedge.Constraint c : m.getConstraints()) {
 			translator.reset();
 			translator.doSwitch(c);
-			
+
 			// Now the top of the stack must contain the complete constraint representation
 			// and we can update the base node
 			ExtendedSemaphore.OPERATION_SEMAPHORE.acquire();
@@ -513,5 +513,33 @@ public class Operations {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Given a CITModel, it returns the ratio (i.e., the ratio between initial
+	 * cardinality and cardinality after having applied the constraints)
+	 * 
+	 * @param model the CIT model
+	 * @return the ratio
+	 * @throws InterruptedException 
+	 */
+	public static double getTestValidityRatioFromModel(CitModel model) throws InterruptedException {
+		ModelToMDDConverter mc = new ModelToMDDConverter(model);
+		MDDManager manager = mc.getMDD();
+		int baseMDD = mc.getStartingNode();
+		
+		// Compute the initial cardinality
+		PathSearcher searcher = new PathSearcher(manager, 1);
+		searcher.setNode(baseMDD);
+		double initialCardinality = searcher.countPaths();
+
+		// Add to the baseNode the constraints
+		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
+		
+		searcher = new PathSearcher(manager, 1);
+		searcher.setNode(baseMDD);
+		double finalCardinality = searcher.countPaths();
+		
+		return finalCardinality/initialCardinality;
 	}
 }
