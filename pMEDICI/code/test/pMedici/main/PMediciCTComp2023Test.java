@@ -32,7 +32,7 @@ public class PMediciCTComp2023Test {
 		Logger.getLogger(ParameterSwitchToPairStrings.class).setLevel(Level.OFF);
 		TestContext.IN_TEST = true;
 		PMedici pMedici = new PMedici();
-		pMedici.verb = true;
+		PMedici.verb = true;
 		TestContext.LockTCOnlyOnWriting = false;
 		TestSuite testsuite = pMedici.generateTests(fileName,2, 1);
 		assertEquals(2, testsuite.getStrength());		

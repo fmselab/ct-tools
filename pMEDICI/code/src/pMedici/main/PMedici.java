@@ -13,7 +13,6 @@ import java.util.concurrent.Callable;
 
 import org.colomoto.mddlib.MDDManager;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
