@@ -1,0 +1,35 @@
+Model MVM
+Parameters:
+State : {OFF STARTUP SELF_TEST VENTILATION_OFF PCV_INSP PCV_EXP PSV_INSP PSV_EXP}
+NextState : {OFF STARTUP SELF_TEST VENTILATION_OFF PCV_INSP PCV_EXP PSV_INSP PSV_EXP}
+InValve : {OPEN CLOSE}
+OutValve : {OPEN CLOSE}
+Mode: {PCV PSV}
+PowerOff : Boolean
+SelfTestPassed: Boolean
+StartupEnded: Boolean
+StartVentilation: Boolean
+InspTimePassed: Boolean
+ExpTimePassed: Boolean
+StopVentilation: Boolean
+
+
+Constraints:
+# NextState = OFF <=> PowerOff #
+# NextState = SELF_TEST <=> (State = STARTUP AND StartupEnded)#
+# SelfTestPassed <=> State = SELF_TEST #
+# StartupEnded <=> State = STARTUP #
+# (State = SELF_TEST AND SelfTestPassed) => NextState = VENTILATION_OFF #
+# (InValve = OPEN AND OutValve = CLOSE) OR (InValve = CLOSE AND OutValve = OPEN) #
+# (InValve = OPEN <=> (State = PSV_INSP OR State = PCV_INSP)) AND (OutValve = OPEN <=> (State = PSV_EXP OR State = PCV_EXP)) #
+# (State = VENTILATION_OFF AND Mode=PCV AND StartVentilation) => NextState = PCV_INSP #
+# (State = VENTILATION_OFF AND Mode=PSV AND StartVentilation) => NextState = PSV_INSP #
+# (State = PSV_INSP AND Mode=PSV AND InspTimePassed) => NextState = PSV_EXP #
+# (State = PCV_INSP AND Mode=PCV AND InspTimePassed) => NextState = PCV_EXP #
+# (State = PCV_EXP AND Mode=PCV AND ExpTimePassed) => NextState = PCV_INSP #
+# (State = PSV_EXP AND Mode=PSV AND ExpTimePassed) => NextState = PSV_INSP #
+# (State = PSV_INSP AND Mode=PCV AND InspTimePassed) => NextState = PCV_EXP #
+# (State = PCV_INSP AND Mode=PSV AND InspTimePassed) => NextState = PSV_EXP #
+# (State = PCV_EXP AND Mode=PSV AND ExpTimePassed) => NextState = PSV_INSP #
+# (State = PSV_EXP AND Mode=PCV AND ExpTimePassed) => NextState = PCV_INSP #
+# (StopVentilation => (State = PCV_EXP OR State = PSV_EXP)) => NextState = VENTILATION_OFF #

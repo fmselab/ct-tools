@@ -1,0 +1,9 @@
+Model BOOLC_4
+Parameters:
+Par9 : Boolean
+Par4 : Boolean
+Par10 : Boolean
+
+Constraints:
+// par4 e par 10 devono essere uguali
+# (Par10 = true <=> (Par4 = true)) #
