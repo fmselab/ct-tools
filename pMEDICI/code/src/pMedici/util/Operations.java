@@ -560,8 +560,10 @@ public class Operations {
 
 		// Compute the initial cardinality
 		PathSearcher searcher = new PathSearcher(manager, 1);
-		searcher.setNode(baseMDD);
-		double initialCardinality = searcher.countPaths();
+		double initialCardinality = 1;
+		for (Parameter p : model.getParameters()) {
+			initialCardinality *= ParameterSize.eInstance.doSwitch(p);
+		}
 
 		// Add to the baseNode the constraints
 		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
