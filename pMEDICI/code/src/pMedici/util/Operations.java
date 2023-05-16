@@ -19,6 +19,7 @@ import org.colomoto.mddlib.operators.MDDBaseOperators;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
+import ctwedge.util.NotConvertableModel;
 import ctwedge.util.ParameterSize;
 import ctwedge.util.ParameterValuesToInt;
 
@@ -224,7 +225,7 @@ public class Operations {
 	 * @throws InterruptedException
 	 */
 	public static int updateMDDWithConstraints(MDDManager manager, CitModel m, int baseNode)
-			throws InterruptedException {
+			throws InterruptedException, NotConvertableModel {
 		// Translator
 		ConstraintToMDD translator = new ConstraintToMDD(m, manager);
 		// Fetch all the constraints
@@ -552,7 +553,7 @@ public class Operations {
 	 * @return the ratio
 	 * @throws InterruptedException
 	 */
-	public static double getTestValidityRatioFromModel(CitModel model) throws InterruptedException {
+	public static double getTestValidityRatioFromModel(CitModel model) throws InterruptedException, NotConvertableModel {
 		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
