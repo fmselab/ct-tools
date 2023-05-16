@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.SolverContext;
+import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.Bool;
 import ctwedge.ctWedge.CitModel;
@@ -21,6 +24,7 @@ import ctwedge.ctWedge.Element;
 import ctwedge.ctWedge.Enumerative;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.ctWedge.Range;
+import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
 import ctwedge.util.ParameterSize;
 import kali.safeelements.TestContext;
@@ -293,6 +297,36 @@ public class Operations {
 				return e.getKey();
 		}
 		return null;
+	}
+	
+	/**
+	 * Given a CITModel, it returns the ratio (i.e., the ratio between all tuples
+	 * and those applicable)
+	 * 
+	 * @param model the CIT model
+	 * @return the ratio
+	 * @throws InterruptedException
+	 * @throws InvalidConfigurationException 
+	 * @throws SolverException 
+	 */
+	public static double getTupleValidityRatioFromModel(CitModel model) throws InterruptedException, InvalidConfigurationException, SolverException {
+		int totTuple = 0;
+		int compatiblePairs = 0;
+		
+		// Compute the position of each parameter
+		Map<String, Integer> paramPosition = Operations.setParamPosition(model);
+		
+		// All tuples
+		Map<String, List<Object>> elements = Operations.getElementsMap(model, Order.AS_DECLARED);
+		Iterator<List<Pair<String, Object>>> tg = ModelUtils.getAllKWiseCombination(elements, 2);
+		TestContext tc = new TestContext(model.getParameters().size(), true, paramPosition, model);
+		while (tg.hasNext()) {
+			Vector<Pair<String, Object>> tuple = new Vector<Pair<String, Object>>(tg.next());
+			if (tc.isCoverable(tuple))
+				compatiblePairs++;
+			totTuple++;
+		}
+		return (double)compatiblePairs/totTuple;
 	}
 
 }
