@@ -126,8 +126,6 @@ public class PMedici implements Callable<Integer> {
 	 */
 	public TestSuite generateTests(String fileName, int strength, int nThreads)
 			throws IOException, InterruptedException {
-		// Get current time
-		long start = System.currentTimeMillis();
 		CitModel model = null;
 
 		// Read the model in CTWedge format
@@ -136,6 +134,14 @@ public class PMedici implements Callable<Integer> {
 		} else {
 			assert false : "You must specify the name of the file containing the CTWedge model";
 		}
+		return generateTests(model, strength, nThreads);
+	}
+	
+	public TestSuite generateTests(CitModel fileName, int strength, int nThreads)
+				throws IOException, InterruptedException {
+		assert fileName != null;
+		// Get current time
+		long start = System.currentTimeMillis();
 
 		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();

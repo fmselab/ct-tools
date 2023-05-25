@@ -1,0 +1,10 @@
+// 
+// One-Test-at-a-Time Heuristic Search for Interaction Test Suites
+// 
+Model benchmark1
+Parameters:
+a1: [1 ..7]
+a2: [1 ..7]
+a3: [1 ..7]
+a4: [1 ..7]
+a5: [1 ..7]
