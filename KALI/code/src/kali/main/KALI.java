@@ -6,26 +6,27 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.emf.common.util.EList;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.Utility;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Pair;
 import ctwedge.util.TestSuite;
+import ctwedge.util.ext.Utility;
 import kali.safeelements.ExtendedSemaphore;
 import kali.safeelements.SafeQueue;
 import kali.safeelements.TestContext;
@@ -33,6 +34,7 @@ import kali.threads.TestBuilder;
 import kali.threads.TupleFiller;
 import kali.util.Operations;
 import kali.util.Order;
+import kali.util.RandomTestGenerator;
 
 public class KALI {
 
@@ -76,8 +78,6 @@ public class KALI {
 
 	@SuppressWarnings("deprecation")
 	public TestSuite doMain(String[] args) throws IOException, InterruptedException {
-		HashSet<String> tests = new HashSet<String>();
-		String tsAsCSV = "";
 		CmdLineParser parser = new CmdLineParser(this);
 		Integer strength = null;
 		try {
@@ -116,24 +116,39 @@ public class KALI {
 			return null;
 		}
 
-		int nCovered = 0;
-		int totTuples = 0;
-
 		// Set parameter ordering strategy
 		ORDER = Order.valueOf(ORDER_STR);
 
 		// Set SMT solver to be used
 		TestContext.SMTSolver = Solvers.valueOf(SOLVER);
 
+		return testGeneration(strength, fileName, m);
+	}
+
+	
+	TestSuite testGeneration(Integer strength, String fileName, CitModel m)
+			throws InterruptedException, IOException {
 		// Get current time
 		long start = System.currentTimeMillis();
 
 		// Compute the position of each parameter
-		Map<String, Integer> paramPosition = new HashMap<String, Integer>();
-		paramPosition = Operations.setParamPosition(m);
+		Map<String, Integer> paramPosition = Operations.setParamPosition(m);
 
 		// Shared object between producer and consumer
 		SafeQueue tuples = new SafeQueue();
+
+		// If the randomization has to be used, then generate random tests and
+		// preprocess them as seeds
+		Vector<TestContext> tcSeedsList = new Vector<TestContext>();
+		if (randomize) {
+			HashSet<String> testSeeds = new HashSet<String>();
+			try {
+				testSeeds = new RandomTestGenerator(m).generateRandomTests();
+				tcSeedsList = preprocessTestSeeds(m, paramPosition, testSeeds);
+			} catch (InterruptedException | SolverException | InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+		}
 
 		// Combination generator
 		Map<String, List<Object>> elements = Operations.getElementsMap(m, ORDER);
@@ -152,13 +167,16 @@ public class KALI {
 		}
 
 		// Generate test cases
-		Vector<TestContext> tcList = testGeneration(m, paramPosition, tuples, tFillerThread);
+		Vector<TestContext> tcList = testGeneration(m, paramPosition, tuples, tFillerThread, tcSeedsList);
 		// Remove empty contexts
 		tcList.removeIf(x -> x.getNCovered() == 0);
 
+		// print the test suite and convert to test suite as ctwedge object
 		// Compute the summary values
+		HashSet<String> tests = new HashSet<String>();
+		int nCovered = 0;
+		int totTuples = 0;
 		System.out.println("-----TEST SUITE-----");
-
 		// First row -> parameter names
 		String header = "";
 		for (Parameter param : m.getParameters()) {
@@ -199,9 +217,8 @@ public class KALI {
 			bw.newLine();
 			bw.close();
 		}
-
 		// Create and return the test suite
-		tsAsCSV = header.substring(0, header.length() - 1) + "\n";
+	 String tsAsCSV = header.substring(0, header.length() - 1) + "\n";
 		for (String t : tests) {
 			tsAsCSV += t + "\n";
 		}
@@ -213,9 +230,12 @@ public class KALI {
 	}
 
 	private Vector<TestContext> testGeneration(CitModel m, Map<String, Integer> paramPosition, SafeQueue tuples,
-			Thread tFillerThread) throws InterruptedException {
+			Thread tFillerThread, Vector<TestContext> tcSeedsList) throws InterruptedException {
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
 		Vector<TestContext> tcList = new Vector<TestContext>();
+		// If seeds have been used, append them to the test context list
+		tcList.addAll(tcSeedsList);
+		
 		int nParams = m.getParameters().size();
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
@@ -232,6 +252,58 @@ public class KALI {
 
 		// Join the tuple filler thread
 		tFillerThread.join();
+		return tcList;
+	}
+
+	private Vector<TestContext> preprocessTestSeeds(CitModel m, Map<String, Integer> paramPosition,
+			HashSet<String> testSeeds) throws InterruptedException, SolverException, InvalidConfigurationException {
+		Vector<TestContext> tcList = new Vector<TestContext>();
+		int nParams = m.getParameters().size();
+		boolean useConstraints = m.getConstraints().size() > 0;
+		// Fetch all the old tests and create new test contexts
+		for (String oldTest : testSeeds) {
+			// New test context
+			TestContext tc = new TestContext(nParams, useConstraints, paramPosition, m);
+			String[] values = oldTest.split(";");
+
+			// Creating the tuple related to the current iteration: we need to create a
+			// tuple because the method that verify
+			// the constraints accepts only the type Vector<Pair<String, Object>>
+			Vector<Pair<String, Object>> tupleNew = new Vector<Pair<String, Object>>();
+
+			EList<Parameter> parameters = m.getParameters();
+			for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
+				Parameter param = parameters.get(tupleIndex);
+				// If the parameter of the new model is in the old test suite,
+				// its value is added in the corresponding position in the current tuple
+				String testParamValue;
+
+				if ((testParamValue = values[paramPosition.get(param.getName())]) != null) {
+					if (testParamValue != "") {
+						tupleNew.add(new Pair<String, Object>(param.getName(), testParamValue));
+
+						// Verify assignment per assignment
+						if (!tupleNew.isEmpty()) {
+							if (tc.isCoverable(tupleNew)) {
+								tc.addTuple(tupleNew);
+							}
+						}
+					}
+				}
+			}
+			tc.resetCovered();
+
+			// If we added at least one parameter test value to the tuple, then the new
+			// test context can be kept
+			if (!tupleNew.isEmpty())
+				tcList.add(tc);
+
+		}
+
+		if (verbose) {
+			System.out.println("Created " + tcList.size() + " test contexts from test seeds");
+		}
+
 		return tcList;
 	}
 

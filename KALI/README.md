@@ -1,5 +1,6 @@
 # KALI
-Replication package and repository for the paper "Multi-thread Combinatorial Test Generation with SMT solvers"
+
+KALI is a multi-threaded tool for generating combinatorial test suites, based on a choosable SMT solver.
 
 ## Folder content
 
@@ -15,3 +16,19 @@ Replication package and repository for the paper "Multi-thread Combinatorial Tes
 		- `.\best_results.csv`: the data containing, for each model, the best execution of each test generator
 		- `.\aggregated_best.csv`: the aggregated data produced by the script `data_aggregator.py`
 		- `.\aggregated_best.csv`: the aggregated data produced by the script `data_aggregator.py`, excluding the timeouts
+- `tool`: the folder containing the tool
+	- `KALI.jar`: the executable JAR for the KALI tool
+	
+Dowload the jar file: https://github.com/fmselab/ct-tools/raw/main/KALI/tool/KALI.jar
+
+## How to generate test cases with KALI
+Provided that you have the executable JAR of KALI, it can be executed with the following command
+
+`java -jar KALI.jar [options] [strength] [CTWedge Model]`
+
+Additional options can be set through the command line:
+- `-n [int]` sets the number of threads used for test generation. By default, the number of threads is automatically determined by the HW architecture;
+- `-verbose` sets the verbose mode, which prints additional information on the console. By default KALI execute in non-verbose mode;
+- `-sort` activates the sort optimization. By default it is non active;
+- `-order [NAME]` sets which kind of parameters ordering has to be used for tuple generation. It can be chosen between IN_ORDER_SIZE_DESC, IN_ORDER_SIZE_ASC, RANDOM, AS_DECLARED. By default IN_ORDER_SIZE_DESC is used;
+- `-solver [NAME]` sets the SMT solver used by text contexts. It can be chosen between MATHSAT, SMTINTERPOL, Z3, PRINCESS, BOOLECTOR, CVC4, YICES2. By default, SMTINTERPOL is used.

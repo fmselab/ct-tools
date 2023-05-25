@@ -2,7 +2,7 @@
 
 ![FoselabCTLogo](https://github.com/fmselab/ct-tools/blob/main/img/logo_foselab.png?raw=true)
 
-Repository containing all the CIT tools developed by fmselab
+Repository containing all the CIT tools developed by foselab
 
 ## Repository content
 

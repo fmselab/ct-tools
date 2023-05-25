@@ -29,8 +29,8 @@ import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
-import ctwedge.generator.util.ParameterElementsGetterAsStrings;
 import ctwedge.util.Pair;
+import ctwedge.util.ParameterElementsGetterAsStrings;
 import kali.threads.TestBuilder;
 import kali.util.Operations;
 import kali.util.TestCase;
@@ -256,6 +256,7 @@ public class TestContext {
 		// If the context is not SAT, it means that the tuple can't be added to this
 		// context
 		boolean unsat = prover.isUnsat();
+		prover.pop();
 		return !unsat;
 	}
 
@@ -408,7 +409,7 @@ public class TestContext {
 					}
 					if (!set) {
 						String value = "";
-						if (!test[paramPosition.get(p.getName())].toString().equals("*")) {
+						if (!test[paramPosition.get(p.getName())].toString().equals(UNDEF)) {
 							value = test[paramPosition.get(p.getName())].toString();
 						} else {
 							List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(p);
@@ -521,6 +522,13 @@ public class TestContext {
 	 */
 	public void close() {
 		context.close();
+	}
+	
+	/**
+	 * Resets the number of covered tuple (used when randomly generating the test seeds)
+	 */
+	public void resetCovered() {
+		nCovered=0;
 	}
 
 }

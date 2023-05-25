@@ -189,6 +189,7 @@ public class TestBuilder implements Runnable {
 		// Extract all the values
 		while (!safeQueue.finished()) {
 			Vector<Pair<String, Object>> tuple = safeQueue.get();
+			
 			if (tuple != null) {
 				// If a tuple has been extracted
 				// Try to find a TestContext which implies this tuple
@@ -245,10 +246,10 @@ public class TestBuilder implements Runnable {
 
 				TestContext tc;
 				try {
-					if (empty != null)
-						tc = empty;
-					else
-						tc = new TestContext(nParam, useConstraints, paramPosition, model);
+//					if (empty != null)
+//						tc = empty;
+//					else
+					tc = new TestContext(nParam, useConstraints, paramPosition, model);
 					
 					try {
 						tc.testMutex.acquire();
