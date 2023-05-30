@@ -137,7 +137,7 @@ public class PMedici implements Callable<Integer> {
 		return generateTests(model, strength, nThreads);
 	}
 	
-	public TestSuite generateTests(CitModel fileName, int strength, int nThreads)
+	public TestSuite generateTests(CitModel model, int strength, int nThreads)
 				throws IOException, InterruptedException {
 		assert fileName != null;
 		// Get current time

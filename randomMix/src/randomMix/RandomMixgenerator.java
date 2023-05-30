@@ -10,7 +10,7 @@ import pMedici.main.PMedici;
 
 public class RandomMixgenerator {
 
-	private static final int N_THREADS = 4;
+	private static final int N_THREADS = 1;
 	
 	PMedici pMedici;
 	private CitModel model; 
@@ -24,10 +24,7 @@ public class RandomMixgenerator {
 	
 	
 	TestSuite generate(int randomStop, int strength) throws IOException, InterruptedException{
-		// generates randomStop random tests
-		
-		// fill the test suite using pMedici
-		
+		// fill the test suite using pMedici		
 		return pMedici.generateTests(model, strength, N_THREADS);
 	}
 	
