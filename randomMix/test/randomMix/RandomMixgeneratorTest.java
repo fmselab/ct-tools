@@ -8,6 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
@@ -46,13 +52,24 @@ public class RandomMixgeneratorTest {
 		// Read the model
 		CitModel model = Utility.loadModelFromPath(modelPath);
 		assert model != null;
-		RandomMixgenerator generator = new RandomMixgenerator(model);
 
 		// Generate with an increasing number of random tests
-		for (int i = 0; i < 10; i++) {
-			TestSuite ts = generator.generate(i * 10, 4);
-			bw.write(model.getName() + "," + ts.getStrength() + "," + i * 10 + "," + ts.getTests().size() + ","
-					+ ts.getGeneratorTime() + "\n");
+		for (int i = 0; i < 20; i++) {
+			
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Future<TestSuite> future = executor.submit(new RandomMixgenerator(model, i*10, 4));
+			try {
+				TestSuite ts = future.get(300, TimeUnit.SECONDS);
+				bw.write(model.getName() + "," + ts.getStrength() + "," + i * 10 + "," + ts.getTests().size() + ","
+						+ ts.getGeneratorTime() + "\n");
+			} catch (TimeoutException e) {
+			    System.out.println("Time out has occurred");
+			    future.cancel(true);
+			    bw.write(model.getName() + ",timeout," + i * 10 + ",timeout,timeout\n");
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+			
 			bw.flush();
 		}
 	}
