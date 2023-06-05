@@ -4,11 +4,10 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.generator.exporter.CSVExporter;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Test;
 import ctwedge.util.TestSuite;
@@ -22,6 +21,7 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 	private CitModel model;
 	int nSeeds;
 	int strength;
+	int usedSeeds;
 
 	RandomMixgenerator(CitModel model, int nSeeds, int strength) {
 		pMedici = new PMedici();
@@ -29,32 +29,63 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		assert model != null;
 		this.nSeeds = nSeeds;
 		this.strength = strength;
+		this.usedSeeds = 0;
 	}
 
 	@Override
 	public TestSuite call() throws Exception {
 		// Generate old tests
 		long start = System.currentTimeMillis();
-		ModelUtils mu = new ModelUtils(model);
-		TestSuite tsOld = new TestSuite(model, null);
-		List<Test> tests = new ArrayList<Test>();
-		for (int i = 0; i < nSeeds; i++) {
-			tests.add(mu.getRandomTestFromModel());
+		String fileName = "experimentsdata/testsuite_"
+				+ new SimpleDateFormat("yyyyMMddhhmmss'.csv'").format(new Date());
+		ArrayList<Test> tests = new ArrayList<Test>();
+		TreeSet<String> testsString = new TreeSet<>();
+		if (nSeeds > 0) {
+			ModelUtils mu = new ModelUtils(model);
+			for (int i = 0; i < nSeeds; i++) {
+				Test t = mu.getRandomTestFromModel();
+				if (!testsString.contains(t.toString())) {
+					testsString.add(t.toString());
+					tests.add(t);					
+				}				
+			}
+			pMedici.setSeeds(tests);
+			usedSeeds = tests.size();
+		} else {
+			pMedici.setSeeds(null);
 		}
-		tsOld.setTests(tests);
-		// Save old tests to temp file
-		CSVExporter exporter = new CSVExporter();
-		String fileName = "experimentsdata/testsuite_" + new SimpleDateFormat("yyyyMMddhhmmss'.csv'").format(new Date());
-		exporter.generateOutput(tsOld, fileName);
-		// Load old seeds
-		pMedici.setOldTs(fileName);
 		long preProcessingDuration = System.currentTimeMillis() - start;
+		
 		// Generate test suite
 		TestSuite ts = pMedici.generateTests(model, strength, N_THREADS);
+		
 		// Update generation time
 		ts.setGeneratorTime(ts.getGeneratorTime() + preProcessingDuration);
-		new File(fileName).delete();
+		if (nSeeds > 0)
+			new File(fileName).delete();
+		
+		// Check that the seeds are in the test suite
+		for (Test t : tests) {
+			boolean found = false;
+			for (Test tTs : ts.getTests()) {
+				if (tTs.toString().equals(t.toString())) {					
+					found = true;
+					break;
+				}
+			}
+			assert(found);
+		}
+		
 		return ts;
+	}
+	
+	/**
+	 * Returns the number of actual used seeds
+	 * 
+	 * @return the number of actual used seeds
+	 */
+	public int getUsedSeeds() {
+		return this.usedSeeds;
 	}
 
 }

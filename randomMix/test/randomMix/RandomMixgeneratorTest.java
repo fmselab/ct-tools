@@ -25,6 +25,9 @@ import pMedici.util.TestContext;
 
 public class RandomMixgeneratorTest {
 
+	private static final int STRENGTH = 5;
+	int nErrors = 0;
+
 	@Test
 	public void testGenerate() throws IOException, InterruptedException {
 		TestContext.IN_TEST = true;
@@ -34,7 +37,7 @@ public class RandomMixgeneratorTest {
 				"experimentsdata/experiments_" + new SimpleDateFormat("yyyyMMddhhmmss'.csv'").format(new Date()));
 		// Output file
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-		bw.write("FileName,Strength,SeedSize,TSSize,TSTime\n");
+		bw.write("FileName,Strength,SeedSize,UsedSeedSize,TSSize,TSTime\n");
 
 		Files.walk(Paths.get("./models")).forEach(x -> {
 			try {
@@ -46,6 +49,8 @@ public class RandomMixgeneratorTest {
 		});
 
 		bw.close();
+
+		System.err.println("Errors: " + nErrors);
 	}
 
 	private void experimentsOnModel(String modelPath, BufferedWriter bw) throws IOException, InterruptedException {
@@ -55,21 +60,23 @@ public class RandomMixgeneratorTest {
 
 		// Generate with an increasing number of random tests
 		for (int i = 0; i < 20; i++) {
-			
+
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Future<TestSuite> future = executor.submit(new RandomMixgenerator(model, i*10, 4));
+			RandomMixgenerator generator = new RandomMixgenerator(model, i * 10, STRENGTH);
+			Future<TestSuite> future = executor.submit(generator);
 			try {
 				TestSuite ts = future.get(300, TimeUnit.SECONDS);
-				bw.write(model.getName() + "," + ts.getStrength() + "," + i * 10 + "," + ts.getTests().size() + ","
-						+ ts.getGeneratorTime() + "\n");
+				bw.write(model.getName() + "," + ts.getStrength() + "," + (i * 10) + "," + generator.getUsedSeeds()
+						+ "," + ts.getTests().size() + "," + ts.getGeneratorTime() + "\n");
 			} catch (TimeoutException e) {
-			    System.out.println("Time out has occurred");
-			    future.cancel(true);
-			    bw.write(model.getName() + ",timeout," + i * 10 + ",timeout,timeout\n");
+				System.out.println("Time out has occurred");
+				future.cancel(true);
+				bw.write(model.getName() + ",timeout," + (i * 10) + ",timeout,timeout,timeout\n");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
+				nErrors++;
 			}
-			
+
 			bw.flush();
 		}
 	}
