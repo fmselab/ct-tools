@@ -17,6 +17,7 @@ import org.eclipse.emf.common.util.EList;
 import ctwedge.ctWedge.CitModel;
 import ctwedge.ctWedge.Parameter;
 import ctwedge.util.ParameterElementsGetterAsStrings;
+import ctwedge.util.Test;
 import ctwedge.util.TestSuite;
 import ctwedge.util.ext.Utility;
 import pMedici.experiments.pMEDICIExperimenter;
@@ -53,7 +54,7 @@ public class PMedici implements Callable<Integer> {
 	/** Use the verbose mode */
 	@Option(names = "-verb", description = "Use the verbose mode.")
 	public static boolean verb;
-	
+
 	/** Use the expand mode */
 	@Option(names = "-expand", description = "Only complete partial tests, and do not create new ones. It is not active by default.")
 	boolean expand = false;
@@ -61,15 +62,15 @@ public class PMedici implements Callable<Integer> {
 	/** Load a previous test suite */
 	@Option(names = "-old", description = "CSV file containing the old test suite, with commas and header in the first row")
 	String oldTs = "";
-	
+
 	/** Stores partial test suites */
 	@Option(names = "-savePartialStep", description = "Step used for saving the partial test suites [ms]")
 	int savePartialStep = -1;
-	
+
 	/** Output path */
 	@Option(names = "-output", description = "The output path")
 	String path = "";
-	
+
 	/** Filename Prefix */
 	@Option(names = "-prefix", description = "Prefix to be used when saving files of the test suite")
 	String prefix = "";
@@ -94,6 +95,11 @@ public class PMedici implements Callable<Integer> {
 
 	/** the model for the generation */
 	CitModel model;
+
+	/**
+	 * The old seeds, if they are loaded directly and not from the CSV file
+	 */
+	Vector<Map<String, String>> oldTests = null;
 
 	/**
 	 * The main method.
@@ -126,8 +132,6 @@ public class PMedici implements Callable<Integer> {
 	 */
 	public TestSuite generateTests(String fileName, int strength, int nThreads)
 			throws IOException, InterruptedException {
-		// Get current time
-		long start = System.currentTimeMillis();
 		CitModel model = null;
 
 		// Read the model in CTWedge format
@@ -136,6 +140,14 @@ public class PMedici implements Callable<Integer> {
 		} else {
 			assert false : "You must specify the name of the file containing the CTWedge model";
 		}
+		return generateTests(model, strength, nThreads);
+	}
+
+	public TestSuite generateTests(CitModel model, int strength, int nThreads)
+			throws IOException, InterruptedException {
+		assert fileName != null;
+		// Get current time
+		long start = System.currentTimeMillis();
 
 		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
@@ -166,7 +178,9 @@ public class PMedici implements Callable<Integer> {
 
 		// If old test suite file is specified, load it in the tcList
 		if (!oldTs.equals("")) {
-			Vector<Map<String, String>> oldTests = CSVImporter.read(oldTs);
+			oldTests = CSVImporter.read(oldTs);
+			initializeTestContexts(model, manager, baseMDD, tcList, oldTests);
+		} else if (oldTests != null) {
 			initializeTestContexts(model, manager, baseMDD, tcList, oldTests);
 		}
 
@@ -181,10 +195,11 @@ public class PMedici implements Callable<Integer> {
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
-		
+
 		// Save partial tests?
 		if (savePartialStep > -1) {
-			Thread tBuilder = new Thread(new TestSuitePrinter(tcList, testContextsMutex, tuples, savePartialStep, model, prefix, path + model.getName()));
+			Thread tBuilder = new Thread(new TestSuitePrinter(tcList, testContextsMutex, tuples, savePartialStep, model,
+					prefix, path + model.getName()));
 			tBuilder.start();
 			tBuilder.join();
 		}
@@ -213,7 +228,7 @@ public class PMedici implements Callable<Integer> {
 			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println("Time required for test suite generation: " + generationTime + " ms");
-			
+
 			// Save test suite to file
 			if (!prefix.equals("")) {
 				BufferedWriter bw = new BufferedWriter(
@@ -221,7 +236,7 @@ public class PMedici implements Callable<Integer> {
 				bw.write(tsAsCSV);
 				bw.write("\n\n");
 				bw.write("Time required for test suite generation: " + generationTime + " ms");
-				bw.close();				
+				bw.close();
 			}
 		}
 
@@ -268,26 +283,26 @@ public class PMedici implements Callable<Integer> {
 				// If the parameter of the new model is in the old test suite,
 				// its value is added in the corresponding position in the current tuple
 				String testParamValue;
-				if ((testParamValue = oldTest.get(param.getName())) != null) {					
+				if ((testParamValue = oldTest.get(param.getName())) != null) {
 					List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(param);
 					int value = values.indexOf(testParamValue);
 					if (value != -1) {
-						
+
 						tupleNew.add(new Pair<Integer, Integer>(tupleIndex, value));
-	
+
 						// If also partial tests should be kept, verify assignment per assignment
 						if (!tupleNew.isEmpty() && TestBuilder.KeepPartialOldTests) {
 							if (tc.verifyWithMDD(tupleNew)) {
 								tc.addTuple(tupleNew, false);
 							}
 						}
-					} 
+					}
 				}
 			}
-			
+
 			// If we added at least one parameter test value to the tuple, then
 			// we check if the created tuple is valid with the model constraints
-			if (!tupleNew.isEmpty()) {			
+			if (!tupleNew.isEmpty()) {
 
 				// If the test context has already been updated step by step, skip the part
 				// adding the new tuple
@@ -312,7 +327,7 @@ public class PMedici implements Callable<Integer> {
 				}
 			}
 		}
-		
+
 		if (verb) {
 			System.out.println("Created " + tcList.size() + " test contexts from the previous test suite");
 		}
@@ -326,17 +341,35 @@ public class PMedici implements Callable<Integer> {
 	public CitModel getModel() {
 		return this.model;
 	}
-	
+
 	/**
 	 * Sets the old test suite path
-	 * @param oldTs the path of the old test suite 
+	 * 
+	 * @param oldTs the path of the old test suite
 	 */
 	public void setOldTs(String oldTs) {
 		this.oldTs = oldTs;
 	}
-	
+
+	/**
+	 * Sets the old test suite path
+	 * 
+	 * @param oldTs the path of the old test suite
+	 */
+	public void setSeeds(List<Test> oldTs) {
+		if (oldTs != null) {
+			oldTests = new Vector<Map<String, String>>();
+			for (Test t : oldTs) {
+				oldTests.add(t);
+			}
+		} else {
+			oldTests = null;
+		}
+	}
+
 	/**
 	 * Sets the expand mode
+	 * 
 	 * @param expand true if the expand mode (no tests have to be created) is used
 	 */
 	public void setExpand(boolean expand) {
