@@ -25,7 +25,7 @@ import org.sosy_lab.java_smt.api.Formula;
 
 import ctwedge.ctWedge.*;
 import ctwedge.ctWedge.util.CtWedgeSwitch;
-import ctwedge.util.validator.ParameterElementsGetterAsStrings;
+import ctwedge.util.ParameterElementsGetterAsStrings;
 import kali.safeelements.TestContext;
 
 public class ParameterAdder extends CtWedgeSwitch<List<Formula>> {
@@ -105,7 +105,7 @@ public class ParameterAdder extends CtWedgeSwitch<List<Formula>> {
 	@Override
 	public List<Formula> caseRange(Range range) {
 		// The Range object can be seen as an array of values => Get the list of all possible values
-		ArrayList<String> values = new ArrayList<String>(ParameterElementsGetterAsStrings.eInstance.caseRange(range));
+		ArrayList<String> values = new ArrayList<String>(ParameterElementsGetterAsStrings.instance.caseRange(range));
 		if (values.size() < 1) 
 			throw new RuntimeException("Not valid");
 		

@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ctwedge.util.TestSuite;
+import ctwedge.util.smt.SMTTestSuiteValidator;
 import ctwedge.util.validator.MinimalityTestSuiteValidator;
 import ctwedge.util.validator.ParameterSwitchToPairStrings;
-import ctwedge.util.validator.SMTTestSuiteValidator;
 import ctwedge.util.validator.ValidatorException;
 import pMedici.util.TestContext;
 
