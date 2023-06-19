@@ -15,7 +15,7 @@ import ctwedge.ctWedge.Parameter;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Test;
 import ctwedge.util.TestSuite;
-import ctwedge.util.validator.SMTTestSuiteValidator;
+import ctwedge.util.smt.SMTTestSuiteValidator;
 import pMedici.main.PMedici;
 
 public class RandomMixgenerator implements Callable<TestSuite> {
