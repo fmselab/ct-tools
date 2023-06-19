@@ -4,13 +4,18 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 import ctwedge.ctWedge.CitModel;
+import ctwedge.ctWedge.Parameter;
 import ctwedge.util.ModelUtils;
 import ctwedge.util.Test;
 import ctwedge.util.TestSuite;
+import ctwedge.util.validator.SMTTestSuiteValidator;
 import pMedici.main.PMedici;
 
 public class RandomMixgenerator implements Callable<TestSuite> {
@@ -23,6 +28,10 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 	int strength;
 	int usedSeeds;
 
+	double cRnd;
+	double cInc;
+	int totalTuples;
+
 	RandomMixgenerator(CitModel model, int nSeeds, int strength) {
 		pMedici = new PMedici();
 		this.model = model;
@@ -30,6 +39,9 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		this.nSeeds = nSeeds;
 		this.strength = strength;
 		this.usedSeeds = 0;
+		this.cRnd = 0;
+		this.cInc = 0;
+		this.totalTuples=0;
 	}
 
 	@Override
@@ -46,8 +58,8 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 				Test t = mu.getRandomTestFromModel();
 				if (!testsString.contains(t.toString())) {
 					testsString.add(t.toString());
-					tests.add(t);					
-				}				
+					tests.add(t);
+				}
 			}
 			pMedici.setSeeds(tests);
 			usedSeeds = tests.size();
@@ -55,30 +67,71 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 			pMedici.setSeeds(null);
 		}
 		long preProcessingDuration = System.currentTimeMillis() - start;
-		
+
+		// Compute the tuples covered by the random part
+		int tplsCovered;
+		if (tests.size() > 0) {
+			tplsCovered = getTuplesCoveredByTests(tests);
+			cRnd = tplsCovered / tests.size();
+		} else {
+			tplsCovered = 0;
+			cRnd = 0;
+		}
+
 		// Generate test suite
 		TestSuite ts = pMedici.generateTests(model, strength, N_THREADS);
-		
+
 		// Update generation time
 		ts.setGeneratorTime(ts.getGeneratorTime() + preProcessingDuration);
 		if (nSeeds > 0)
 			new File(fileName).delete();
-		
+
 		// Check that the seeds are in the test suite
 		for (Test t : tests) {
 			boolean found = false;
 			for (Test tTs : ts.getTests()) {
-				if (tTs.toString().equals(t.toString())) {					
+				if (tTs.toString().equals(t.toString())) {
 					found = true;
 					break;
 				}
 			}
-			assert(found);
+			assert (found);
+		}
+
+		// Compute the tuples covered by the other part
+		totalTuples = getTuplesCoveredByIncrementalTests(ts);
+		if (ts.getTests().size() - tests.size() > 0) {			
+			cInc = (totalTuples - tplsCovered) / (ts.getTests().size() - tests.size());
+		} else {
+			cInc = 0;
 		}
 		
 		return ts;
 	}
-	
+
+	private int getTuplesCoveredByIncrementalTests(TestSuite ts) {
+		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(ts);
+		return validator.howManyTuplesCovers();
+	}
+
+	private int getTuplesCoveredByTests(ArrayList<Test> tests) {
+		// Build the test suite object
+		List<Map<Parameter, ?>> oldTests = new ArrayList<Map<Parameter, ?>>();
+		for (Test t : tests) {
+			Map<Parameter, String> thisTest = new HashMap<Parameter, String>();
+			for (String param : t.getParameters()) {
+				Parameter p = model.getParameters().stream().filter(x -> x.getName().equals(param)).findFirst().get();
+				String v = t.get(param);
+				thisTest.put(p, v);
+			}
+			oldTests.add(thisTest);
+		}
+		TestSuite ts = new TestSuite(model, oldTests);
+		ts.setStrength(strength);
+		SMTTestSuiteValidator validator = new SMTTestSuiteValidator(ts);
+		return validator.howManyTuplesCovers();
+	}
+
 	/**
 	 * Returns the number of actual used seeds
 	 * 
@@ -86,6 +139,33 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 	 */
 	public int getUsedSeeds() {
 		return this.usedSeeds;
+	}
+
+	/**
+	 * Returns the average number of tuples covered by random tests
+	 * 
+	 * @return the average number of tuples covered by random tests
+	 */
+	public double getCRnd() {
+		return this.cRnd;
+	}
+
+	/**
+	 * Returns the average number of tuples covered by incremental tests
+	 * 
+	 * @return the average number of tuples covered by incremental tests
+	 */
+	public double getCInc() {
+		return this.cInc;
+	}
+	
+	/**
+	 * Returns the total number of tuples 
+	 * 
+	 * @return Returns the total number of tuples 
+	 */
+	public int getTotalTuples() {
+		return this.totalTuples;
 	}
 
 }

@@ -55,41 +55,4 @@ plt.legend()
 
 plt.show()
 
-# draw a boxplot to show the distribution of the cRnd column per SeedSize
-data.boxplot(column='cRnd', by='SeedSize')
-plt.title('cRnd vs Seed Size')
-# on the x-axis use a step of 10
-plt.xticks(np.arange(1, 200, 10))
-plt.ylabel('cRnd')
-plt.xlabel('Seed Size')
-plt.show()
 
-
-# draw a boxplot to show the distribution of the cInc column per SeedSize
-data.boxplot(column='cInc', by='SeedSize')
-plt.title('cInc vs Seed Size')
-# on the x-axis use a step of 10
-plt.xticks(np.arange(1, 200, 10))
-plt.ylabel('cInc')
-plt.xlabel('Seed Size')
-plt.show()
-
-# draw a boxplot to show the distribution of the cRnd column divided for the totTuples column per SeedSize
-data['cRnd/totTuples'] = data['cRnd']/data['totTuples']
-data.boxplot(column='cRnd/totTuples', by='SeedSize')
-plt.title('Relative cRnd vs Seed Size')
-# on the x-axis use a step of 10
-plt.xticks(np.arange(1, 200, 10))
-plt.ylabel('cRnd')
-plt.xlabel('Seed Size')
-plt.show()
-
-# draw a boxplot to show the distribution of the cInc column divided for the totTuples column per SeedSize
-data['cInc/totTuples'] = data['cInc']/data['totTuples']
-data.boxplot(column='cInc/totTuples', by='SeedSize')
-plt.title('Relative cInc vs Seed Size')
-# on the x-axis use a step of 10
-plt.xticks(np.arange(1, 200, 10))
-plt.ylabel('cInc')
-plt.xlabel('Seed Size')
-plt.show()
