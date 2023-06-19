@@ -9,7 +9,7 @@ import org.junit.Test;
 import ctwedge.ctWedge.CitModel;
 import ctwedge.util.TestSuite;
 import ctwedge.util.ext.Utility;
-import ctwedge.util.validator.SMTTestSuiteValidator;
+import ctwedge.util.smt.SMTTestSuiteValidator;
 import kali.threads.TestBuilder;
 
 public class KaliTestWithValidation {
