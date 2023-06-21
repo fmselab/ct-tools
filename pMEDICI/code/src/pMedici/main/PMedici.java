@@ -189,6 +189,12 @@ public class PMedici implements Callable<Integer> {
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		int nParams = model.getParameters().size();
 		boolean useConstraints = model.getConstraints().size() > 0;
+
+		if (verb) {
+			System.out.println("Starting generation for " + model.getName() + " with " + nThreads + " threads");
+			System.out.println("Initial tests: " + tcList.size());
+		}
+
 		for (int i = 0; i < nThreads; i++) {
 			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, nParams, useConstraints,
 					manager, testContextsMutex, verb, expand));
@@ -208,7 +214,8 @@ public class PMedici implements Callable<Integer> {
 		for (int i = 0; i < nThreads; i++) {
 			testBuilderThreads.get(i).join();
 		}
-
+		// Join the tuple filler thread
+		tFillerThread.join();
 		// Save the tests
 		ArrayList<String> testCases = new ArrayList<String>();
 		for (TestContext tc : tcList) {
@@ -220,15 +227,15 @@ public class PMedici implements Callable<Integer> {
 		System.out.println("-----TEST SUITE-----");
 		String tsAsCSV = Operations.translateOutputToString(testCases, model);
 		System.out.println(tsAsCSV);
+		// compute generation time
 		long generationTime = (System.currentTimeMillis() - start);
-
 		if (verb) {
 			totTuples = tuples.getNTuples();
+			System.out.println("Tests: " + testCases.size());
 			System.out.println("Covered: " + nCovered + " tuples");
 			System.out.println("Uncovered: " + (totTuples - nCovered) + " tuples");
 			System.out.println("Total number of tuples: " + totTuples + " tuples");
 			System.out.println("Time required for test suite generation: " + generationTime + " ms");
-
 			// Save test suite to file
 			if (!prefix.equals("")) {
 				BufferedWriter bw = new BufferedWriter(
@@ -239,9 +246,6 @@ public class PMedici implements Callable<Integer> {
 				bw.close();
 			}
 		}
-
-		// Join the tuple filler thread
-		tFillerThread.join();
 
 		// Create and return the test suite
 		TestSuite testSuite = new TestSuite(tsAsCSV, model);
