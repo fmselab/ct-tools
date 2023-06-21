@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-data = pd.read_csv("experiments_t3.csv")
+data = pd.read_csv("experiments_t4.csv")
 print (data)
 
 # Remove all rows having 'timeout' in the TSSize column
@@ -56,6 +56,7 @@ plt.legend()
 plt.show()
 
 # draw a boxplot to show the distribution of the cRnd column per SeedSize
+data['cRnd'] = pd.to_numeric(data['cRnd'])
 data.boxplot(column='cRnd', by='SeedSize')
 plt.title('cRnd vs Seed Size')
 # on the x-axis use a step of 10
@@ -66,6 +67,7 @@ plt.show()
 
 
 # draw a boxplot to show the distribution of the cInc column per SeedSize
+data['cInc'] = pd.to_numeric(data['cInc'])
 data.boxplot(column='cInc', by='SeedSize')
 plt.title('cInc vs Seed Size')
 # on the x-axis use a step of 10
@@ -75,6 +77,7 @@ plt.xlabel('Seed Size')
 plt.show()
 
 # draw a boxplot to show the distribution of the cRnd column divided for the totTuples column per SeedSize
+data['totTuples'] = pd.to_numeric(data['totTuples'])
 data['cRnd/totTuples'] = data['cRnd']/data['totTuples']
 data.boxplot(column='cRnd/totTuples', by='SeedSize')
 plt.title('Relative cRnd vs Seed Size')
