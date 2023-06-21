@@ -15,9 +15,11 @@ import java.util.Arrays;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.sosy_lab.common.configuration.InvalidConfigurationException;
+import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.util.TestSuite;
-import ctwedge.util.validator.SMTTestSuiteValidator;
+import ctwedge.util.smt.SMTTestSuiteValidator;
 import ctwedge.util.validator.ValidatorException;
 import pMedici.safeelements.SafeQueue;
 import pMedici.threads.TestBuilder;

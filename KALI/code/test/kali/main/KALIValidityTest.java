@@ -11,7 +11,7 @@ import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.api.SolverException;
 
 import ctwedge.util.TestSuite;
-import ctwedge.util.validator.SMTTestSuiteValidator;
+import ctwedge.util.smt.SMTTestSuiteValidator;
 import ctwedge.util.validator.ValidatorException;
 import kali.threads.TestBuilder;
 

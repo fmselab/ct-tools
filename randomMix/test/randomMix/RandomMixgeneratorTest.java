@@ -25,7 +25,7 @@ import pMedici.util.TestContext;
 
 public class RandomMixgeneratorTest {
 
-	private static final int STRENGTH = 5;
+	private static final int STRENGTH = 4;
 	int nErrors = 0;
 
 	@Test
@@ -37,7 +37,7 @@ public class RandomMixgeneratorTest {
 				"experimentsdata/experiments_" + new SimpleDateFormat("yyyyMMddhhmmss'.csv'").format(new Date()));
 		// Output file
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-		bw.write("FileName,Strength,SeedSize,UsedSeedSize,TSSize,TSTime\n");
+		bw.write("FileName,Strength,SeedSize,UsedSeedSize,TSSize,TSTime,cRnd,cInc,totTuples\n");
 
 		Files.walk(Paths.get("./models")).forEach(x -> {
 			try {
@@ -59,19 +59,20 @@ public class RandomMixgeneratorTest {
 		assert model != null;
 
 		// Generate with an increasing number of random tests
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 200; i++) {
 
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-			RandomMixgenerator generator = new RandomMixgenerator(model, i * 10, STRENGTH);
+			RandomMixgenerator generator = new RandomMixgenerator(model, i, STRENGTH);
 			Future<TestSuite> future = executor.submit(generator);
 			try {
 				TestSuite ts = future.get(300, TimeUnit.SECONDS);
-				bw.write(model.getName() + "," + ts.getStrength() + "," + (i * 10) + "," + generator.getUsedSeeds()
-						+ "," + ts.getTests().size() + "," + ts.getGeneratorTime() + "\n");
+				bw.write(model.getName() + "," + ts.getStrength() + "," + i + "," + generator.getUsedSeeds() + ","
+						+ ts.getTests().size() + "," + ts.getGeneratorTime() + "," + generator.getCRnd() + ","
+						+ generator.getCInc() + "," + generator.getTotalTuples() + "\n");
 			} catch (TimeoutException e) {
 				System.out.println("Time out has occurred");
 				future.cancel(true);
-				bw.write(model.getName() + ",timeout," + (i * 10) + ",timeout,timeout,timeout\n");
+				bw.write(model.getName() + ",timeout," + i + ",timeout,timeout,timeout,timeout,timeout,timeout\n");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 				nErrors++;

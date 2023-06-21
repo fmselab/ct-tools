@@ -31,3 +31,12 @@ examples/bool2.ctw;15;810;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
 ../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;402;9189;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
 ../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;323;8448;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
 ../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;323;6647;false;IN_ORDER_SIZE_DESC;8;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/HIGHLY_CONSTRAINED_0.ctw;346;4559;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/CNF_0.ctw;95;122;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/MCA_0.ctw;179;410;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/BOOLC_0.ctw;12;36;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/MCAC_0.ctw;225;1444;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/NUMC_0.ctw;417;2636;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/FM_0.ctw;18;255;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/UNIFORM_ALL_0.ctw;29;10;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
+../../CIT_Benchmark_Generator/Benchmarks_CITCompetition_2023/EvaluationPhase/CTWedge/INDUSTRIAL_0.ctw;27;78;false;IN_ORDER_SIZE_DESC;16;SMTINTERPOL
