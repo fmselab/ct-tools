@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 
-	<id>assembly_without_dlls</id>
+	<id>assembly_with_dlls</id>
 	<formats>
 		<format>jar</format>
 	</formats>
@@ -11,7 +11,7 @@
 	<dependencySets>
 		<!-- package the regular dependencies -->
 		<dependencySet>
-			<outputDirectory>/dist/</outputDirectory>
+			<outputDirectory>dist/</outputDirectory>
 			<useProjectArtifact>true</useProjectArtifact>
 			<unpack>true</unpack>
 			<scope>runtime</scope>
@@ -23,6 +23,20 @@
 				<exclude>org.sosy-lab:javasmt-solver-mathsat5:dll:mathsat:5.6.10</exclude>
 				<exclude>org.sosy-lab:javasmt-solver-mathsat5:dll:mpir:5.6.10</exclude>
 			</excludes>
+		</dependencySet>
+		<!-- package the DLLs -->
+		<dependencySet>
+			<outputDirectory>/</outputDirectory>
+			<useProjectArtifact>true</useProjectArtifact>
+			<unpack>false</unpack>
+			<scope>runtime</scope>
+			<includes>
+				<include>org.sosy-lab:javasmt-solver-z3:dll:libz3:4.12.2</include>
+				<include>org.sosy-lab:javasmt-solver-z3:dll:libz3java:4.12.2</include>
+				<include>org.sosy-lab:javasmt-solver-mathsat5:dll:mathsat5j:5.6.10</include>
+				<include>org.sosy-lab:javasmt-solver-mathsat5:dll:mathsat:5.6.10</include>
+				<include>org.sosy-lab:javasmt-solver-mathsat5:dll:mpir:5.6.10</include>
+			</includes>
 		</dependencySet>
 	</dependencySets>
 </assembly>
