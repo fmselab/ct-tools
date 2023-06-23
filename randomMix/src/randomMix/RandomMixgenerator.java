@@ -72,7 +72,7 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		int tplsCovered;
 		if (tests.size() > 0) {
 			tplsCovered = getTuplesCoveredByTests(tests);
-			cRnd = tplsCovered / tests.size();
+			cRnd = (double)tplsCovered / tests.size();
 		} else {
 			tplsCovered = 0;
 			cRnd = 0;
@@ -101,7 +101,7 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		// Compute the tuples covered by the other part
 		totalTuples = getTuplesCoveredByIncrementalTests(ts);
 		if (ts.getTests().size() - tests.size() > 0) {			
-			cInc = (totalTuples - tplsCovered) / (ts.getTests().size() - tests.size());
+			cInc = (double)(totalTuples - tplsCovered) / (ts.getTests().size() - tests.size());
 		} else {
 			cInc = 0;
 		}
