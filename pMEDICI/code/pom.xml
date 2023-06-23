@@ -45,13 +45,13 @@
 			</plugin>
 		</plugins>
 		<resources>
-	      <resource>
-	        <directory>resources</directory>
-	        <includes>
-	          <include>plugin.properties</include>
-	        </includes>
-	      </resource>
-    	</resources>
+			<resource>
+				<directory>resources</directory>
+				<includes>
+					<include>plugin.properties</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 	<dependencies>
 		<!--<dependency>
