@@ -25,7 +25,7 @@ import pMedici.util.TestContext;
 
 public class RandomMixgeneratorTest {
 
-	private static final int STRENGTH = 4;
+	private static final int STRENGTH = 3;
 	int nErrors = 0;
 
 	@Test
@@ -37,7 +37,7 @@ public class RandomMixgeneratorTest {
 				"experimentsdata/experiments_" + new SimpleDateFormat("yyyyMMddhhmmss'.csv'").format(new Date()));
 		// Output file
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-		bw.write("FileName,Strength,SeedSize,UsedSeedSize,TSSize,TSTime,cRnd,cInc,totTuples\n");
+		bw.write("FileName,t,k,SeedSize,UsedSeedSize,TSSize,TSTime,cRnd,cInc,totTuples,relCRnd,relCInc\n");
 
 		Files.walk(Paths.get("./models")).forEach(x -> {
 			try {
@@ -53,6 +53,13 @@ public class RandomMixgeneratorTest {
 		System.err.println("Errors: " + nErrors);
 	}
 
+	static long fact(int i) {
+		if (i <= 1) {
+			return 1;
+		}
+		return i * fact(i - 1);
+	}
+
 	private void experimentsOnModel(String modelPath, BufferedWriter bw) throws IOException, InterruptedException {
 		// Read the model
 		CitModel model = Utility.loadModelFromPath(modelPath);
@@ -66,13 +73,18 @@ public class RandomMixgeneratorTest {
 			Future<TestSuite> future = executor.submit(generator);
 			try {
 				TestSuite ts = future.get(300, TimeUnit.SECONDS);
-				bw.write(model.getName() + "," + ts.getStrength() + "," + i + "," + generator.getUsedSeeds() + ","
+				int k = model.getParameters().size();
+				int t = ts.getStrength();
+				bw.write(model.getName() + "," + t + "," + k + "," + i + "," + generator.getUsedSeeds() + ","
 						+ ts.getTests().size() + "," + ts.getGeneratorTime() + "," + generator.getCRnd() + ","
-						+ generator.getCInc() + "," + generator.getTotalTuples() + "\n");
+						+ generator.getCInc() + "," + generator.getTotalTuples() + ","
+						+ generator.getCRnd() / (fact(k) / (fact(t) * fact(k - t))) + ","
+						+ generator.getCInc() / (fact(k) / (fact(t) * fact(k - t))) + "\n");
 			} catch (TimeoutException e) {
 				System.out.println("Time out has occurred");
 				future.cancel(true);
-				bw.write(model.getName() + ",timeout," + i + ",timeout,timeout,timeout,timeout,timeout,timeout\n");
+				bw.write(model.getName() + ",timeout,timeout," + i
+						+ ",timeout,timeout,timeout,timeout,timeout,timeout,timeout,timeout\n");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 				nErrors++;
