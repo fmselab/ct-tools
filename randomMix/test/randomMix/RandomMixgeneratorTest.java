@@ -25,7 +25,8 @@ import pMedici.util.TestContext;
 
 public class RandomMixgeneratorTest {
 
-	private static final int STRENGTH = 3;
+	private static final int STRENGTH = 4;
+	private static final int STEP = 10;
 	int nErrors = 0;
 
 	@Test
@@ -53,7 +54,7 @@ public class RandomMixgeneratorTest {
 		System.err.println("Errors: " + nErrors);
 	}
 
-	static long fact(int i) {
+	static double fact(int i) {
 		if (i <= 1) {
 			return 1;
 		}
@@ -66,7 +67,7 @@ public class RandomMixgeneratorTest {
 		assert model != null;
 
 		// Generate with an increasing number of random tests
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 200; i+=STEP) {
 
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			RandomMixgenerator generator = new RandomMixgenerator(model, i, STRENGTH);
@@ -75,11 +76,13 @@ public class RandomMixgeneratorTest {
 				TestSuite ts = future.get(300, TimeUnit.SECONDS);
 				int k = model.getParameters().size();
 				int t = ts.getStrength();
+				double cRnd = generator.getCRnd();
+				double cInc = generator.getCInc();
+				double kOverT = fact(k) / (fact(t) * fact(k - t));
 				bw.write(model.getName() + "," + t + "," + k + "," + i + "," + generator.getUsedSeeds() + ","
-						+ ts.getTests().size() + "," + ts.getGeneratorTime() + "," + generator.getCRnd() + ","
-						+ generator.getCInc() + "," + generator.getTotalTuples() + ","
-						+ generator.getCRnd() / (fact(k) / (fact(t) * fact(k - t))) + ","
-						+ generator.getCInc() / (fact(k) / (fact(t) * fact(k - t))) + "\n");
+						+ ts.getTests().size() + "," + ts.getGeneratorTime() + "," + cRnd + "," + cInc + ","
+						+ generator.getTotalTuples() + "," + (cRnd / kOverT) + ","
+						+ (cInc / kOverT) + "\n");
 			} catch (TimeoutException e) {
 				System.out.println("Time out has occurred");
 				future.cancel(true);
