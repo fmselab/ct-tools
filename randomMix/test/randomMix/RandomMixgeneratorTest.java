@@ -18,6 +18,7 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Test;
 
 import ctwedge.ctWedge.CitModel;
+import ctwedge.util.ParameterSize;
 import ctwedge.util.TestSuite;
 import ctwedge.util.ext.Utility;
 import pMedici.main.PMedici;
@@ -38,7 +39,7 @@ public class RandomMixgeneratorTest {
 				"experimentsdata/experiments_" + new SimpleDateFormat("yyyyMMddhhmmss'.csv'").format(new Date()));
 		// Output file
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-		bw.write("FileName,t,k,SeedSize,UsedSeedSize,TSSize,TSTime,cRnd,cInc,totTuples,relCRnd,relCInc\n");
+		bw.write("FileName,t,k,v,SeedSize,UsedSeedSize,TSSize,TSTime,cRnd,cInc,totTuples,relCRnd,relCInc\n");
 
 		Files.walk(Paths.get("./models")).forEach(x -> {
 			try {
@@ -76,18 +77,17 @@ public class RandomMixgeneratorTest {
 				TestSuite ts = future.get(300, TimeUnit.SECONDS);
 				int k = model.getParameters().size();
 				int t = ts.getStrength();
+				int v = ParameterSize.eInstance.doSwitch(model.getParameters().get(0));
 				double cRnd = generator.getCRnd();
 				double cInc = generator.getCInc();
 				double kOverT = fact(k) / (fact(t) * fact(k - t));
-				bw.write(model.getName() + "," + t + "," + k + "," + i + "," + generator.getUsedSeeds() + ","
+				bw.write(model.getName() + "," + t + "," + k + ","+ v + "," + i + "," + generator.getUsedSeeds() + ","
 						+ ts.getTests().size() + "," + ts.getGeneratorTime() + "," + cRnd + "," + cInc + ","
 						+ generator.getTotalTuples() + "," + (cRnd / kOverT) + ","
 						+ (cInc / kOverT) + "\n");
 			} catch (TimeoutException e) {
 				System.out.println("Time out has occurred");
 				future.cancel(true);
-				bw.write(model.getName() + ",timeout,timeout," + i
-						+ ",timeout,timeout,timeout,timeout,timeout,timeout,timeout,timeout\n");
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 				nErrors++;
