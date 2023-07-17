@@ -31,6 +31,8 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 	double cRnd;
 	double cInc;
 	int totalTuples;
+	int tplsCoveredRnd;
+	ArrayList<Test> tests;
 
 	RandomMixgenerator(CitModel model, int nSeeds, int strength) {
 		pMedici = new PMedici();
@@ -42,6 +44,8 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		this.cRnd = 0;
 		this.cInc = 0;
 		this.totalTuples=0;
+		this.tests = new ArrayList<Test>();
+		this.tplsCoveredRnd = 0;
 	}
 
 	@Override
@@ -69,12 +73,11 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		long preProcessingDuration = System.currentTimeMillis() - start;
 
 		// Compute the tuples covered by the random part
-		int tplsCovered;
 		if (tests.size() > 0) {
-			tplsCovered = getTuplesCoveredByTests(tests);
-			cRnd = (double)tplsCovered / tests.size();
+			tplsCoveredRnd = getTuplesCoveredByTests(tests);
+			cRnd = (double)tplsCoveredRnd / tests.size();
 		} else {
-			tplsCovered = 0;
+			tplsCoveredRnd = 0;
 			cRnd = 0;
 		}
 
@@ -85,7 +88,11 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		ts.setGeneratorTime(ts.getGeneratorTime() + preProcessingDuration);
 		if (nSeeds > 0)
 			new File(fileName).delete();
-
+		
+		return ts;
+	}
+	
+	void updateDataTestSuite(TestSuite ts) {
 		// Check that the seeds are in the test suite
 		for (Test t : tests) {
 			boolean found = false;
@@ -101,12 +108,10 @@ public class RandomMixgenerator implements Callable<TestSuite> {
 		// Compute the tuples covered by the other part
 		totalTuples = getTuplesCoveredByIncrementalTests(ts);
 		if (ts.getTests().size() - tests.size() > 0) {			
-			cInc = (double)(totalTuples - tplsCovered) / (ts.getTests().size() - tests.size());
+			cInc = (double)(totalTuples - tplsCoveredRnd) / (ts.getTests().size() - tests.size());
 		} else {
 			cInc = 0;
 		}
-		
-		return ts;
 	}
 
 	private int getTuplesCoveredByIncrementalTests(TestSuite ts) {

@@ -26,8 +26,9 @@ import pMedici.util.TestContext;
 
 public class RandomMixgeneratorTest {
 
-	private static final int STRENGTH = 4;
-	private static final int STEP = 10;
+	private static final int STRENGTH = 3;
+	private static final int N_REP = 5;
+	private static final int STEP = 1;
 	int nErrors = 0;
 
 	@Test
@@ -41,10 +42,11 @@ public class RandomMixgeneratorTest {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 		bw.write("FileName,t,k,v,SeedSize,UsedSeedSize,TSSize,TSTime,cRnd,cInc,totTuples,relCRnd,relCInc\n");
 
-		Files.walk(Paths.get("./models")).forEach(x -> {
+		Files.walk(Paths.get("/home/bombarda/Documents/NEW_MODELS/")).forEach(x -> {
 			try {
-				if (x.toFile().getAbsolutePath().endsWith(".ctw"))
+				if (x.toFile().getAbsolutePath().endsWith(".ctw")) {
 					experimentsOnModel(x.toFile().getAbsolutePath(), bw);
+				}
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -68,32 +70,34 @@ public class RandomMixgeneratorTest {
 		assert model != null;
 
 		// Generate with an increasing number of random tests
-		for (int i = 0; i < 200; i+=STEP) {
+		for (int i = 0; i < 200; i += STEP) {
+			for (int j = 0; j < N_REP; j++) {
+				System.out.println(modelPath);
+				ExecutorService executor = Executors.newSingleThreadExecutor();
+				RandomMixgenerator generator = new RandomMixgenerator(model, i, STRENGTH);
+				Future<TestSuite> future = executor.submit(generator);
+				try {
+					TestSuite ts = future.get(300, TimeUnit.SECONDS);
+					generator.updateDataTestSuite(ts);
+					int k = model.getParameters().size();
+					int t = ts.getStrength();
+					int v = ParameterSize.eInstance.doSwitch(model.getParameters().get(0));
+					double cRnd = generator.getCRnd();
+					double cInc = generator.getCInc();
+					double kOverT = fact(k) / (fact(t) * fact(k - t));
+					bw.write(model.getName() + "," + t + "," + k + "," + v + "," + i + "," + generator.getUsedSeeds()
+							+ "," + ts.getTests().size() + "," + ts.getGeneratorTime() + "," + cRnd + "," + cInc + ","
+							+ generator.getTotalTuples() + "," + (cRnd / kOverT) + "," + (cInc / kOverT) + "\n");
+				} catch (TimeoutException e) {
+					System.out.println("Time out has occurred");
+					future.cancel(true);
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					nErrors++;
+				}
 
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			RandomMixgenerator generator = new RandomMixgenerator(model, i, STRENGTH);
-			Future<TestSuite> future = executor.submit(generator);
-			try {
-				TestSuite ts = future.get(300, TimeUnit.SECONDS);
-				int k = model.getParameters().size();
-				int t = ts.getStrength();
-				int v = ParameterSize.eInstance.doSwitch(model.getParameters().get(0));
-				double cRnd = generator.getCRnd();
-				double cInc = generator.getCInc();
-				double kOverT = fact(k) / (fact(t) * fact(k - t));
-				bw.write(model.getName() + "," + t + "," + k + ","+ v + "," + i + "," + generator.getUsedSeeds() + ","
-						+ ts.getTests().size() + "," + ts.getGeneratorTime() + "," + cRnd + "," + cInc + ","
-						+ generator.getTotalTuples() + "," + (cRnd / kOverT) + ","
-						+ (cInc / kOverT) + "\n");
-			} catch (TimeoutException e) {
-				System.out.println("Time out has occurred");
-				future.cancel(true);
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-				nErrors++;
+				bw.flush();
 			}
-
-			bw.flush();
 		}
 	}
 
