@@ -26,8 +26,8 @@ import pMedici.util.TestContext;
 
 public class RandomMixgeneratorTest {
 
-	private static final int STRENGTH = 3;
-	private static final int N_REP = 5;
+	private static final int STRENGTH = 2;
+	private static final int N_REP = 100;
 	private static final int STEP = 1;
 	int nErrors = 0;
 
@@ -41,18 +41,19 @@ public class RandomMixgeneratorTest {
 		// Output file
 		BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 		bw.write("FileName,t,k,v,SeedSize,UsedSeedSize,TSSize,TSTime,cRnd,cInc,totTuples,relCRnd,relCInc\n");
+		bw.close();
 
-		Files.walk(Paths.get("/home/bombarda/Documents/NEW_MODELS/")).forEach(x -> {
+		Files.walk(Paths.get("C:\\Users\\Andrea_PC\\Desktop\\NEW_MODELS_40/")).forEach(x -> {
 			try {
 				if (x.toFile().getAbsolutePath().endsWith(".ctw")) {
-					experimentsOnModel(x.toFile().getAbsolutePath(), bw);
+					experimentsOnModel(x.toFile().getAbsolutePath(), f);
 				}
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		});
 
-		bw.close();
+		
 
 		System.err.println("Errors: " + nErrors);
 	}
@@ -64,7 +65,9 @@ public class RandomMixgeneratorTest {
 		return i * fact(i - 1);
 	}
 
-	private void experimentsOnModel(String modelPath, BufferedWriter bw) throws IOException, InterruptedException {
+	private void experimentsOnModel(String modelPath, File f) throws IOException, InterruptedException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter(f, true));
+		
 		// Read the model
 		CitModel model = Utility.loadModelFromPath(modelPath);
 		assert model != null;
@@ -85,7 +88,7 @@ public class RandomMixgeneratorTest {
 					double cRnd = generator.getCRnd();
 					double cInc = generator.getCInc();
 					double kOverT = fact(k) / (fact(t) * fact(k - t));
-					bw.write(model.getName() + "," + t + "," + k + "," + v + "," + i + "," + generator.getUsedSeeds()
+					bw.append(model.getName() + "," + t + "," + k + "," + v + "," + i + "," + generator.getUsedSeeds()
 							+ "," + ts.getTests().size() + "," + ts.getGeneratorTime() + "," + cRnd + "," + cInc + ","
 							+ generator.getTotalTuples() + "," + (cRnd / kOverT) + "," + (cInc / kOverT) + "\n");
 				} catch (TimeoutException e) {
@@ -99,6 +102,8 @@ public class RandomMixgeneratorTest {
 				bw.flush();
 			}
 		}
+		
+		bw.close();
 	}
 
 }
