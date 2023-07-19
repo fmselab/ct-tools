@@ -34,7 +34,11 @@ public class SpecialIssueIWCT2023Test {
 		CSVExporter t = new CSVExporter();
 		String output_file = "resultsTSCP.csv";
 		PMedici pMEDICI = new PMedici();
+		
+		// File header
+		printFileHeader(output_file);
 
+		// Configurations
 		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 		
@@ -70,6 +74,14 @@ public class SpecialIssueIWCT2023Test {
 				}
 			}
 		}
+	}
+
+	private void printFileHeader(String output_file) throws IOException {
+		FileWriter fw = new FileWriter(output_file, true);
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write("Generator,ModelName,PercentageOfOldTsKept,TSSize,TSTime,Strength,Ordering,");
+		bw.newLine();
+		bw.close();
 	}
 
 	private void pMEDICI_TSCP(String output_file, PMedici pMEDICI, File f, CitModel model, int percentage,
