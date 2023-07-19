@@ -15,6 +15,7 @@ import ctwedge.util.smt.SMTTestSuiteValidator;
 import ctwedge.util.validator.MinimalityTestSuiteValidator;
 import ctwedge.util.validator.ParameterSwitchToPairStrings;
 import ctwedge.util.validator.ValidatorException;
+import pMedici.util.Order;
 import pMedici.util.TestContext;
 
 public class PMediciTestReduce {
@@ -35,6 +36,7 @@ public class PMediciTestReduce {
 	@Test
 	public void test2() throws IOException, InterruptedException, ValidatorException {
 		TestContext.CloseTestContexts = true;
+		PMedici.order = Order.RANDOM;
 		generateAndCheck("examples/CTComp/MCAC_0.ctw");
 
 	}

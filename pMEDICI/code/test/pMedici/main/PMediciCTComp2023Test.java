@@ -14,12 +14,14 @@ import ctwedge.util.smt.SMTTestSuiteValidator;
 import ctwedge.util.validator.MinimalityTestSuiteValidator;
 import ctwedge.util.validator.ParameterSwitchToPairStrings;
 import ctwedge.util.validator.ValidatorException;
+import pMedici.util.Order;
 import pMedici.util.TestContext;
 
 public class PMediciCTComp2023Test {
 	@Test
 	public void testCNF12() throws IOException, InterruptedException, ValidatorException{
 		TestContext.CloseTestContexts = true;
+		PMedici.order = Order.IN_ORDER_SIZE_ASC;
 		generateAndCheckValidity("./examples/CTComp2023/CNF_12.ctw");	
 	}
 	

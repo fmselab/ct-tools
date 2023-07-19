@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -30,6 +31,7 @@ import pMedici.threads.TupleFiller;
 import pMedici.util.ExtendedSemaphore;
 import pMedici.util.ModelToMDDConverter;
 import pMedici.util.Operations;
+import pMedici.util.Order;
 import pMedici.util.Pair;
 import pMedici.util.TestContext;
 import pMedici.util.TupleGenerator;
@@ -75,6 +77,10 @@ public class PMedici implements Callable<Integer> {
 	@Option(names = "-prefix", description = "Prefix to be used when saving files of the test suite")
 	String prefix = "";
 
+	/** Ordering strategy */
+	@Option(names = "-o", description = "Ordering for tuple generation process [AS_DECLARED, IN_ORDER_ASC, IN_ORDER_DESC, RANDOM]. By default parameters are considered AS_DECLARED")
+	String ordering = "AS_DECLARED";
+
 	/**
 	 * Variable used to share the size of the generated test suite with the class
 	 * {@link pMEDICIExperimenter}
@@ -92,6 +98,11 @@ public class PMedici implements Callable<Integer> {
 	 * {@link pMEDICIExperimenter}
 	 */
 	public static int threadsNum = -1;
+
+	/**
+	 * The ordering stragety for parameters in tuple generation
+	 */
+	public static Order order = Order.AS_DECLARED;
 
 	/** the model for the generation */
 	CitModel model;
@@ -162,7 +173,9 @@ public class PMedici implements Callable<Integer> {
 		SafeQueue tuples = new SafeQueue();
 
 		// Combination generator
-		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(model, strength);
+		PMedici.order = Order.valueOf(ordering);
+		LinkedHashMap<Integer, List<Integer>> elements = Operations.getElementsMap(model, order);
+		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(elements, strength);
 
 		// Start the filler thread
 		TupleFiller tFiller = new TupleFiller(tg, tuples);

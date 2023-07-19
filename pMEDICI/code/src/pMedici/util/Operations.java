@@ -6,8 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
 import java.util.Vector;
@@ -542,7 +547,7 @@ public class Operations {
 				compatiblePairs++;
 			totTuple++;
 		}
-		return (double)compatiblePairs/totTuple;
+		return (double) compatiblePairs / totTuple;
 	}
 
 	/**
@@ -553,7 +558,8 @@ public class Operations {
 	 * @return the ratio
 	 * @throws InterruptedException
 	 */
-	public static double getTestValidityRatioFromModel(CitModel model) throws InterruptedException, NotConvertableModel {
+	public static double getTestValidityRatioFromModel(CitModel model)
+			throws InterruptedException, NotConvertableModel {
 		ModelToMDDConverter mc = new ModelToMDDConverter(model);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
@@ -573,5 +579,57 @@ public class Operations {
 		double finalCardinality = searcher.countPaths();
 
 		return finalCardinality / initialCardinality;
+	}
+
+	/**
+	 * Convert the parameters in a Cit Model in a MAP [Integer, List(Integer)]
+	 * 
+	 * @param m:     the combinatorial model
+	 * @param order: the order for parameter consideration during tuple generation
+	 * @return the elements in a MAP [Integer, List(Integer)]
+	 */
+	public static LinkedHashMap<Integer, List<Integer>> getElementsMap(CitModel m, Order order) {
+		assert order != null;
+
+		List<Parameter> parameters = new ArrayList<>();
+		for (Parameter p : m.getParameters())
+			parameters.add(p);
+
+		// Order the parameters
+		switch (order) {
+		case RANDOM:
+			Collections.shuffle(parameters);
+			break;
+		case IN_ORDER_SIZE_ASC:
+			Collections.sort(parameters, new Comparator<Parameter>() {
+				@Override
+				public int compare(Parameter o1, Parameter o2) {
+					return Integer.compare(ParameterSize.eInstance.doSwitch(o1), ParameterSize.eInstance.doSwitch(o2));
+				}
+			});
+			break;
+		case IN_ORDER_SIZE_DESC:
+			Collections.sort(parameters, new Comparator<Parameter>() {
+				@Override
+				public int compare(Parameter o1, Parameter o2) {
+					return Integer.compare(ParameterSize.eInstance.doSwitch(o2), ParameterSize.eInstance.doSwitch(o1));
+				}
+			});
+			break;
+		default:
+			break;
+		}
+
+		LinkedHashMap<Integer, List<Integer>> map = new LinkedHashMap<>();
+		
+		for (int param = 0; param < parameters.size(); param++) {
+			Vector<Integer> values = new Vector<>();
+			for (int val = 0; val < ParameterSize.eInstance.doSwitch(parameters.get(param)); val++) {
+				values.add(val);
+			}
+			map.put(m.getParameters().indexOf(parameters.get(param)), values);
+		}
+		
+		return map;
 	}
 }
