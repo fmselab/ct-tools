@@ -1,0 +1,51 @@
+Model BOOLC_13
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2 : Boolean
+Par3 : Boolean
+Par4 : Boolean
+Par5 : Boolean
+Par6 : Boolean
+Par7 : Boolean
+Par8 : Boolean
+Par9 : Boolean
+Par10 : Boolean
+Par11 : Boolean
+Par12 : Boolean
+Par13 : Boolean
+Par14 : Boolean
+Par15 : Boolean
+Par16 : Boolean
+Par17 : Boolean
+Par18 : Boolean
+Par19 : Boolean
+Par20 : Boolean
+Par21 : Boolean
+Par22 : Boolean
+Par23 : Boolean
+Par24 : Boolean
+Par25 : Boolean
+Par26 : Boolean
+Par27 : Boolean
+Par28 : Boolean
+
+Constraints:
+# ((Par7 != false <=> Par2 != true) <=> (Par5 != true <=> Par7 != true)) #
+# ((((not (Par2 != true)) <=> (not (Par4 != false))) AND ((not (Par7 != true)) <=> (not (Par28 != true)))) <=> (((not (Par22 = false)) OR (not (Par5 != false))) OR ((not (Par1 = true)) OR (not (Par13 = true))))) #
+# (((Par27 != true => Par0 = false) AND (Par24 != false => (not (Par20 = false)))) OR ((Par7 = false OR Par3 != false) AND ((not (Par2 = false)) OR Par24 != false))) #
+# (((Par23 = false OR (not (Par14 = true))) => (Par10 != true <=> (not (Par23 != true)))) AND ((Par22 != true OR Par11 != true) => ((not (Par4 = true)) AND (not (Par21 = false))))) #
+# Par22 = true #
+# (((Par11 = false => (not (Par28 = true))) <=> (Par6 = false <=> Par4 = false)) <=> (((not (Par5 = false)) OR (not (Par7 = false))) OR ((not (Par13 = true)) <=> (not (Par20 != false))))) #
+# ((((not (Par12 != true)) <=> (not (Par21 != false))) => ((not (Par12 != false)) OR Par2 = true)) <=> (((not (Par14 != true)) <=> (not (Par17 = false))) AND ((not (Par5 = false)) AND (not (Par20 = true))))) #
+# ((((not (Par8 != false)) => (not (Par14 != false))) AND ((not (Par28 = true)) OR Par2 != false)) AND (((not (Par10 = false)) <=> Par28 = false) <=> (Par7 != false OR (not (Par18 != true))))) #
+# ((Par25 = false AND Par21 = true) OR (Par21 = true OR (not (Par0 != true)))) #
+# (((not (Par10 = false)) => (not (Par17 = false))) OR (Par26 = false <=> Par19 != true)) #
+# Par2 = false #
+# ((Par23 = true AND Par27 != false) => (Par10 != true => (not (Par7 != false)))) #
+# (((not (Par8 = true)) => (not (Par17 = false))) OR ((not (Par18 = true)) <=> Par0 = false)) #
+# ((((not (Par17 != true)) => (not (Par4 != false))) OR ((not (Par14 != false)) OR Par25 != false)) OR (((not (Par27 != false)) <=> Par4 != false) OR (Par16 != true OR Par0 != false))) #
+# ((not (Par24 != false)) <=> (not (Par19 != false))) #
+# (((Par11 = false => Par7 != false) <=> (Par17 = true OR Par22 != false)) OR (((not (Par16 = true)) => (not (Par27 = false))) => (Par4 = true AND (not (Par26 = true))))) #
+# ((((not (Par4 = true)) <=> (not (Par15 = false))) <=> (Par23 = true <=> (not (Par12 = false)))) OR (((not (Par10 = true)) => Par9 != true) OR (Par18 = false AND (not (Par18 != false))))) #
+# (((not (Par15 != false)) OR Par3 != false) => (Par2 = false AND Par11 = false)) #

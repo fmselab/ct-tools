@@ -1,0 +1,255 @@
+import static org.junit.Assert.*;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.Map.Entry;
+
+import org.junit.Test;
+
+import ctwedge.ctWedge.CitModel;
+import ctwedge.generator.acts.ACTSTranslator;
+import ctwedge.generator.exporter.CSVExporter;
+import ctwedge.generator.pict.PICTGenerator;
+import ctwedge.util.ext.Utility;
+import ctwedge.util.TestSuite;
+import pMedici.main.PMedici;
+import pMedici.util.*;
+
+public class SpecialIssueIWCT2023Test {
+
+	static int N_REP = 10;
+	static String PATH = "examples/SI_IWCT_2023_MODELS/";
+	static int[] PERCENTAGE_REMOVAL = { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+	static String TEMP_FILE_NAME = "temp.txt";
+	
+	@Test
+	public void testTSCP() throws Exception {
+		File folder = new File(PATH);
+		File[] listOfFiles = folder.listFiles();		
+		CSVExporter t = new CSVExporter();
+		String output_file = "resultsTSCP.csv";
+		PMedici pMEDICI = new PMedici();
+
+		ACTSTranslator.PRINT = false;
+		TestContext.IN_TEST = true;
+		
+		for (File f : listOfFiles) {
+			if (!f.getAbsolutePath().endsWith(".ctw") || !f.getAbsolutePath().contains("UNIFORM")) continue;			
+			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
+			
+			// Repeat the experiments N_REP times
+			for (int i=0; i<N_REP; i++) {
+				
+				// Generate test suite with ACTS
+				TestSuite ts1 = null;
+				try {
+					 ts1 = getACTSTestSuiteAndPrintData(output_file, model);
+				} catch (Error e) {
+					System.err.println(e.getMessage());
+					continue;
+				}
+				
+				// Remove a percentage of test cases and define a new test suite
+				for (int percentage : PERCENTAGE_REMOVAL) {
+					// Define the seeds
+					TestSuite tsTemp;
+					List<ctwedge.util.Test> tempTsActs = selectRandomSeeds(t, model, ts1, percentage);
+					tsTemp = new TestSuite(toCSVcode(tempTsActs), model, ",");					
+					
+					// Try with PICT
+					tsTemp = getPICTTestSuite(model, 2, tsTemp);
+					printStats(tsTemp, percentage, 2, output_file);
+					
+					// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
+					pMEDICI_TSCP(output_file, pMEDICI, f, model, percentage, tempTsActs);
+				}
+			}
+		}
+	}
+
+	private void pMEDICI_TSCP(String output_file, PMedici pMEDICI, File f, CitModel model, int percentage,
+			List<ctwedge.util.Test> tempTsActs) throws IOException, InterruptedException {
+		TestSuite tsTemp;
+		for (Order o : Order.values()) {
+			List<ctwedge.util.Test> tempTs;						
+			
+			// Ordering strategy
+			PMedici.order = o;
+		
+			// --------------------------------
+			// INCREMENTAL APPROACH - pMEDICI +
+			// --------------------------------
+			// Load the test suite into pMEDICI+ and generate the new test suite incrementally
+			pMEDICI.setSeeds(tempTsActs);
+			TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
+			tempTs = ts2.getTests();
+			tempTs = tempTs.stream().distinct().collect(Collectors.toList());
+			tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
+			tsTemp.setGeneratorName("pMEDICI+");
+			tsTemp.setGeneratorTime(ts2.getGeneratorTime());
+			printStats(tsTemp, percentage, 2, output_file, o);
+			// --------------------------------
+			// TRADITIONAL APPROACH - pMEDICI
+			// --------------------------------
+			// Generate the test suite from scratch with pMEDICI
+			pMEDICI.setOldTs("");
+			TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
+			// Add the tests of the previous test suite and remove duplicates
+			long start = System.currentTimeMillis();
+			ts3.getTests().addAll(tempTsActs);
+			tempTs = ts3.getTests();
+			tempTs = tempTs.stream().distinct().collect(Collectors.toList());
+			tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
+			tsTemp.setGeneratorName("pMEDICI");
+			tsTemp.setGeneratorTime(ts3.getGeneratorTime() + (System.currentTimeMillis() - start));
+			printStats(tsTemp, 0, 2, output_file, o);
+		}
+	}
+
+	private TestSuite getACTSTestSuiteAndPrintData(String output_file, CitModel model) throws IOException {
+		TestSuite ts1;
+		ts1 = getACTSTestSuite(model, 2);
+		// Save the basic result of ACTS
+		printStats(ts1, 0, 2, output_file);
+		return ts1;
+	}
+
+	private List<ctwedge.util.Test> selectRandomSeeds(CSVExporter t, CitModel model, TestSuite ts1,
+			int percentage) {
+		Random random = new Random();
+		List<ctwedge.util.Test> tempTsActs = ts1.getTests();
+		int nToBeRemoved = (int) (tempTsActs.size() * (percentage / 100.0));
+		// Remove nToBeRemoved tests
+		for (int j = 0; j < nToBeRemoved; j++) {
+			tempTsActs.remove(random.nextInt(tempTsActs.size()));
+		}
+		// Save the test suite to file
+		String csvCode = toCSVcode(tempTsActs);
+		TestSuite tsTemp = new TestSuite(csvCode, model, ",");
+		t.generateOutput(tsTemp, TEMP_FILE_NAME);
+		return tempTsActs;
+	}
+	
+	@Test
+	public void testIncreaseStrength() throws IOException, InterruptedException {
+		File folder = new File(PATH);
+		File[] listOfFiles = folder.listFiles();
+		CSVExporter t = new CSVExporter();
+		String output_file = "ResultsIncreaseStrength.csv";
+		PMedici pMEDICI = new PMedici();
+
+		TestContext.IN_TEST = true;
+		
+		for (File f : listOfFiles) {
+			if (!f.getAbsolutePath().endsWith(".ctw") || f.getName().startsWith("NUMC_")) continue;
+			// Repeat the experiments N_REP times
+			for (int i=0; i<N_REP; i++) {
+				// Generate test suite with pMEDICI for strength 2
+				pMEDICI.setOldTs("");
+				TestSuite ts = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
+				// Save the test suite to file
+				t.generateOutput(ts, TEMP_FILE_NAME);
+				// --------------------------------
+				// INCREMENTAL APPROACH - pMEDICI +
+				// --------------------------------
+				// Load the test suite into pMEDICI+ and generate the new test suite incrementally
+				pMEDICI.setOldTs("temp.txt");
+				TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), 3, 0);
+				ts2.setGeneratorName("pMEDICI+");
+				printStats(ts2, 0, 3, output_file, Order.AS_DECLARED);
+				// --------------------------------
+				// TRADITIONAL APPROACH - pMEDICI
+				// --------------------------------
+				// Generate the test suite from scratch with pMEDICI with strength 3
+				pMEDICI.setOldTs("");
+				TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), 3, 0);
+				ts3.setGeneratorName("pMEDICI");
+				printStats(ts3, 0, 3, output_file, Order.AS_DECLARED);
+			}
+		}
+	}
+	
+	@Test
+	public void testIncreaseCITCoverage() {
+		// TODO: Complete
+		fail("Not yet implemented");
+	}
+	
+	public void printStats(TestSuite t, int percentage, int strength, String output_file) throws IOException {
+		FileWriter fw = new FileWriter(output_file, true);
+		BufferedWriter bw = new BufferedWriter(fw);
+
+		if (t == null || t.getTests() == null)
+			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + ",0,"
+					+ t.getGeneratorTime() + "," + strength + ",,");
+		else
+			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + "," + t.getTests().size()
+					+ "," + t.getGeneratorTime() + "," + strength + ",,");
+
+		bw.newLine();
+		bw.close();
+	}
+	
+	public void printStats(TestSuite t, int percentage, int strength, String output_file, Order o) throws IOException {
+		FileWriter fw = new FileWriter(output_file, true);
+		BufferedWriter bw = new BufferedWriter(fw);
+
+		if (t == null || t.getTests() == null)
+			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + ",0,"
+					+ t.getGeneratorTime() + "," + strength + "," + o.toString() + ",");
+		else
+			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + "," + t.getTests().size()
+					+ "," + t.getGeneratorTime() + "," + strength + "," + o.toString() + ",");
+
+		bw.newLine();
+		bw.close();
+	}
+
+	private TestSuite getACTSTestSuite(CitModel model, int strength) {
+		ACTSTranslator actsTranslator = new ACTSTranslator();
+		TestSuite ts1 = actsTranslator.getTestSuite(model, strength, false);
+		ts1.setGeneratorName("ACTS");
+		return ts1;
+	}
+	
+	private TestSuite getPICTTestSuite(CitModel model, int strength, TestSuite seed) throws Exception {
+		PICTGenerator pictGenerator = new PICTGenerator();
+		TestSuite ts1 = pictGenerator.getTestSuite(model, strength, false, seed);
+		ts1.setGeneratorName("PICT");
+		return ts1;
+	}
+	
+	private String toCSVcode(List<ctwedge.util.Test> input) {
+		String s = "";
+		int i=0;
+		for (Entry<String,String> assignment : input.get(0).entrySet()) {
+			if (i>0) {
+				s+=","+assignment.getKey();
+			} else {
+				s+=assignment.getKey();
+			}
+			i++;
+		}
+		s+="\n";
+		i=0;
+		for (ctwedge.util.Test test : input) {
+			i=0;
+			for (Entry<String,String> assignment: test.entrySet()) {
+				if (i>0) {
+					s+=","+assignment.getValue();
+				} else {
+					s+=assignment.getValue();
+				}
+				i++;
+			}
+			s+="\n";
+		}
+		return s;
+	}
+
+}

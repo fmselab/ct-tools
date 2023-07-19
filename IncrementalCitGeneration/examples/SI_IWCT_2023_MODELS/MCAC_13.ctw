@@ -1,0 +1,53 @@
+Model MCAC_13
+Parameters:
+Par0 : Boolean
+Par1: {PAR1_0,PAR1_1,PAR1_2}
+Par2 : Boolean
+Par3: {PAR3_0,PAR3_1,PAR3_2,PAR3_3,PAR3_4,PAR3_5,PAR3_6,PAR3_7,PAR3_8}
+Par4 : Boolean
+Par5 : Boolean
+Par6: {PAR6_0,PAR6_1,PAR6_2,PAR6_3,PAR6_4,PAR6_5,PAR6_6}
+Par7 : Boolean
+Par8 : Boolean
+Par9 : Boolean
+Par10 : Boolean
+Par11 : Boolean
+Par12 : Boolean
+Par13: {PAR13_0,PAR13_1,PAR13_2,PAR13_3,PAR13_4,PAR13_5,PAR13_6}
+Par14 : Boolean
+Par15 : Boolean
+Par16 : Boolean
+Par17: {PAR17_0,PAR17_1,PAR17_2,PAR17_3,PAR17_4,PAR17_5,PAR17_6,PAR17_7,PAR17_8}
+Par18 : Boolean
+Par19: {PAR19_0,PAR19_1,PAR19_2,PAR19_3,PAR19_4,PAR19_5,PAR19_6,PAR19_7,PAR19_8,PAR19_9,PAR19_10,PAR19_11,PAR19_12,PAR19_13,PAR19_14}
+Par20 : Boolean
+Par21: {PAR21_0,PAR21_1,PAR21_2,PAR21_3,PAR21_4,PAR21_5,PAR21_6,PAR21_7,PAR21_8}
+Par22 : Boolean
+Par23 : Boolean
+Par24: {PAR24_0,PAR24_1,PAR24_2,PAR24_3,PAR24_4,PAR24_5,PAR24_6,PAR24_7,PAR24_8,PAR24_9}
+Par25 : Boolean
+Par26: {PAR26_0,PAR26_1,PAR26_2,PAR26_3,PAR26_4}
+Par27: {PAR27_0,PAR27_1,PAR27_2,PAR27_3}
+Par28 : Boolean
+Par29 : Boolean
+
+Constraints:
+# ((Par9 != false <=> Par13 = PAR13_3) => (Par14 != true => Par12 = true)) #
+# ((((not (Par8 = false)) <=> Par12 != true) => ((not (Par4 = false)) AND (not (Par25 != false)))) OR ((Par16 = true OR Par8 = true) => ((not (Par16 != true)) OR Par16 = true))) #
+# ((((not (Par19 = PAR19_5)) OR Par19 != PAR19_2) => ((not (Par3 = PAR3_4)) AND (not (Par0 = true)))) OR (((not (Par26 = PAR26_1)) => (not (Par1 = PAR1_0))) <=> (Par13 = PAR13_0 => Par16 = false))) #
+# ((((not (Par28 != true)) AND Par25 != false) OR ((not (Par14 = true)) <=> Par6 != PAR6_4)) => (((not (Par3 != PAR3_2)) <=> (not (Par6 != PAR6_0))) <=> (Par21 = PAR21_4 => (not (Par14 = false))))) #
+# Par14 = true #
+# ((((not (Par8 = false)) => Par24 = PAR24_2) OR ((not (Par11 = false)) => (not (Par27 = PAR27_0)))) => (((not (Par25 != true)) AND Par8 != false) OR ((not (Par1 = PAR1_2)) AND Par14 = true))) #
+# (((not (Par13 = PAR13_2)) AND (not (Par12 != true))) => (Par4 != true => Par29 != false)) #
+# ((((not (Par24 != PAR24_0)) AND (not (Par22 != true))) OR ((not (Par21 = PAR21_6)) <=> Par15 = false)) => (((not (Par15 = false)) <=> (not (Par16 = false))) AND ((not (Par24 != PAR24_8)) AND (not (Par19 = PAR19_11))))) #
+# (not (Par21 != PAR21_1)) #
+# (((Par11 != true OR Par18 = false) <=> (Par13 != PAR13_1 => Par28 = true)) AND (((not (Par12 != false)) => Par18 = false) OR (Par6 = PAR6_0 OR Par22 = false))) #
+# ((((not (Par24 != PAR24_6)) <=> (not (Par2 != false))) <=> ((not (Par6 != PAR6_2)) => Par4 != true)) => (((not (Par2 != false)) <=> (not (Par24 = PAR24_6))) => (Par26 != PAR26_4 => (not (Par23 = true))))) #
+# (((Par17 != PAR17_8 => Par6 != PAR6_1) <=> (Par20 = true <=> Par23 != false)) => (((not (Par25 = true)) <=> (not (Par9 != true))) OR ((not (Par26 != PAR26_2)) => Par2 != true))) #
+# (((Par11 = false => (not (Par22 != true))) AND ((not (Par24 != PAR24_8)) OR (not (Par1 = PAR1_1)))) <=> (((not (Par14 != true)) OR Par27 != PAR27_0) <=> (Par12 != false => Par0 = true))) #
+# (((not (Par25 != true)) <=> (not (Par12 != false))) OR ((not (Par9 != true)) OR Par0 != true)) #
+# (((Par4 != true OR Par1 != PAR1_0) => (Par27 != PAR27_0 <=> Par24 = PAR24_7)) <=> ((Par19 = PAR19_6 OR Par29 = true) AND ((not (Par6 != PAR6_4)) <=> (not (Par5 != true))))) #
+# ((((not (Par15 = false)) <=> Par14 != true) => (Par13 != PAR13_2 <=> (not (Par0 = true)))) => ((Par7 != false => (not (Par27 = PAR27_0))) OR (Par11 != true OR Par2 = true))) #
+# (((Par7 != true AND Par7 = true) AND (Par5 = true <=> Par11 = false)) OR (((not (Par11 != false)) AND Par19 = PAR19_3) <=> (Par29 != false AND Par1 != PAR1_2))) #
+# ((not (Par22 != false)) => (not (Par7 = false))) #
+# (((Par18 = true AND Par12 = false) <=> ((not (Par21 != PAR21_3)) => (not (Par21 != PAR21_7)))) => (((not (Par13 != PAR13_1)) <=> (not (Par8 != false))) => ((not (Par10 = false)) AND (not (Par27 = PAR27_2))))) #

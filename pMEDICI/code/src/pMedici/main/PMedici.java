@@ -127,6 +127,7 @@ public class PMedici implements Callable<Integer> {
 
 	@Override
 	public Integer call() throws Exception {
+		PMedici.order = Order.valueOf(ordering);
 		generateTests(fileName, strength, nThreads);
 		return 0;
 	}
@@ -173,7 +174,6 @@ public class PMedici implements Callable<Integer> {
 		SafeQueue tuples = new SafeQueue();
 
 		// Combination generator
-		PMedici.order = Order.valueOf(ordering);
 		LinkedHashMap<Integer, List<Integer>> elements = Operations.getElementsMap(model, order);
 		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(elements, strength);
 

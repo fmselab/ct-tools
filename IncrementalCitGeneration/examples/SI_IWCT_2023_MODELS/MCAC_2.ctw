@@ -1,0 +1,37 @@
+Model MCAC_2
+Parameters:
+Par0: {PAR0_0,PAR0_1,PAR0_2,PAR0_3,PAR0_4,PAR0_5}
+Par1 : Boolean
+Par2 : Boolean
+Par3: {PAR3_0,PAR3_1}
+Par4 : Boolean
+Par5 : Boolean
+Par6: {PAR6_0,PAR6_1,PAR6_2,PAR6_3,PAR6_4,PAR6_5,PAR6_6}
+Par7 : Boolean
+Par8 : Boolean
+Par9: {PAR9_0,PAR9_1,PAR9_2,PAR9_3,PAR9_4}
+Par10 : Boolean
+Par11 : Boolean
+Par12: {PAR12_0,PAR12_1,PAR12_2,PAR12_3}
+Par13 : Boolean
+Par14: {PAR14_0,PAR14_1,PAR14_2}
+Par15: {PAR15_0,PAR15_1,PAR15_2,PAR15_3,PAR15_4,PAR15_5,PAR15_6,PAR15_7,PAR15_8,PAR15_9,PAR15_10,PAR15_11,PAR15_12}
+Par16 : Boolean
+
+Constraints:
+# ((Par6 = PAR6_2 <=> (not (Par0 = PAR0_5))) OR (Par7 = true OR (not (Par1 != true)))) #
+# (((Par8 = true AND (not (Par0 = PAR0_5))) <=> (Par6 != PAR6_1 OR (not (Par12 = PAR12_3)))) AND ((Par12 = PAR12_0 OR Par0 = PAR0_5) AND ((not (Par13 != true)) => Par1 != false))) #
+# Par11 != false #
+# ((Par1 = true <=> (not (Par15 != PAR15_4))) => ((not (Par10 != true)) => Par4 != true)) #
+# (((not (Par16 = true)) OR Par4 != false) => (Par4 != false OR (not (Par9 = PAR9_3)))) #
+# (((not (Par14 != PAR14_1)) AND Par7 = true) <=> ((not (Par15 = PAR15_10)) <=> Par3 = PAR3_1)) #
+# ((((not (Par1 = false)) OR Par10 = true) <=> (Par3 = PAR3_0 AND (not (Par5 = true)))) <=> (((not (Par8 = false)) <=> (not (Par15 != PAR15_3))) <=> ((not (Par14 != PAR14_1)) OR (not (Par11 != false))))) #
+# (((not (Par15 = PAR15_12)) AND Par6 = PAR6_6) <=> ((not (Par12 = PAR12_1)) => Par6 = PAR6_2)) #
+# ((((not (Par15 != PAR15_6)) AND (not (Par1 = false))) AND ((not (Par1 = true)) OR (not (Par8 = false)))) OR ((Par1 = false AND Par6 != PAR6_6) => (Par1 = true <=> Par8 = true))) #
+# (((Par12 != PAR12_1 => Par7 != true) OR (Par9 = PAR9_3 => Par5 = true)) => ((Par9 = PAR9_3 <=> Par13 = true) OR (Par1 = false AND (not (Par5 = false))))) #
+# ((not (Par9 = PAR9_1)) => (not (Par12 != PAR12_0))) #
+# (((Par10 != false <=> Par7 != false) OR (Par9 = PAR9_0 => (not (Par0 != PAR0_1)))) <=> (((not (Par10 != true)) AND (not (Par10 != false))) AND ((not (Par9 = PAR9_2)) OR (not (Par15 != PAR15_1))))) #
+# (Par4 = false AND (not (Par0 != PAR0_0))) #
+# ((Par16 = false => (not (Par15 = PAR15_12))) AND ((not (Par5 = true)) => Par1 = false)) #
+# (((not (Par4 != false)) AND (not (Par0 = PAR0_1))) OR (Par10 = false OR Par9 = PAR9_1)) #
+# (((not (Par0 = PAR0_2)) OR (not (Par12 = PAR12_2))) <=> (Par9 = PAR9_0 => (not (Par2 != true)))) #

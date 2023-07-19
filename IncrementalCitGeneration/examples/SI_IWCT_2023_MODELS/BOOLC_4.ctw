@@ -1,0 +1,35 @@
+Model BOOLC_4
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2 : Boolean
+Par3 : Boolean
+Par4 : Boolean
+Par5 : Boolean
+Par6 : Boolean
+Par7 : Boolean
+Par8 : Boolean
+Par9 : Boolean
+Par10 : Boolean
+Par11 : Boolean
+Par12 : Boolean
+Par13 : Boolean
+Par14 : Boolean
+Par15 : Boolean
+Par16 : Boolean
+Par17 : Boolean
+Par18 : Boolean
+Par19 : Boolean
+Par20 : Boolean
+Par21 : Boolean
+Par22 : Boolean
+Par23 : Boolean
+Par24 : Boolean
+
+Constraints:
+# ((Par22 != true OR Par2 = false) => ((not (Par5 != true)) AND Par12 = false)) #
+# ((((not (Par19 != true)) => Par17 != true) AND (Par18 = true => (not (Par12 = false)))) OR (((not (Par6 != true)) <=> (not (Par21 = true))) AND (Par0 = false OR (not (Par23 != false))))) #
+# ((not (Par22 != true)) => Par15 = true) #
+# ((not (Par21 = true)) AND Par8 = false) #
+# (((Par23 != false => Par17 != true) => ((not (Par4 != false)) OR Par5 != false)) AND ((Par1 != true <=> Par22 != true) => (Par17 != false => Par15 != true))) #
+# (((Par24 != true AND (not (Par17 = true))) AND (Par13 != true OR (not (Par18 = false)))) <=> (((not (Par10 = true)) <=> (not (Par16 != true))) OR (Par7 = false <=> Par1 != true))) #
