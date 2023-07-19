@@ -100,7 +100,7 @@ public class PMedici implements Callable<Integer> {
 	public static int threadsNum = -1;
 
 	/**
-	 * The ordering stragety for parameters in tuple generation
+	 * The ordering strategy for parameters in tuple generation
 	 */
 	public static Order order = Order.AS_DECLARED;
 
