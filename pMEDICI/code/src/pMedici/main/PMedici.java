@@ -284,9 +284,15 @@ public class PMedici implements Callable<Integer> {
 			EList<Parameter> parameters = model.getParameters();
 			for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
 				Parameter param = parameters.get(tupleIndex);
+
+				String testParamValue;
+				// If the test seed is not complete in that parameter, skip the parameter and
+				// move to the next one
+				if (oldTest.get(param.getName()).equals("*"))
+					continue;
+
 				// If the parameter of the new model is in the old test suite,
 				// its value is added in the corresponding position in the current tuple
-				String testParamValue;
 				if ((testParamValue = oldTest.get(param.getName())) != null) {
 					List<String> values = ParameterElementsGetterAsStrings.instance.doSwitch(param);
 					int value = values.indexOf(testParamValue);

@@ -19,6 +19,7 @@ import pMedici.util.TestContext;
 public class PMediciCTComp2023Test {
 	@Test
 	public void testCNF12() throws IOException, InterruptedException, ValidatorException{
+		TestContext.CloseTestContexts = true;
 		generateAndCheckValidity("./examples/CTComp2023/CNF_12.ctw");	
 	}
 	
