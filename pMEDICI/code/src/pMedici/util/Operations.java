@@ -535,7 +535,7 @@ public class Operations {
 		baseMDD = Operations.updateMDDWithConstraints(manager, model, baseMDD);
 		// All tuples
 		Iterator<List<Pair<Integer, Integer>>> tg = TupleGenerator.getAllKWiseCombination(model, 2);
-		TestContext tc = new TestContext(baseMDD, model.getParameters().size(), true, manager);
+		TestContext tc = new TestContext(baseMDD, model.getParameters().size(), true, manager, model);
 		while (tg.hasNext()) {
 			Vector<Pair<Integer, Integer>> tuple = new Vector<Pair<Integer, Integer>>(tg.next());
 			if (tc.verifyWithMDD(tuple))

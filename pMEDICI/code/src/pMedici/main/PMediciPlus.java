@@ -25,9 +25,9 @@ import pMedici.util.TestContext;
 import pMedici.util.TupleGenerator;
 
 /**
- * Non-multithread version of pMEDICI+. 
- * This version has never been tested and it should not be used.
- * Please use the multithread version <i>{@link PMediciPlusMT}.
+ * Non-multithread version of pMEDICI+. This version has never been tested and
+ * it should not be used. Please use the multithread version
+ * <i>{@link PMediciPlusMT}.
  * 
  * @author Luca Parimbelli
  *
@@ -36,13 +36,13 @@ import pMedici.util.TupleGenerator;
 public class PMediciPlus {
 
 	static final Logger LOGGER = Logger.getLogger(PMediciPlus.class);
-	
+
 	public static boolean PRINT_DEBUG = true;
 
 	static boolean verb = false;
 
 	static int strength;
-	
+
 	public static void main(String[] args) throws IOException, InterruptedException {
 
 		String evolvedModelPath = "";
@@ -51,7 +51,7 @@ public class PMediciPlus {
 
 		strength = 2;
 		CitModel model = null;
-		
+
 		// Read the test model from arguments
 		// args[0] = t-wise strength
 		// args[1] = file name (path) to CTWedge evolved model
@@ -71,7 +71,6 @@ public class PMediciPlus {
 					"You must specify 1) the strength, 2) the new model file path, 3) the old test suite file path and 4) the file path for the test suite export file");
 		}
 
-
 		Vector<Map<String, String>> oldTests = CSVImporter.read(oldTestSuiteFilePath);
 
 		String testSuite = generateTests(model, oldTests);
@@ -83,20 +82,21 @@ public class PMediciPlus {
 
 	/**
 	 * 
-	 * @param newModel the new citmodel 
+	 * @param newModel the new citmodel
 	 * @param oldTests the old tests
 	 * @return
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	public static String generateTests(CitModel newModel, Vector<Map<String, String>> oldTests) throws InterruptedException, IOException {
+	public static String generateTests(CitModel newModel, Vector<Map<String, String>> oldTests)
+			throws InterruptedException, IOException {
 		// Get current time
 		long start = System.currentTimeMillis();
 		// Get the MDD representing the model without constraints
 		ModelToMDDConverter mc = new ModelToMDDConverter(newModel);
 		MDDManager manager = mc.getMDD();
 		int baseMDD = mc.getStartingNode();
-		
+
 		// Adding the constraints to the baseNode (baseMDD)
 		baseMDD = Operations.updateMDDWithConstraints(manager, newModel, baseMDD);
 
@@ -137,7 +137,8 @@ public class PMediciPlus {
 			// If we added at least one parameter test value to the tuple, then
 			// we check if the created tuple is valid with the model constraints
 			if (!tuple.isEmpty()) {
-				TestContext tc = new TestContext(baseMDD, newModel.getParameters().size(), newModel.getConstraints().size()>0, manager);
+				TestContext tc = new TestContext(baseMDD, newModel.getParameters().size(),
+						newModel.getConstraints().size() > 0, manager, newModel);
 
 				// If the tuple is compatible with the constraints, then we add the
 				// add the tuple to the current test context and then we add the
@@ -152,7 +153,7 @@ public class PMediciPlus {
 
 					// Adding the tc to the list of all the test context tcList
 					tcList.add(tc);
-				} 
+				}
 			}
 
 		}
@@ -165,7 +166,7 @@ public class PMediciPlus {
 		// is now applied starting using this tcList.
 
 		/* pMEDICI algorithm */
-		
+
 		int nCovered = 0;
 		int totTuples = 0;
 
@@ -180,7 +181,6 @@ public class PMediciPlus {
 		Thread tFillerThread = new Thread(tFiller);
 		tFillerThread.start();
 
-		
 		// Start all the TestBuilder threads
 		int nThreads = Runtime.getRuntime().availableProcessors();
 		ExtendedSemaphore testContextsMutex = new ExtendedSemaphore();
@@ -188,7 +188,7 @@ public class PMediciPlus {
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
 			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, newModel.getParameters().size(),
-					newModel.getConstraints().size()>0, manager, testContextsMutex, verb, false));
+					newModel.getConstraints().size() > 0, manager, testContextsMutex, verb, false, newModel));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
@@ -207,19 +207,19 @@ public class PMediciPlus {
 
 		// Print test suite
 		String testSuite = Operations.translateOutputToString(testCases, newModel);
-		
+
 		// Deleting eventually duplicated tests
 		String reducedTestSuite = Operations.deleteDuplicates(testSuite);
-		
+
 		if (PRINT_DEBUG) {
 			System.out.println("----- FINAL TEST SUITE -----");
 			System.out.print(testSuite);
-			System.out.println("SIZE: "+ (testSuite.split("\n").length-1) );
+			System.out.println("SIZE: " + (testSuite.split("\n").length - 1));
 			System.out.println();
-			
+
 			System.out.println("----- FINAL TEST SUITE REDUCED -----");
 			System.out.print(reducedTestSuite);
-			System.out.println("SIZE: "+ (reducedTestSuite.split("\n").length-1) );
+			System.out.println("SIZE: " + (reducedTestSuite.split("\n").length - 1));
 			System.out.println();
 		}
 
@@ -237,7 +237,6 @@ public class PMediciPlus {
 		tFillerThread.join();
 
 		System.out.println("Time required for the whole algorithm: " + (System.currentTimeMillis() - start) + " ms");
-
 
 		return testSuite;
 	}

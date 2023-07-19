@@ -83,7 +83,7 @@ public class PMedici_withTestSuiteExport {
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
 			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, model.getParameters().size(),
-					model.getConstraints().size()>0, manager, testContextsMutex, verb, false));
+					model.getConstraints().size()>0, manager, testContextsMutex, verb, false, model));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}

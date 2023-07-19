@@ -126,7 +126,7 @@ public class TestEarlyFiller implements Runnable {
 						Vector<Pair<Integer, Integer>> tupleNew = new Vector<Pair<Integer, Integer>>();
 
 						// New test context
-						TestContext tc = new TestContext(baseMDD, m.getnParams(), m.getUseConstraints(), manager);
+						TestContext tc = new TestContext(baseMDD, m.getnParams(), m.getUseConstraints(), manager, model);
 						
 						EList<Parameter> parameters = model.getParameters();
 						for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {

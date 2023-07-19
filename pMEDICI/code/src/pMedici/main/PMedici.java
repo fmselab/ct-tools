@@ -197,7 +197,7 @@ public class PMedici implements Callable<Integer> {
 
 		for (int i = 0; i < nThreads; i++) {
 			Thread tBuilder = new Thread(new TestBuilder(baseMDD, tuples, tcList, sort, nParams, useConstraints,
-					manager, testContextsMutex, verb, expand));
+					manager, testContextsMutex, verb, expand, model));
 			testBuilderThreads.add(tBuilder);
 			tBuilder.start();
 		}
@@ -279,7 +279,7 @@ public class PMedici implements Callable<Integer> {
 			Vector<Pair<Integer, Integer>> tupleNew = new Vector<Pair<Integer, Integer>>();
 
 			// New test context
-			TestContext tc = new TestContext(baseMDD, nParams, useConstraints, manager);
+			TestContext tc = new TestContext(baseMDD, nParams, useConstraints, manager, model);
 
 			EList<Parameter> parameters = model.getParameters();
 			for (int tupleIndex = 0; tupleIndex < parameters.size(); tupleIndex++) {
