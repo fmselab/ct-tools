@@ -21,7 +21,7 @@ public class PMediciTestReduce {
 
 	@Test
 	public void test1() throws IOException, InterruptedException, ValidatorException {
-		TestContext.CloseTestContexts = true;
+		TestContext.CloseTestContexts = false;
 		generateAndCheck("examples/CTComp/BOOLC_0.ctw");
 
 	}

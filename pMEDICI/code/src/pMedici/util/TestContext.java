@@ -2,6 +2,7 @@ package pMedici.util;
 
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.stream.IntStream;
 
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.PathSearcher;
@@ -422,16 +423,12 @@ public class TestContext {
 	 */
 	public void close() {
 		// Store the test
-		this.test = Operations.getPathInMDD(this.mdd, manager, this.test);
-
-		for (int i = 0; i < this.test.length; i++) {
-
-			// Assign a random value
-			if (this.test[i] == -1) {
-				this.test[i] = Operations.randInt(0, ParameterSize.eInstance.doSwitch(this.model.getParameters().get(i)) - 1);
-			}
+		int[] givenTest = Operations.getPathInMDD(this.mdd, manager, this.test);
+		
+		if (!IntStream.of(givenTest).anyMatch(x -> x == -1)) {
+			this.test = givenTest;
+			this.closed = true;
 		}
-		this.closed = true;
 	}
 
 	/**
