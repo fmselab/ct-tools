@@ -1,13 +1,20 @@
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -15,10 +22,11 @@ import ctwedge.ctWedge.CitModel;
 import ctwedge.generator.acts.ACTSTranslator;
 import ctwedge.generator.exporter.CSVExporter;
 import ctwedge.generator.pict.PICTGenerator;
-import ctwedge.util.ext.Utility;
 import ctwedge.util.TestSuite;
+import ctwedge.util.ext.Utility;
 import pMedici.main.PMedici;
-import pMedici.util.*;
+import pMedici.util.Order;
+import pMedici.util.TestContext;
 
 public class SpecialIssueIWCT2023Test {
 
@@ -26,6 +34,8 @@ public class SpecialIssueIWCT2023Test {
 	static String PATH = "examples/SI_IWCT_2023_MODELS/";
 	static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 	static String TEMP_FILE_NAME = "temp.txt";
+	static int TIMEOUT_MS = 300000;
+	static int STRENGTH = 2;
 
 	/**
 	 * Test executor for the TSCP Scenario.
@@ -64,31 +74,38 @@ public class SpecialIssueIWCT2023Test {
 				// Generate test suite with ACTS
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuiteAndPrintData(output_file, model);
+					ts1 = getACTSTestSuite(model, STRENGTH, null);
+					printStats(ts1, 0, STRENGTH, output_file, null);
 				} catch (Error e) {
 					System.err.println(e.getMessage());
 					continue;
 				}
 
-				// Remove a percentage of test cases and define a new test suite
-				for (int percentage : PERCENTAGE_REMOVAL) {
-					// Define the seeds
-					TestSuite tsTemp;
-					TestSuite tsTempPICT;
-					TestSuite tsTempACTS;
-					List<ctwedge.util.Test> tempTsActs = selectRandomSeeds(model, ts1, percentage);
-					tsTemp = new TestSuite(toCSVcode(tempTsActs), model, ",");
+				// Proceed only if seeds have been generated
+				if (ts1.getGeneratorTime() != -1) {
+					// Remove a percentage of test cases and define a new test suite
+					for (int percentage : PERCENTAGE_REMOVAL) {
+						// Define the seeds
+						TestSuite tsTemp;
+						TestSuite tsTempPICT;
+						TestSuite tsTempACTS;
+						List<ctwedge.util.Test> tempTsActs = selectRandomSeeds(model, ts1, percentage);
+						if (tempTsActs.size() > 0)
+							tsTemp = new TestSuite(toCSVcode(tempTsActs), model, ",");
+						else
+							tsTemp = null;
 
-					// Try with PICT
-					tsTempPICT = getPICTTestSuite(model, 2, tsTemp);
-					printStats(tsTempPICT, percentage, 2, output_file);
+						// Try with PICT
+						tsTempPICT = getPICTTestSuite(model, STRENGTH, tsTemp);
+						printStats(tsTempPICT, percentage, STRENGTH, output_file, null);
 
-					// Try with ACTS by feeding a seed test suite
-					tsTempACTS = getACTSTestSuite(model, 2, tsTemp);
-					printStats(tsTempACTS, percentage, 2, output_file);
+						// Try with ACTS by feeding a seed test suite
+						tsTempACTS = getACTSTestSuite(model, STRENGTH, tsTemp);
+						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
 
-					// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
-					pMEDICI_TSCP(output_file, pMEDICI, f, model, percentage, tempTsActs);
+						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
+						pMEDICI_TSCP(output_file, pMEDICI, f, model, percentage, tempTsActs);
+					}
 				}
 			}
 		}
@@ -118,13 +135,28 @@ public class SpecialIssueIWCT2023Test {
 	 * @return a test suite generated with ACTS
 	 */
 	private TestSuite getACTSTestSuite(CitModel model, int strength, TestSuite seed) {
-		ACTSTranslator actsTranslator = new ACTSTranslator();
 		TestSuite ts1;
-		if (seed != null)
-			ts1 = actsTranslator.getTestSuite(model, strength, false, seed);
-		else
-			ts1 = actsTranslator.getTestSuite(model, strength, false);
-		ts1.setGeneratorName("ACTS");
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<TestSuite> task = new Callable<TestSuite>() {
+			public TestSuite call() throws Exception {
+				ACTSTranslator actsTranslator = new ACTSTranslator();
+				TestSuite ts1 = actsTranslator.getTestSuite(model, strength, false, seed);
+				ts1.setGeneratorName("ACTS");
+				return ts1;
+			}
+		};
+		Future<TestSuite> future = executor.submit(task);
+		try {
+			ts1 = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
+			System.out.println(ex.getMessage());
+			ts1 = new TestSuite(model, null);
+			ts1.setGeneratorName("ACTS");
+			ts1.setGeneratorTime(-1);
+		} finally {
+			// May or may not desire this
+			future.cancel(true);
+		}
 		return ts1;
 	}
 
@@ -148,7 +180,11 @@ public class SpecialIssueIWCT2023Test {
 		}
 		// Save the test suite to file
 		String csvCode = toCSVcode(tempTsActs);
-		TestSuite tsTemp = new TestSuite(csvCode, model, ",");
+		TestSuite tsTemp;
+		if (!csvCode.equals(""))
+			tsTemp = new TestSuite(csvCode, model, ",");
+		else
+			tsTemp = new TestSuite(model, null);
 		t.generateOutput(tsTemp, TEMP_FILE_NAME);
 		return tempTsActs;
 	}
@@ -163,12 +199,31 @@ public class SpecialIssueIWCT2023Test {
 	 * @return a test suite generated with PICT
 	 */
 	private TestSuite getPICTTestSuite(CitModel model, int strength, TestSuite seed) throws Exception {
-		PICTGenerator pictGenerator = new PICTGenerator();
-		TestSuite ts1 = pictGenerator.getTestSuite(model, strength, false, seed);
-		ts1.setGeneratorName("PICT");
+		TestSuite ts1;
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<TestSuite> task = new Callable<TestSuite>() {
+			public TestSuite call() throws Exception {
+				PICTGenerator pictGenerator = new PICTGenerator();
+				TestSuite ts1 = pictGenerator.getTestSuite(model, strength, false, seed);
+				ts1.setGeneratorName("PICT");
+				return ts1;
+			}
+		};
+		Future<TestSuite> future = executor.submit(task);
+		try {
+			ts1 = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
+			System.out.println(ex.getMessage());
+			ts1 = new TestSuite(model, null);
+			ts1.setGeneratorName("PICT");
+			ts1.setGeneratorTime(-1);
+		} finally {
+			// May or may not desire this
+			future.cancel(true);
+		}
 		return ts1;
 	}
-	
+
 	/**
 	 * Convert a list of tests in a string, for those generators which require the
 	 * seeds to be expressed in thee CSV format
@@ -178,30 +233,59 @@ public class SpecialIssueIWCT2023Test {
 	 */
 	private String toCSVcode(List<ctwedge.util.Test> input) {
 		String s = "";
-		int i = 0;
-		for (Entry<String, String> assignment : input.get(0).entrySet()) {
-			if (i > 0) {
-				s += "," + assignment.getKey();
-			} else {
-				s += assignment.getKey();
-			}
-			i++;
-		}
-		s += "\n";
-		i = 0;
-		for (ctwedge.util.Test test : input) {
-			i = 0;
-			for (Entry<String, String> assignment : test.entrySet()) {
+		if (input.size() > 0) {
+			int i = 0;
+			for (Entry<String, String> assignment : input.get(0).entrySet()) {
 				if (i > 0) {
-					s += "," + assignment.getValue();
+					s += "," + assignment.getKey();
 				} else {
-					s += assignment.getValue();
+					s += assignment.getKey();
 				}
 				i++;
 			}
 			s += "\n";
+			i = 0;
+			for (ctwedge.util.Test test : input) {
+				i = 0;
+				for (Entry<String, String> assignment : test.entrySet()) {
+					if (i > 0) {
+						s += "," + assignment.getValue();
+					} else {
+						s += assignment.getValue();
+					}
+					i++;
+				}
+				s += "\n";
+			}
 		}
 		return s;
+	}
+
+	/**
+	 * Prints statistics to file
+	 * 
+	 * @param t           the test suite
+	 * @param percentage  the removal percentage of test cases
+	 * @param strength    the strength
+	 * @param output_file the output file name
+	 * @param o           the used order (it may be null)
+	 * @throws IOException
+	 */
+	public void printStats(TestSuite t, int percentage, int strength, String output_file, Order o) throws IOException {
+		FileWriter fw = new FileWriter(output_file, true);
+		BufferedWriter bw = new BufferedWriter(fw);
+		String out = "";
+
+		if (t == null || t.getTests() == null)
+			out = t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + ",0," + t.getGeneratorTime()
+					+ "," + strength + "," + (o.toString() == null ? "" : o.toString()) + ",";
+		else
+			out = t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + "," + t.getTests().size()
+					+ "," + t.getGeneratorTime() + "," + strength + "," + (o == null ? "" : o.toString()) + ",";
+
+		bw.write(out);
+		bw.newLine();
+		bw.close();
 	}
 
 	private void pMEDICI_TSCP(String output_file, PMedici pMEDICI, File f, CitModel model, int percentage,
@@ -219,19 +303,19 @@ public class SpecialIssueIWCT2023Test {
 			// Load the test suite into pMEDICI+ and generate the new test suite
 			// incrementally
 			pMEDICI.setSeeds(tempTsActs);
-			TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
+			TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), STRENGTH, 0);
 			tempTs = ts2.getTests();
 			tempTs = tempTs.stream().distinct().collect(Collectors.toList());
 			tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
 			tsTemp.setGeneratorName("pMEDICI+");
 			tsTemp.setGeneratorTime(ts2.getGeneratorTime());
-			printStats(tsTemp, percentage, 2, output_file, o);
+			printStats(tsTemp, percentage, STRENGTH, output_file, o);
 			// --------------------------------
 			// TRADITIONAL APPROACH - pMEDICI
 			// --------------------------------
 			// Generate the test suite from scratch with pMEDICI
 			pMEDICI.setOldTs("");
-			TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
+			TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), STRENGTH, 0);
 			// Add the tests of the previous test suite and remove duplicates
 			long start = System.currentTimeMillis();
 			ts3.getTests().addAll(tempTsActs);
@@ -240,16 +324,8 @@ public class SpecialIssueIWCT2023Test {
 			tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
 			tsTemp.setGeneratorName("pMEDICI");
 			tsTemp.setGeneratorTime(ts3.getGeneratorTime() + (System.currentTimeMillis() - start));
-			printStats(tsTemp, 0, 2, output_file, o);
+			printStats(tsTemp, 0, STRENGTH, output_file, o);
 		}
-	}
-
-	private TestSuite getACTSTestSuiteAndPrintData(String output_file, CitModel model) throws IOException {
-		TestSuite ts1;
-		ts1 = getACTSTestSuite(model, 2, null);
-		// Save the basic result of ACTS
-		printStats(ts1, 0, 2, output_file);
-		return ts1;
 	}
 
 	@Test
@@ -298,35 +374,4 @@ public class SpecialIssueIWCT2023Test {
 		// TODO: Complete
 		fail("Not yet implemented");
 	}
-
-	public void printStats(TestSuite t, int percentage, int strength, String output_file) throws IOException {
-		FileWriter fw = new FileWriter(output_file, true);
-		BufferedWriter bw = new BufferedWriter(fw);
-
-		if (t == null || t.getTests() == null)
-			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + ",0,"
-					+ t.getGeneratorTime() + "," + strength + ",,");
-		else
-			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + "," + t.getTests().size()
-					+ "," + t.getGeneratorTime() + "," + strength + ",,");
-
-		bw.newLine();
-		bw.close();
-	}
-
-	public void printStats(TestSuite t, int percentage, int strength, String output_file, Order o) throws IOException {
-		FileWriter fw = new FileWriter(output_file, true);
-		BufferedWriter bw = new BufferedWriter(fw);
-
-		if (t == null || t.getTests() == null)
-			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + ",0,"
-					+ t.getGeneratorTime() + "," + strength + "," + o.toString() + ",");
-		else
-			bw.write(t.getGeneratorName() + "," + t.getModel().getName() + "," + percentage + "," + t.getTests().size()
-					+ "," + t.getGeneratorTime() + "," + strength + "," + o.toString() + ",");
-
-		bw.newLine();
-		bw.close();
-	}
-
 }
