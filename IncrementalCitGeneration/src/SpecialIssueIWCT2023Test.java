@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -34,7 +35,7 @@ public class SpecialIssueIWCT2023Test {
 	static String PATH = "examples/SI_IWCT_2023_MODELS/";
 	static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 	static String TEMP_FILE_NAME = "temp.txt";
-	static int TIMEOUT_MS = 300000;
+	static int TIMEOUT_MS = 100000;
 	static int STRENGTH = 2;
 
 	/**
@@ -54,7 +55,6 @@ public class SpecialIssueIWCT2023Test {
 		File folder = new File(PATH);
 		File[] listOfFiles = folder.listFiles();
 		String output_file = "resultsTSCP.csv";
-		PMedici pMEDICI = new PMedici();
 
 		// File header
 		printFileHeader(output_file);
@@ -104,7 +104,7 @@ public class SpecialIssueIWCT2023Test {
 						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
 
 						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
-						pMEDICI_TSCP(output_file, pMEDICI, f, model, percentage, tempTsActs);
+						getAllPMediciTestSuites(output_file, f, percentage, tempTsActs);
 					}
 				}
 			}
@@ -149,7 +149,6 @@ public class SpecialIssueIWCT2023Test {
 		try {
 			ts1 = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
-			System.out.println(ex.getMessage());
 			ts1 = new TestSuite(model, null);
 			ts1.setGeneratorName("ACTS");
 			ts1.setGeneratorTime(-1);
@@ -213,7 +212,7 @@ public class SpecialIssueIWCT2023Test {
 		try {
 			ts1 = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
-			System.out.println(ex.getMessage());
+			Runtime.getRuntime().exec("taskkill /F /IM pict.exe");
 			ts1 = new TestSuite(model, null);
 			ts1.setGeneratorName("PICT");
 			ts1.setGeneratorTime(-1);
@@ -288,12 +287,113 @@ public class SpecialIssueIWCT2023Test {
 		bw.close();
 	}
 
-	private void pMEDICI_TSCP(String output_file, PMedici pMEDICI, File f, CitModel model, int percentage,
-			List<ctwedge.util.Test> tempTsActs) throws IOException, InterruptedException {
+	/**
+	 * Generates a test suite with pMEDICI+
+	 * 
+	 * @param f          the file containing the model in CTWedge format
+	 * @param tempTsActs the seeds
+	 * @param strength   the strength
+	 * @return the test suite generated with pMEDICI+
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private TestSuite getPMediciPlusTestSuite(File f, List<ctwedge.util.Test> tempTsActs, int strength)
+			throws IOException, InterruptedException {
+		TestSuite tsTemp;
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<TestSuite> task = new Callable<TestSuite>() {
+			public TestSuite call() throws Exception {
+				PMedici pMEDICI = new PMedici();
+				TestSuite tsTemp;
+				List<ctwedge.util.Test> tempTs;
+				pMEDICI.setSeeds(tempTsActs);
+				TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), strength, 0);
+				tempTs = ts2.getTests();
+				tempTs = tempTs.stream().distinct().collect(Collectors.toList());
+				tsTemp = new TestSuite(toCSVcode(tempTs), Utility.loadModelFromPath(f.getAbsolutePath()), ",");
+				tsTemp.setGeneratorName("pMEDICI+");
+				tsTemp.setGeneratorTime(ts2.getGeneratorTime());
+				return tsTemp;
+			}
+		};
+		Future<TestSuite> future = executor.submit(task);
+		try {
+			tsTemp = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
+			tsTemp = new TestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), null);
+			tsTemp.setGeneratorName("pMEDICI+");
+			tsTemp.setGeneratorTime(-1);
+		} finally {
+			// May or may not desire this
+			future.cancel(true);
+		}
+		return tsTemp;
+	}
+
+	/**
+	 * Generates a test suite with pMEDICI
+	 * 
+	 * @param f          the file containing the model in CTWedge format
+	 * @param tempTsActs the seeds. They are appended to the original test suite in
+	 *                   order to keep them
+	 * @param strength   the strength
+	 * @return the test suite generated with pMEDICI
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private TestSuite getPMediciTestSuite(File f, List<ctwedge.util.Test> tempTsActs, int strength)
+			throws IOException, InterruptedException {
+		TestSuite tsTemp;
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<TestSuite> task = new Callable<TestSuite>() {
+			public TestSuite call() throws Exception {
+				PMedici pMEDICI = new PMedici();
+				List<ctwedge.util.Test> tempTs;
+				TestSuite tsTemp;
+				pMEDICI.setOldTs("");
+				TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), strength, 0);
+				// Add the tests of the previous test suite and remove duplicates
+				long start = System.currentTimeMillis();
+				ts3.getTests().addAll(tempTsActs);
+				tempTs = ts3.getTests();
+				tempTs = tempTs.stream().distinct().collect(Collectors.toList());
+				tsTemp = new TestSuite(toCSVcode(tempTs), Utility.loadModelFromPath(f.getAbsolutePath()), ",");
+				tsTemp.setGeneratorName("pMEDICI");
+				tsTemp.setGeneratorTime(ts3.getGeneratorTime() + (System.currentTimeMillis() - start));
+				return tsTemp;
+			}
+		};
+		Future<TestSuite> future = executor.submit(task);
+		try {
+			tsTemp = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
+			tsTemp = new TestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), null);
+			tsTemp.setGeneratorName("pMEDICI");
+			tsTemp.setGeneratorTime(-1);
+		} finally {
+			// May or may not desire this
+			future.cancel(true);
+		}
+		return tsTemp;
+	}
+
+	/**
+	 * Executes the TSCP Scenario with pMEDICI and pMEDICI+, and performs
+	 * experiments using different types of ordering
+	 * 
+	 * @param output_file the name of the output file in which the results are
+	 *                    written
+	 * @param f           the file containing the ctwedge model
+	 * @param percentage  the removal percentage of test cases from original test
+	 *                    suite
+	 * @param tempTsActs  the seeds
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private void getAllPMediciTestSuites(String output_file, File f, int percentage, List<ctwedge.util.Test> tempTsActs)
+			throws IOException, InterruptedException {
 		TestSuite tsTemp;
 		for (Order o : Order.values()) {
-			List<ctwedge.util.Test> tempTs;
-
 			// Ordering strategy
 			PMedici.order = o;
 
@@ -302,69 +402,112 @@ public class SpecialIssueIWCT2023Test {
 			// --------------------------------
 			// Load the test suite into pMEDICI+ and generate the new test suite
 			// incrementally
-			pMEDICI.setSeeds(tempTsActs);
-			TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), STRENGTH, 0);
-			tempTs = ts2.getTests();
-			tempTs = tempTs.stream().distinct().collect(Collectors.toList());
-			tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
-			tsTemp.setGeneratorName("pMEDICI+");
-			tsTemp.setGeneratorTime(ts2.getGeneratorTime());
+			tsTemp = getPMediciPlusTestSuite(f, tempTsActs, STRENGTH);
 			printStats(tsTemp, percentage, STRENGTH, output_file, o);
 			// --------------------------------
 			// TRADITIONAL APPROACH - pMEDICI
 			// --------------------------------
 			// Generate the test suite from scratch with pMEDICI
-			pMEDICI.setOldTs("");
-			TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), STRENGTH, 0);
-			// Add the tests of the previous test suite and remove duplicates
-			long start = System.currentTimeMillis();
-			ts3.getTests().addAll(tempTsActs);
-			tempTs = ts3.getTests();
-			tempTs = tempTs.stream().distinct().collect(Collectors.toList());
-			tsTemp = new TestSuite(toCSVcode(tempTs), model, ",");
-			tsTemp.setGeneratorName("pMEDICI");
-			tsTemp.setGeneratorTime(ts3.getGeneratorTime() + (System.currentTimeMillis() - start));
+			tsTemp = getPMediciTestSuite(f, tempTsActs, STRENGTH);
 			printStats(tsTemp, 0, STRENGTH, output_file, o);
 		}
 	}
 
+	/**
+	 * Executes the SINC Scenario with pMEDICI and pMEDICI+, and performs
+	 * experiments using different types of ordering
+	 * 
+	 * @param output_file the name of the output file in which the results are
+	 *                    written
+	 * @param f           the file containing the ctwedge model
+	 * @param tempTsActs  the seeds
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private void getAllPMediciTestSuitesSINC(String output_file, File f, TestSuite tempTsActs)
+			throws IOException, InterruptedException {
+		TestSuite tsTemp;
+		for (Order o : Order.values()) {
+			// Ordering strategy
+			PMedici.order = o;
+
+			// Try with pMEDICI with seeds (pMEDICI+)
+			tsTemp = getPMediciPlusTestSuite(f, tempTsActs.getTests(), STRENGTH + 1);
+			printStats(tsTemp, 0, STRENGTH + 1, output_file, o);
+
+			// Try with pMEDICI without seeds (pMEDICI)
+			tsTemp = getPMediciTestSuite(f, null, STRENGTH + 1);
+			printStats(tsTemp, 100, STRENGTH + 1, output_file, o);
+		}
+	}
+
+	/**
+	 * Test executor for the SINC Scenario.
+	 * 
+	 * It executes the tests with: - ACTS (without seeds) - ACTS (with seeds) -
+	 * pMEDICI (without seeds) - pMEDICI+ (with seeds) - PICT (with seeds) - PICT
+	 * (without seeds)
+	 * 
+	 * First a complete test suite is generated for strength t by pMEDICI, then this
+	 * is used by the other tools as seed
+	 * 
+	 * @throws Exception
+	 */
 	@Test
-	public void testIncreaseStrength() throws IOException, InterruptedException {
+	public void testSINC() throws Exception {
 		File folder = new File(PATH);
 		File[] listOfFiles = folder.listFiles();
-		CSVExporter t = new CSVExporter();
-		String output_file = "ResultsIncreaseStrength.csv";
-		PMedici pMEDICI = new PMedici();
+		String output_file = "resultsSINC.csv";
 
+		// File header
+		printFileHeader(output_file);
+
+		// Configurations
+		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw") || f.getName().startsWith("NUMC_"))
+			if (!f.getAbsolutePath().endsWith(".ctw"))
 				continue;
+			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
+
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
-				// Generate test suite with pMEDICI for strength 2
-				pMEDICI.setOldTs("");
-				TestSuite ts = pMEDICI.generateTests(f.getAbsolutePath(), 2, 0);
-				// Save the test suite to file
-				t.generateOutput(ts, TEMP_FILE_NAME);
-				// --------------------------------
-				// INCREMENTAL APPROACH - pMEDICI +
-				// --------------------------------
-				// Load the test suite into pMEDICI+ and generate the new test suite
-				// incrementally
-				pMEDICI.setOldTs("temp.txt");
-				TestSuite ts2 = pMEDICI.generateTests(f.getAbsolutePath(), 3, 0);
-				ts2.setGeneratorName("pMEDICI+");
-				printStats(ts2, 0, 3, output_file, Order.AS_DECLARED);
-				// --------------------------------
-				// TRADITIONAL APPROACH - pMEDICI
-				// --------------------------------
-				// Generate the test suite from scratch with pMEDICI with strength 3
-				pMEDICI.setOldTs("");
-				TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), 3, 0);
-				ts3.setGeneratorName("pMEDICI");
-				printStats(ts3, 0, 3, output_file, Order.AS_DECLARED);
+
+				// Generate test suite with strength t=2 with pMEDICI
+				TestSuite ts1 = null;
+				try {
+					ts1 = getPMediciTestSuite(f, new ArrayList<ctwedge.util.Test>(), STRENGTH);
+					printStats(ts1, 0, STRENGTH, output_file, null);
+				} catch (Error | Exception e) {
+					continue;
+				}
+
+				// Proceed only if seeds have been generated
+				if (ts1.getGeneratorTime() != -1) {
+					// Define the seeds
+					TestSuite tsTempPICT;
+					TestSuite tsTempACTS;
+
+					// Try with PICT with seeds
+					tsTempPICT = getPICTTestSuite(model, STRENGTH + 1, ts1);
+					printStats(tsTempPICT, 0, STRENGTH + 1, output_file, null);
+
+					// Try with PICT without seeds
+					tsTempPICT = getPICTTestSuite(model, STRENGTH + 1, null);
+					printStats(tsTempPICT, 100, STRENGTH + 1, output_file, null);
+
+					// Try with ACTS with seeds
+					tsTempACTS = getACTSTestSuite(model, STRENGTH + 1, ts1);
+					printStats(tsTempACTS, 0, STRENGTH + 1, output_file, null);
+
+					// Try with ACTS without seeds
+					tsTempACTS = getACTSTestSuite(model, STRENGTH + 1, null);
+					printStats(tsTempACTS, 0, STRENGTH + 1, output_file, null);
+
+					// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
+					getAllPMediciTestSuitesSINC(output_file, f, ts1);
+				}
 			}
 		}
 	}
