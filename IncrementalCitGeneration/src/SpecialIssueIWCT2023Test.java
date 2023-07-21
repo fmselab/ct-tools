@@ -187,6 +187,42 @@ public class SpecialIssueIWCT2023Test {
 		t.generateOutput(tsTemp, TEMP_FILE_NAME);
 		return tempTsActs;
 	}
+	
+	/**
+	 * Given a test suite, a model and a percentage of parameter values to be removed from each test case, it
+	 * randomly removes values
+	 * 
+	 * @param model      the CIT Model
+	 * @param ts1        the test suite from which test values need to be removed
+	 * @param percentage the percentage of parameters to be removed
+	 * @return a list of Tests
+	 */
+	private List<ctwedge.util.Test> randomlyAddDontCares(CitModel model, TestSuite ts1, int percentage) {
+		Random random = new Random();
+		CSVExporter t = new CSVExporter();
+		List<ctwedge.util.Test> tempTsActs = ts1.getTests();
+		int nToBeRemoved = (int) (model.getParameters().size() * (percentage / 100.0));
+		// For each test case, remove randomly nToBeRemoved values
+		for (int i=0; i<ts1.getTests().size(); i++) {
+			for (int j = 0; j < nToBeRemoved; j++) {
+				int index = 0;
+				do {
+					index = random.nextInt(tempTsActs.size());
+				} while(ts1.getTests().get(i).get(model.getParameters().get(index).getName()).equals("*"));
+				ts1.getTests().get(i).put(ts1.getTests().get(i).get(model.getParameters().get(index).getName()), "*");
+			}
+		}
+		
+		// Save the test suite to file
+		String csvCode = toCSVcode(ts1.getTests());
+		TestSuite tsTemp;
+		if (!csvCode.equals(""))
+			tsTemp = new TestSuite(csvCode, model, ",");
+		else
+			tsTemp = new TestSuite(model, null);
+		t.generateOutput(tsTemp, TEMP_FILE_NAME);
+		return tempTsActs;
+	}
 
 	/**
 	 * Returns a test suite generated with PICT
@@ -512,9 +548,68 @@ public class SpecialIssueIWCT2023Test {
 		}
 	}
 
+	/**
+	 * Test executor for the TCCP (Test Cases Completion) Scenario
+	 * @throws Exception 
+	 */
 	@Test
-	public void testIncreaseCITCoverage() {
-		// TODO: Complete
-		fail("Not yet implemented");
+	public void testTCCP() throws Exception {
+		File folder = new File(PATH);
+		File[] listOfFiles = folder.listFiles();
+		String output_file = "resultsTSCP.csv";
+
+		// File header
+		printFileHeader(output_file);
+
+		// Configurations
+		ACTSTranslator.PRINT = false;
+		TestContext.IN_TEST = true;
+
+		for (File f : listOfFiles) {
+			if (!f.getAbsolutePath().endsWith(".ctw"))
+				continue;
+			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
+
+			// Repeat the experiments N_REP times
+			for (int i = 0; i < N_REP; i++) {
+
+				// Generate test suite with ACTS
+				TestSuite ts1 = null;
+				try {
+					ts1 = getACTSTestSuite(model, STRENGTH, null);
+					printStats(ts1, 0, STRENGTH, output_file, null);
+				} catch (Error e) {
+					System.err.println(e.getMessage());
+					continue;
+				}
+
+				// Proceed only if seeds have been generated
+				if (ts1.getGeneratorTime() != -1) {
+					// Remove a percentage of test cases and define a new test suite
+					for (int percentage : PERCENTAGE_REMOVAL) {
+						// Define the seeds
+						TestSuite tsTemp;
+						TestSuite tsTempPICT;
+						TestSuite tsTempACTS;
+						List<ctwedge.util.Test> tempTsActs = randomlyAddDontCares(model, ts1, percentage);
+						if (tempTsActs.size() > 0)
+							tsTemp = new TestSuite(toCSVcode(tempTsActs), model, ",");
+						else
+							tsTemp = null;
+
+						// Try with PICT
+						tsTempPICT = getPICTTestSuite(model, STRENGTH, tsTemp);
+						printStats(tsTempPICT, percentage, STRENGTH, output_file, null);
+
+						// Try with ACTS by feeding a seed test suite
+						tsTempACTS = getACTSTestSuite(model, STRENGTH, tsTemp);
+						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
+
+						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
+						getAllPMediciTestSuites(output_file, f, percentage, tempTsActs);
+					}
+				}
+			}
+		}
 	}
 }
