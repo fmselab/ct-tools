@@ -1,0 +1,7 @@
+Model MCA_29
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2 : Boolean
+Par3: {PAR3_0,PAR3_1,PAR3_2,PAR3_3,PAR3_4,PAR3_5,PAR3_6}
+Par4: {PAR4_0,PAR4_1,PAR4_2,PAR4_3}

@@ -1,0 +1,12 @@
+Model MCA_41
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2 : Boolean
+Par3 : Boolean
+Par4 : Boolean
+Par5 : Boolean
+Par6 : Boolean
+Par7 : Boolean
+Par8: {PAR8_0,PAR8_1,PAR8_2,PAR8_3,PAR8_4,PAR8_5}
+Par9: {PAR9_0,PAR9_1,PAR9_2,PAR9_3,PAR9_4}
