@@ -1,0 +1,38 @@
+Model MCA_24
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2 : Boolean
+Par3 : Boolean
+Par4 : Boolean
+Par5 : Boolean
+Par6 : Boolean
+Par7 : Boolean
+Par8: {PAR8_0,PAR8_1,PAR8_2,PAR8_3}
+Par9: {PAR9_0,PAR9_1,PAR9_2,PAR9_3,PAR9_4}
+Par10: {PAR10_0,PAR10_1,PAR10_2,PAR10_3,PAR10_4,PAR10_5}
+Par11 : Boolean
+Par12 : Boolean
+Par13 : Boolean
+Par14 : Boolean
+Par15 : Boolean
+Par16 : Boolean
+Par17: {PAR17_0,PAR17_1}
+Par18 : Boolean
+Par19: {PAR19_0,PAR19_1}
+Par20 : Boolean
+Par21 : Boolean
+Par22: {PAR22_0,PAR22_1,PAR22_2,PAR22_3,PAR22_4,PAR22_5}
+Par23 : Boolean
+Par24 : Boolean
+Par25 : Boolean
+Par26: {PAR26_0,PAR26_1,PAR26_2,PAR26_3,PAR26_4}
+Par27: {PAR27_0,PAR27_1}
+Par28: {PAR28_0,PAR28_1,PAR28_2,PAR28_3,PAR28_4,PAR28_5}
+Par29: {PAR29_0,PAR29_1,PAR29_2,PAR29_3,PAR29_4,PAR29_5}
+Par30 : Boolean
+Par31 : Boolean
+Par32 : Boolean
+Par33 : Boolean
+Par34: {PAR34_0,PAR34_1}
+Par35: {PAR35_0,PAR35_1}

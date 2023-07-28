@@ -1,0 +1,20 @@
+Model MCA_16
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2: {PAR2_0,PAR2_1,PAR2_2,PAR2_3,PAR2_4,PAR2_5}
+Par3 : Boolean
+Par4 : Boolean
+Par5: {PAR5_0,PAR5_1,PAR5_2,PAR5_3}
+Par6: {PAR6_0,PAR6_1,PAR6_2,PAR6_3,PAR6_4,PAR6_5}
+Par7 : Boolean
+Par8: {PAR8_0,PAR8_1}
+Par9: {PAR9_0,PAR9_1,PAR9_2,PAR9_3}
+Par10: {PAR10_0,PAR10_1,PAR10_2}
+Par11 : Boolean
+Par12: {PAR12_0,PAR12_1}
+Par13: {PAR13_0,PAR13_1}
+Par14 : Boolean
+Par15 : Boolean
+Par16: {PAR16_0,PAR16_1,PAR16_2}
+Par17 : Boolean

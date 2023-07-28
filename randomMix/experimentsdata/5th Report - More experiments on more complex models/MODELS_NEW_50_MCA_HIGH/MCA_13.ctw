@@ -1,0 +1,69 @@
+Model MCA_13
+Parameters:
+Par0: {PAR0_0,PAR0_1,PAR0_2,PAR0_3,PAR0_4,PAR0_5,PAR0_6}
+Par1 : Boolean
+Par2 : Boolean
+Par3 : Boolean
+Par4 : Boolean
+Par5: {PAR5_0,PAR5_1,PAR5_2}
+Par6 : Boolean
+Par7 : Boolean
+Par8: {PAR8_0,PAR8_1,PAR8_2,PAR8_3,PAR8_4,PAR8_5,PAR8_6}
+Par9: {PAR9_0,PAR9_1,PAR9_2,PAR9_3,PAR9_4,PAR9_5}
+Par10: {PAR10_0,PAR10_1,PAR10_2,PAR10_3,PAR10_4,PAR10_5,PAR10_6}
+Par11 : Boolean
+Par12: {PAR12_0,PAR12_1}
+Par13: {PAR13_0,PAR13_1,PAR13_2}
+Par14 : Boolean
+Par15: {PAR15_0,PAR15_1,PAR15_2}
+Par16: {PAR16_0,PAR16_1}
+Par17 : Boolean
+Par18: {PAR18_0,PAR18_1,PAR18_2}
+Par19 : Boolean
+Par20 : Boolean
+Par21: {PAR21_0,PAR21_1,PAR21_2,PAR21_3,PAR21_4}
+Par22: {PAR22_0,PAR22_1,PAR22_2,PAR22_3,PAR22_4,PAR22_5,PAR22_6}
+Par23 : Boolean
+Par24: {PAR24_0,PAR24_1,PAR24_2,PAR24_3,PAR24_4}
+Par25: {PAR25_0,PAR25_1,PAR25_2,PAR25_3,PAR25_4,PAR25_5,PAR25_6}
+Par26 : Boolean
+Par27 : Boolean
+Par28 : Boolean
+Par29 : Boolean
+Par30: {PAR30_0,PAR30_1}
+Par31 : Boolean
+Par32 : Boolean
+Par33: {PAR33_0,PAR33_1,PAR33_2}
+Par34 : Boolean
+Par35: {PAR35_0,PAR35_1,PAR35_2,PAR35_3,PAR35_4,PAR35_5,PAR35_6}
+Par36: {PAR36_0,PAR36_1,PAR36_2,PAR36_3,PAR36_4,PAR36_5,PAR36_6}
+Par37 : Boolean
+Par38 : Boolean
+Par39 : Boolean
+Par40: {PAR40_0,PAR40_1}
+Par41 : Boolean
+Par42 : Boolean
+Par43 : Boolean
+Par44 : Boolean
+Par45 : Boolean
+Par46: {PAR46_0,PAR46_1,PAR46_2}
+Par47 : Boolean
+Par48: {PAR48_0,PAR48_1}
+Par49 : Boolean
+Par50 : Boolean
+Par51 : Boolean
+Par52: {PAR52_0,PAR52_1,PAR52_2,PAR52_3,PAR52_4}
+Par53: {PAR53_0,PAR53_1,PAR53_2,PAR53_3,PAR53_4,PAR53_5}
+Par54 : Boolean
+Par55: {PAR55_0,PAR55_1,PAR55_2}
+Par56: {PAR56_0,PAR56_1,PAR56_2,PAR56_3}
+Par57 : Boolean
+Par58 : Boolean
+Par59: {PAR59_0,PAR59_1,PAR59_2,PAR59_3,PAR59_4,PAR59_5,PAR59_6}
+Par60: {PAR60_0,PAR60_1,PAR60_2,PAR60_3}
+Par61 : Boolean
+Par62 : Boolean
+Par63 : Boolean
+Par64: {PAR64_0,PAR64_1,PAR64_2}
+Par65 : Boolean
+Par66 : Boolean

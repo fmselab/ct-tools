@@ -1,0 +1,85 @@
+Model MCA_4
+Parameters:
+Par0: {PAR0_0,PAR0_1}
+Par1: {PAR1_0,PAR1_1,PAR1_2,PAR1_3,PAR1_4,PAR1_5,PAR1_6}
+Par2 : Boolean
+Par3: {PAR3_0,PAR3_1,PAR3_2,PAR3_3,PAR3_4,PAR3_5}
+Par4: {PAR4_0,PAR4_1,PAR4_2}
+Par5: {PAR5_0,PAR5_1,PAR5_2}
+Par6 : Boolean
+Par7 : Boolean
+Par8: {PAR8_0,PAR8_1,PAR8_2,PAR8_3,PAR8_4}
+Par9: {PAR9_0,PAR9_1,PAR9_2,PAR9_3,PAR9_4,PAR9_5}
+Par10 : Boolean
+Par11 : Boolean
+Par12 : Boolean
+Par13 : Boolean
+Par14: {PAR14_0,PAR14_1,PAR14_2,PAR14_3,PAR14_4,PAR14_5}
+Par15 : Boolean
+Par16 : Boolean
+Par17 : Boolean
+Par18: {PAR18_0,PAR18_1,PAR18_2,PAR18_3,PAR18_4,PAR18_5,PAR18_6}
+Par19 : Boolean
+Par20 : Boolean
+Par21 : Boolean
+Par22 : Boolean
+Par23: {PAR23_0,PAR23_1,PAR23_2,PAR23_3,PAR23_4,PAR23_5,PAR23_6}
+Par24 : Boolean
+Par25: {PAR25_0,PAR25_1,PAR25_2,PAR25_3,PAR25_4,PAR25_5,PAR25_6}
+Par26 : Boolean
+Par27: {PAR27_0,PAR27_1}
+Par28: {PAR28_0,PAR28_1}
+Par29 : Boolean
+Par30 : Boolean
+Par31: {PAR31_0,PAR31_1,PAR31_2,PAR31_3}
+Par32 : Boolean
+Par33 : Boolean
+Par34: {PAR34_0,PAR34_1,PAR34_2,PAR34_3}
+Par35: {PAR35_0,PAR35_1}
+Par36 : Boolean
+Par37: {PAR37_0,PAR37_1}
+Par38 : Boolean
+Par39: {PAR39_0,PAR39_1,PAR39_2,PAR39_3,PAR39_4,PAR39_5,PAR39_6}
+Par40: {PAR40_0,PAR40_1,PAR40_2,PAR40_3,PAR40_4,PAR40_5,PAR40_6}
+Par41: {PAR41_0,PAR41_1}
+Par42: {PAR42_0,PAR42_1}
+Par43 : Boolean
+Par44: {PAR44_0,PAR44_1,PAR44_2}
+Par45 : Boolean
+Par46: {PAR46_0,PAR46_1,PAR46_2,PAR46_3,PAR46_4,PAR46_5,PAR46_6}
+Par47 : Boolean
+Par48 : Boolean
+Par49 : Boolean
+Par50: {PAR50_0,PAR50_1,PAR50_2,PAR50_3,PAR50_4,PAR50_5}
+Par51 : Boolean
+Par52 : Boolean
+Par53: {PAR53_0,PAR53_1,PAR53_2,PAR53_3}
+Par54: {PAR54_0,PAR54_1}
+Par55 : Boolean
+Par56: {PAR56_0,PAR56_1,PAR56_2,PAR56_3}
+Par57 : Boolean
+Par58 : Boolean
+Par59 : Boolean
+Par60 : Boolean
+Par61: {PAR61_0,PAR61_1,PAR61_2}
+Par62 : Boolean
+Par63 : Boolean
+Par64: {PAR64_0,PAR64_1,PAR64_2}
+Par65 : Boolean
+Par66 : Boolean
+Par67: {PAR67_0,PAR67_1,PAR67_2,PAR67_3}
+Par68 : Boolean
+Par69: {PAR69_0,PAR69_1}
+Par70: {PAR70_0,PAR70_1,PAR70_2,PAR70_3}
+Par71 : Boolean
+Par72: {PAR72_0,PAR72_1,PAR72_2,PAR72_3,PAR72_4,PAR72_5,PAR72_6}
+Par73 : Boolean
+Par74 : Boolean
+Par75 : Boolean
+Par76: {PAR76_0,PAR76_1,PAR76_2}
+Par77 : Boolean
+Par78 : Boolean
+Par79: {PAR79_0,PAR79_1,PAR79_2,PAR79_3}
+Par80 : Boolean
+Par81 : Boolean
+Par82 : Boolean
