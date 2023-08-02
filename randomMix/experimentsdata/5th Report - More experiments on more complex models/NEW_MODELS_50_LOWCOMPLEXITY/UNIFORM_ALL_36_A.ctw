@@ -1,0 +1,11 @@
+Model UNIFORM_ALL_36
+Parameters:
+Par0 : Boolean
+Par1 : Boolean
+Par2 : Boolean
+Par3: {PAR3_0,PAR3_1}
+Par4: {PAR4_0,PAR4_1}
+Par5: {PAR5_0,PAR5_1}
+Par6: {PAR6_0,PAR6_1}
+Par7: {PAR7_0,PAR7_1}
+Par8 : Boolean
