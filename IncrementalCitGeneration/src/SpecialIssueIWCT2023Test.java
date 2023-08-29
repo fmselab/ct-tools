@@ -207,9 +207,9 @@ public class SpecialIssueIWCT2023Test {
 			for (int j = 0; j < nToBeRemoved; j++) {
 				int index = 0;
 				do {
-					index = random.nextInt(tempTsActs.size());
+					index = random.nextInt(model.getParameters().size());
 				} while(ts1.getTests().get(i).get(model.getParameters().get(index).getName()).equals("*"));
-				ts1.getTests().get(i).put(ts1.getTests().get(i).get(model.getParameters().get(index).getName()), "*");
+				ts1.getTests().get(i).put(model.getParameters().get(index).getName(), "*");
 			}
 		}
 		
