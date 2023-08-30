@@ -35,7 +35,7 @@ public class SpecialIssueIWCT2023Test {
 	static String PATH = "examples/SI_IWCT_2023_MODELS/";
 	static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 	static String TEMP_FILE_NAME = "temp.txt";
-	static int TIMEOUT_MS = 100000;
+	static int TIMEOUT_MS = 300000;
 	static int STRENGTH = 2;
 
 	/**
@@ -248,7 +248,10 @@ public class SpecialIssueIWCT2023Test {
 		try {
 			ts1 = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
-			Runtime.getRuntime().exec("taskkill /F /IM pict.exe");
+			if (System.getProperty("os.name").startsWith("Windows"))
+				Runtime.getRuntime().exec("taskkill /F /IM pict.exe");
+			else
+				Runtime.getRuntime().exec("kill pict");
 			ts1 = new TestSuite(model, null);
 			ts1.setGeneratorName("PICT");
 			ts1.setGeneratorTime(-1);
