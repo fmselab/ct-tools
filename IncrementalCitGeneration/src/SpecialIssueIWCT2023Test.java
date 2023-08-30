@@ -67,6 +67,7 @@ public class SpecialIssueIWCT2023Test {
 			if (!f.getAbsolutePath().endsWith(".ctw"))
 				continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
+			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
 
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
@@ -74,7 +75,7 @@ public class SpecialIssueIWCT2023Test {
 				// Generate test suite with ACTS
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuite(model, STRENGTH, null);
+					ts1 = getACTSTestSuite(modelACTS, STRENGTH, null);
 					printStats(ts1, 0, STRENGTH, output_file, null);
 				} catch (Error e) {
 					System.err.println(e.getMessage());
@@ -100,7 +101,7 @@ public class SpecialIssueIWCT2023Test {
 						printStats(tsTempPICT, percentage, STRENGTH, output_file, null);
 
 						// Try with ACTS by feeding a seed test suite
-						tsTempACTS = getACTSTestSuite(model, STRENGTH, tsTemp);
+						tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH, tsTemp);
 						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
 
 						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
@@ -207,9 +208,9 @@ public class SpecialIssueIWCT2023Test {
 			for (int j = 0; j < nToBeRemoved; j++) {
 				int index = 0;
 				do {
-					index = random.nextInt(tempTsActs.size());
+					index = random.nextInt(model.getParameters().size());
 				} while(ts1.getTests().get(i).get(model.getParameters().get(index).getName()).equals("*"));
-				ts1.getTests().get(i).put(ts1.getTests().get(i).get(model.getParameters().get(index).getName()), "*");
+				ts1.getTests().get(i).put(model.getParameters().get(index).getName(), "*");
 			}
 		}
 		
@@ -509,6 +510,7 @@ public class SpecialIssueIWCT2023Test {
 			if (!f.getAbsolutePath().endsWith(".ctw"))
 				continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
+			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
 
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
@@ -537,11 +539,11 @@ public class SpecialIssueIWCT2023Test {
 					printStats(tsTempPICT, 100, STRENGTH + 1, output_file, null);
 
 					// Try with ACTS with seeds
-					tsTempACTS = getACTSTestSuite(model, STRENGTH + 1, ts1);
+					tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH + 1, ts1);
 					printStats(tsTempACTS, 0, STRENGTH + 1, output_file, null);
 
 					// Try with ACTS without seeds
-					tsTempACTS = getACTSTestSuite(model, STRENGTH + 1, null);
+					tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH + 1, null);
 					printStats(tsTempACTS, 0, STRENGTH + 1, output_file, null);
 
 					// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
@@ -572,6 +574,7 @@ public class SpecialIssueIWCT2023Test {
 			if (!f.getAbsolutePath().endsWith(".ctw"))
 				continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
+			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
 
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
@@ -579,7 +582,7 @@ public class SpecialIssueIWCT2023Test {
 				// Generate test suite with ACTS
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuite(model, STRENGTH, null);
+					ts1 = getACTSTestSuite(modelACTS, STRENGTH, null);
 					printStats(ts1, 0, STRENGTH, output_file, null);
 				} catch (Error e) {
 					System.err.println(e.getMessage());
@@ -605,7 +608,7 @@ public class SpecialIssueIWCT2023Test {
 						printStats(tsTempPICT, percentage, STRENGTH, output_file, null);
 
 						// Try with ACTS by feeding a seed test suite
-						tsTempACTS = getACTSTestSuite(model, STRENGTH, tsTemp);
+						tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH, tsTemp);
 						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
 
 						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
