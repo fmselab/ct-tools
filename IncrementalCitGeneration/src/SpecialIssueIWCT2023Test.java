@@ -31,7 +31,7 @@ import pMedici.util.TestContext;
 
 public class SpecialIssueIWCT2023Test {
 
-	static int N_REP = 10;
+	static int N_REP = 5;
 	static String PATH = "examples/SI_IWCT_2023_MODELS/";
 	static int[] PERCENTAGE_REMOVAL = { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
 	static String TEMP_FILE_NAME = "temp.txt";
@@ -394,7 +394,8 @@ public class SpecialIssueIWCT2023Test {
 				TestSuite ts3 = pMEDICI.generateTests(f.getAbsolutePath(), strength, 0);
 				// Add the tests of the previous test suite and remove duplicates
 				long start = System.currentTimeMillis();
-				ts3.getTests().addAll(tempTsActs);
+				if (tempTsActs != null)
+					ts3.getTests().addAll(tempTsActs);
 				tempTs = ts3.getTests();
 				tempTs = tempTs.stream().distinct().collect(Collectors.toList());
 				tsTemp = new TestSuite(toCSVcode(tempTs), Utility.loadModelFromPath(f.getAbsolutePath()), ",");
@@ -532,6 +533,7 @@ public class SpecialIssueIWCT2023Test {
 
 					// Try with PICT with seeds
 					tsTempPICT = getPICTTestSuite(model, STRENGTH + 1, ts1);
+					tsTempPICT.setGeneratorName("PICT w SEEDS");
 					printStats(tsTempPICT, 0, STRENGTH + 1, output_file, null);
 
 					// Try with PICT without seeds
@@ -540,11 +542,12 @@ public class SpecialIssueIWCT2023Test {
 
 					// Try with ACTS with seeds
 					tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH + 1, ts1);
+					tsTempACTS.setGeneratorName("ACTS w SEEDS");
 					printStats(tsTempACTS, 0, STRENGTH + 1, output_file, null);
 
 					// Try with ACTS without seeds
 					tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH + 1, null);
-					printStats(tsTempACTS, 0, STRENGTH + 1, output_file, null);
+					printStats(tsTempACTS, 100, STRENGTH + 1, output_file, null);
 
 					// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
 					getAllPMediciTestSuitesSINC(output_file, f, ts1);
@@ -561,7 +564,7 @@ public class SpecialIssueIWCT2023Test {
 	public void testTCCP() throws Exception {
 		File folder = new File(PATH);
 		File[] listOfFiles = folder.listFiles();
-		String output_file = "resultsTSCP.csv";
+		String output_file = "resultsTCCP.csv";
 
 		// File header
 		printFileHeader(output_file);
