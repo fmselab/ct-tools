@@ -203,14 +203,17 @@ public class SpecialIssueIWCT2023Test {
 		CSVExporter t = new CSVExporter();
 		List<ctwedge.util.Test> tempTsActs = ts1.getTests();
 		int nToBeRemoved = (int) (model.getParameters().size() * (percentage / 100.0));
+		
 		// For each test case, remove randomly nToBeRemoved values
 		for (int i=0; i<ts1.getTests().size(); i++) {
+			ArrayList<Integer> indexes = new ArrayList<>();
+			for (int j=0; j<model.getParameters().size(); j++)
+				indexes.add(j);
+			
 			for (int j = 0; j < nToBeRemoved; j++) {
-				int index = 0;
-				do {
-					index = random.nextInt(model.getParameters().size());
-				} while(ts1.getTests().get(i).get(model.getParameters().get(index).getName()).equals("*"));
-				ts1.getTests().get(i).put(model.getParameters().get(index).getName(), "*");
+				int index = random.nextInt(indexes.size());
+				ts1.getTests().get(i).put(model.getParameters().get(indexes.get(index)).getName(), "*");
+				indexes.remove(index);
 			}
 		}
 		
@@ -596,6 +599,7 @@ public class SpecialIssueIWCT2023Test {
 				if (ts1.getGeneratorTime() != -1) {
 					// Remove a percentage of test cases and define a new test suite
 					for (int percentage : PERCENTAGE_REMOVAL) {
+						System.out.println("---- Removing " + percentage + " %");
 						// Define the seeds
 						TestSuite tsTemp;
 						TestSuite tsTempPICT;
@@ -607,14 +611,17 @@ public class SpecialIssueIWCT2023Test {
 							tsTemp = null;
 
 						// Try with PICT
+						System.out.println("---- PICT with " + percentage + " %");
 						tsTempPICT = getPICTTestSuite(model, STRENGTH, tsTemp);
 						printStats(tsTempPICT, percentage, STRENGTH, output_file, null);
 
 						// Try with ACTS by feeding a seed test suite
+						System.out.println("---- ACTS with " + percentage + " %");
 						tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH, tsTemp);
 						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
 
 						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
+						System.out.println("---- pMEDICI with " + percentage + " %");
 						getAllPMediciTestSuites(output_file, f, percentage, tempTsActs);
 					}
 				}
