@@ -13,7 +13,8 @@ Repository containing all the CIT tools developed by foselab
 (Bombarda, Andrea, and Gargantini, Angelo) in 9th International Workshop on Combinatorial Testing (IWCT 2020)
 - `KALI`: a multi-threaded tool for generating combinatorial test suites, based on a choosable SMT solver.
 - `MEDICI`: medici is a tool for combinatorial test generation based on the use of Multiple-Valued Decision Diagrams, presented in [*Efficient Combinatorial Test Generation based on Multivalued Decision Diagrams*](https://cs.unibg.it/gargantini/research/papers/mdd_hvc_postconf.pdf)(Gargantini, Angelo, and Vavassori, Paolo) in Hardware and Software: Verification and Testing, Haifa Verification Conference HVC 2014 (Eds. Yahav, Eran) Springer International Publishing, Lecture Notes in Computer Science, vol. 8855 (2014): 220-235 ISBN 978-3-319-13337-9
-- `pMEDICI`: a multi-threaded tool for generating combinatorial test suites, derived from `MEDICI`, presented in in [*Parallel Test Generation for Combinatorial Models
+- `pMEDICI`: a multi-threaded tool for generating combinatorial test suites, derived from `MEDICI`, presented in [*Parallel Test Generation for Combinatorial Models
 Based on Multivalued Decision Diagrams*]()
 (Bombarda, Andrea, and Gargantini, Angelo) in 11th International Workshop on Combinatorial Testing (IWCT 2022)
-- `IncrementalCitGeneration`: experiments, based on `pMEDICI`, `ACTS` and `pMEDICI+`, about incremental test suites generation
+- `IncrementalCitGeneration`: experiments, based on `pMEDICI`, `ACTS` and `pMEDICI+`, about incremental test suites generation. Preliminary results have been presented in [*Incremental generation of combinatorial test suites
+starting from existing seed tests*]() (Bombarda, Andrea, and Gargantini, Angelo) in 12th International Workshop on Combinatorial Testing (IWCT 2023)

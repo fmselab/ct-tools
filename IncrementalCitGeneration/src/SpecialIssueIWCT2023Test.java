@@ -65,8 +65,6 @@ public class SpecialIssueIWCT2023Test {
 		for (File f : listOfFiles) {
 			if (!f.getAbsolutePath().endsWith(".ctw"))
 				continue;
-			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
-			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
 
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
@@ -74,8 +72,9 @@ public class SpecialIssueIWCT2023Test {
 				// Generate test suite with ACTS
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuite(modelACTS, STRENGTH, null);
+					ts1 = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, null);
 					printStats(ts1, 0, STRENGTH, output_file, null);
+					Thread.sleep(200);
 				} catch (Error e) {
 					System.err.println(e.getMessage());
 					continue;
@@ -89,19 +88,21 @@ public class SpecialIssueIWCT2023Test {
 						TestSuite tsTemp;
 						TestSuite tsTempPICT;
 						TestSuite tsTempACTS;
-						List<ctwedge.util.Test> tempTsActs = selectRandomSeeds(model, ts1, percentage);
+						List<ctwedge.util.Test> tempTsActs = selectRandomSeeds(Utility.loadModelFromPath(f.getAbsolutePath()), ts1, percentage);
 						if (tempTsActs.size() > 0)
-							tsTemp = new TestSuite(toCSVcode(tempTsActs), model, ",");
+							tsTemp = new TestSuite(toCSVcode(tempTsActs), Utility.loadModelFromPath(f.getAbsolutePath()), ",");
 						else
 							tsTemp = null;
 
 						// Try with PICT
-						tsTempPICT = getPICTTestSuite(model, STRENGTH, tsTemp);
+						tsTempPICT = getPICTTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, tsTemp);
 						printStats(tsTempPICT, percentage, STRENGTH, output_file, null);
+						Thread.sleep(200);
 
 						// Try with ACTS by feeding a seed test suite
-						tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH, tsTemp);
+						tsTempACTS = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, tsTemp);
 						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
+						Thread.sleep(200);
 
 						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
 						getAllPMediciTestSuites(output_file, f, percentage, tempTsActs);
@@ -202,14 +203,17 @@ public class SpecialIssueIWCT2023Test {
 		CSVExporter t = new CSVExporter();
 		List<ctwedge.util.Test> tempTsActs = ts1.getTests();
 		int nToBeRemoved = (int) (model.getParameters().size() * (percentage / 100.0));
+		
 		// For each test case, remove randomly nToBeRemoved values
 		for (int i=0; i<ts1.getTests().size(); i++) {
+			ArrayList<Integer> indexes = new ArrayList<>();
+			for (int j=0; j<model.getParameters().size(); j++)
+				indexes.add(j);
+			
 			for (int j = 0; j < nToBeRemoved; j++) {
-				int index = 0;
-				do {
-					index = random.nextInt(model.getParameters().size());
-				} while(ts1.getTests().get(i).get(model.getParameters().get(index).getName()).equals("*"));
-				ts1.getTests().get(i).put(model.getParameters().get(index).getName(), "*");
+				int index = random.nextInt(indexes.size());
+				ts1.getTests().get(i).put(model.getParameters().get(indexes.get(index)).getName(), "*");
+				indexes.remove(index);
 			}
 		}
 		
@@ -251,7 +255,7 @@ public class SpecialIssueIWCT2023Test {
 			if (System.getProperty("os.name").startsWith("Windows"))
 				Runtime.getRuntime().exec("taskkill /F /IM pict.exe");
 			else
-				Runtime.getRuntime().exec("kill pict");
+				Runtime.getRuntime().exec("killall pict");
 			ts1 = new TestSuite(model, null);
 			ts1.setGeneratorName("PICT");
 			ts1.setGeneratorTime(-1);
@@ -444,12 +448,14 @@ public class SpecialIssueIWCT2023Test {
 			// incrementally
 			tsTemp = getPMediciPlusTestSuite(f, tempTsActs, STRENGTH);
 			printStats(tsTemp, percentage, STRENGTH, output_file, o);
+			Thread.sleep(200);
 			// --------------------------------
 			// TRADITIONAL APPROACH - pMEDICI
 			// --------------------------------
 			// Generate the test suite from scratch with pMEDICI
 			tsTemp = getPMediciTestSuite(f, tempTsActs, STRENGTH);
 			printStats(tsTemp, 0, STRENGTH, output_file, o);
+			Thread.sleep(200);
 		}
 	}
 
@@ -593,6 +599,7 @@ public class SpecialIssueIWCT2023Test {
 				if (ts1.getGeneratorTime() != -1) {
 					// Remove a percentage of test cases and define a new test suite
 					for (int percentage : PERCENTAGE_REMOVAL) {
+						System.out.println("---- Removing " + percentage + " %");
 						// Define the seeds
 						TestSuite tsTemp;
 						TestSuite tsTempPICT;
@@ -604,14 +611,17 @@ public class SpecialIssueIWCT2023Test {
 							tsTemp = null;
 
 						// Try with PICT
+						System.out.println("---- PICT with " + percentage + " %");
 						tsTempPICT = getPICTTestSuite(model, STRENGTH, tsTemp);
 						printStats(tsTempPICT, percentage, STRENGTH, output_file, null);
 
 						// Try with ACTS by feeding a seed test suite
+						System.out.println("---- ACTS with " + percentage + " %");
 						tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH, tsTemp);
 						printStats(tsTempACTS, percentage, STRENGTH, output_file, null);
 
 						// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
+						System.out.println("---- pMEDICI with " + percentage + " %");
 						getAllPMediciTestSuites(output_file, f, percentage, tempTsActs);
 					}
 				}
