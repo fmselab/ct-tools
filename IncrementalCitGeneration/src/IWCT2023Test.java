@@ -36,7 +36,6 @@ public class IWCT2023Test {
 		String output_file = "ResultsCompleteTestSuite.csv";
 		PMedici pMEDICI = new PMedici();
 
-		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 		
 		for (File f : listOfFiles) {

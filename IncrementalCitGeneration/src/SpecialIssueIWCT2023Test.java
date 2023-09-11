@@ -60,7 +60,6 @@ public class SpecialIssueIWCT2023Test {
 		printFileHeader(output_file);
 
 		// Configurations
-		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
@@ -504,7 +503,6 @@ public class SpecialIssueIWCT2023Test {
 		printFileHeader(output_file);
 
 		// Configurations
-		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
@@ -570,7 +568,6 @@ public class SpecialIssueIWCT2023Test {
 		printFileHeader(output_file);
 
 		// Configurations
-		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
