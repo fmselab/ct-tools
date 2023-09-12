@@ -512,7 +512,7 @@ public class SpecialIssueIWCT2023Test {
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw"))
+			if (!f.getAbsolutePath().endsWith(".ctw") || f.getAbsolutePath().contains("C_"))
 				continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
 			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
@@ -520,10 +520,10 @@ public class SpecialIssueIWCT2023Test {
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
 
-				// Generate test suite with strength t=2 with pMEDICI
+				// Generate test suite with strength t=2 with ACTS
 				TestSuite ts1 = null;
 				try {
-					ts1 = getPMediciTestSuite(f, new ArrayList<ctwedge.util.Test>(), STRENGTH);
+					ts1 = getACTSTestSuite(model, STRENGTH, null);
 					printStats(ts1, 0, STRENGTH, output_file, null);
 				} catch (Error | Exception e) {
 					continue;
