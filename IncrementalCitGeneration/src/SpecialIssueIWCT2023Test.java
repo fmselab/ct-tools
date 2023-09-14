@@ -522,7 +522,7 @@ public class SpecialIssueIWCT2023Test {
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw") || f.getAbsolutePath().contains("C_"))
+			if (!f.getAbsolutePath().endsWith(".ctw"))
 				continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
 			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
