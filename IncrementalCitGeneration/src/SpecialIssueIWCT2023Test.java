@@ -4,7 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -503,7 +506,14 @@ public class SpecialIssueIWCT2023Test {
 	public void testSINC() throws Exception {
 		File folder = new File(PATH);
 		File[] listOfFiles = folder.listFiles();
-		String output_file = "resultsSINC.csv";
+		Arrays.sort(listOfFiles, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm").format(new java.util.Date());
+		String output_file = "resultsSINC_"+ timeStamp + ".csv";
 
 		// File header
 		printFileHeader(output_file);
