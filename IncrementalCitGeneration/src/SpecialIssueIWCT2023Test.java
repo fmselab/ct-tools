@@ -524,8 +524,6 @@ public class SpecialIssueIWCT2023Test {
 		for (File f : listOfFiles) {
 			if (!f.getAbsolutePath().endsWith(".ctw") || ! f.getName().contains("C_"))
 				continue;
-			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
-			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
 
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
@@ -533,7 +531,7 @@ public class SpecialIssueIWCT2023Test {
 				// Generate test suite with strength t=2 with ACTS
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuite(model, STRENGTH, null);
+					ts1 = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, null);
 					printStats(ts1, 0, STRENGTH, output_file, null);
 				} catch (Error | Exception e) {
 					continue;
@@ -546,21 +544,21 @@ public class SpecialIssueIWCT2023Test {
 					TestSuite tsTempACTS;
 
 					// Try with PICT with seeds
-					tsTempPICT = getPICTTestSuite(model, STRENGTH + 1, ts1);
+					tsTempPICT = getPICTTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH + 1, ts1);
 					tsTempPICT.setGeneratorName("PICT w SEEDS");
 					printStats(tsTempPICT, 0, STRENGTH + 1, output_file, null);
 
 					// Try with PICT without seeds
-					tsTempPICT = getPICTTestSuite(model, STRENGTH + 1, null);
+					tsTempPICT = getPICTTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH + 1, null);
 					printStats(tsTempPICT, 100, STRENGTH + 1, output_file, null);
 
 					// Try with ACTS with seeds
-					tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH + 1, ts1);
+					tsTempACTS = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH + 1, ts1);
 					tsTempACTS.setGeneratorName("ACTS w SEEDS");
 					printStats(tsTempACTS, 0, STRENGTH + 1, output_file, null);
 
 					// Try with ACTS without seeds
-					tsTempACTS = getACTSTestSuite(modelACTS, STRENGTH + 1, null);
+					tsTempACTS = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH + 1, null);
 					printStats(tsTempACTS, 100, STRENGTH + 1, output_file, null);
 
 					// Try with pMEDICI and pMEDICI+ with multiple ordering strategies
