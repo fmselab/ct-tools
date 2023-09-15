@@ -522,7 +522,7 @@ public class SpecialIssueIWCT2023Test {
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw") || !f.getName().startsWith("MCAC_4"))
+			if (!f.getAbsolutePath().endsWith(".ctw"))
 				continue;
 
 			// Repeat the experiments N_REP times
