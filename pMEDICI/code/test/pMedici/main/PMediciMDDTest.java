@@ -232,7 +232,7 @@ public class PMediciMDDTest {
 		PMedici.verb = saveandprint;
 		// generate the tests (as lines in a csv format)
 		TestSuite ts = pMedici.generateTests(filename, 2, 0);
-		ts.populateTestSuite();
+		ts.populateTestSuite(";");
 		if (saveandprint) {
 			PrintStream consoleStream = new PrintStream(new FileOutputStream(FileDescriptor.out));
 			System.setOut(consoleStream);
