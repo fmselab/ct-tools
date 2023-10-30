@@ -301,7 +301,7 @@ public class PMedici implements Callable<Integer> {
 				String testParamValue;
 				// If the test seed is not complete in that parameter, skip the parameter and
 				// move to the next one
-				if (oldTest.get(param.getName()).equals("*"))
+				if (oldTest.get(param.getName()) == null || oldTest.get(param.getName()).equals("*"))
 					continue;
 
 				// If the parameter of the new model is in the old test suite,

@@ -1,5 +1,3 @@
-import static org.junit.Assert.fail;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -57,7 +55,14 @@ public class SpecialIssueIWCT2023Test {
 	public void testTSCP() throws Exception {
 		File folder = new File(PATH);
 		File[] listOfFiles = folder.listFiles();
-		String output_file = "resultsTSCP.csv";
+		Arrays.sort(listOfFiles, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm").format(new java.util.Date());
+		String output_file = "resultsTSCP_"+ timeStamp + ".csv";
 
 		// File header
 		printFileHeader(output_file);
@@ -66,7 +71,7 @@ public class SpecialIssueIWCT2023Test {
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw"))
+			if (!f.getAbsolutePath().endsWith(".ctw") || !f.getName().contains("MCAC_9"))
 				continue;
 
 			// Repeat the experiments N_REP times
@@ -576,7 +581,14 @@ public class SpecialIssueIWCT2023Test {
 	public void testTCCP() throws Exception {
 		File folder = new File(PATH);
 		File[] listOfFiles = folder.listFiles();
-		String output_file = "resultsTCCP.csv";
+		Arrays.sort(listOfFiles, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm").format(new java.util.Date());
+		String output_file = "resultsTCCP_"+ timeStamp + ".csv";
 
 		// File header
 		printFileHeader(output_file);
