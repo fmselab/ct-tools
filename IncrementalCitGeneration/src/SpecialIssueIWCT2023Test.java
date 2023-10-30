@@ -527,7 +527,7 @@ public class SpecialIssueIWCT2023Test {
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw"))
+			if (!f.getAbsolutePath().endsWith(".ctw") || ! f.getName().contains("C_"))
 				continue;
 
 			// Repeat the experiments N_REP times
