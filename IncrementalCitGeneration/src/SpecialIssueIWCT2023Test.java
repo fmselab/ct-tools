@@ -26,6 +26,7 @@ import ctwedge.generator.exporter.CSVExporter;
 import ctwedge.generator.pict.PICTGenerator;
 import ctwedge.util.TestSuite;
 import ctwedge.util.ext.Utility;
+import ctwedge.util.smt.SMTTestSuiteValidator;
 import pMedici.main.PMedici;
 import pMedici.util.Order;
 import pMedici.util.TestContext;
@@ -259,6 +260,7 @@ public class SpecialIssueIWCT2023Test {
 		Future<TestSuite> future = executor.submit(task);
 		try {
 			ts1 = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+			ts1.setStrength(strength);
 		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
 			if (System.getProperty("os.name").startsWith("Windows"))
 				Runtime.getRuntime().exec("taskkill /F /IM pict.exe");
