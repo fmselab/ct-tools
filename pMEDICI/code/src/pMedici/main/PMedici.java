@@ -21,8 +21,6 @@ import ctwedge.util.ParameterElementsGetterAsStrings;
 import ctwedge.util.Test;
 import ctwedge.util.TestSuite;
 import ctwedge.util.ext.Utility;
-import pMedici.experiments.pMEDICIExperimenter;
-import pMedici.experiments.pMEDICIPlusMTExperimenter;
 import pMedici.importer.CSVImporter;
 import pMedici.safeelements.SafeQueue;
 import pMedici.threads.TestBuilder;
