@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: ctwedge.util
+Bundle-ManifestVersion: 2
+Bundle-Name: ctwedge.util
+Bundle-Vendor: University of Bergamo, Italy
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: ctwedge.util;singleton:=true
+Require-Bundle: org.junit,
+ org.eclipse.core.runtime,
+ org.apache.log4j
+Export-Package: ctwedge.generator,
+ ctwedge.generator.exporter;
+  uses:="org.eclipse.xtext.generator,
+   ctwedge.util,
+   jxl.write,
+   ctwedge.util.ext",
+ ctwedge.util,
+ ctwedge.util.ext,
+ ctwedge.util.genprefs,
+ ctwedge.util.simplifier,
+ ctwedge.util.smt,
+ ctwedge.util.validator
