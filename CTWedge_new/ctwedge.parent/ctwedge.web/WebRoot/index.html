@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Language" content="en-us">
+<title>CTWedge</title>
+<link rel="stylesheet" type="text/css" href="xtext/2.34.0/xtext-ace.css" />
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script src="webjars/requirejs/2.3.6/require.min.js"></script>
+<script type="text/javascript">
+	var baseUrl = window.location.pathname;
+	var fileIndex = baseUrl.indexOf("index.html");
+	if (fileIndex > 0)
+		baseUrl = baseUrl.slice(0, fileIndex);
+	require
+			.config({
+				baseUrl : baseUrl,
+				paths : {
+					"jquery" : "webjars/jquery/3.6.0/jquery.min",
+					"ace/ext/language_tools" : "webjars/ace/1.3.3/src/ext-language_tools",
+					"xtext/xtext-ace" : "xtext/2.34.0/xtext-ace"
+				}
+			});
+	require([ "webjars/ace/1.3.3/src/ace" ], function() {
+		require([ "xtext/xtext-ace" ], function(xtext) {
+			xtext.createEditor({
+				baseUrl : baseUrl,
+				syntaxDefinition : "xtext-resources/generated/mode-ctw"
+			});
+		});
+	});
+</script>
+</head>
+<body>
+
+	<div class="container">
+		<div class="header">
+			<h1>CTWedge: Combinatorial Testing Web-based Editor and
+				Generator</h1>
+		</div>
+		<div class="content">
+			<div id="xtext-editor" data-editor-xtext-lang="ctw"
+				style="top: 60px; height: 380px; width: 640px"></div>
+		</div>
+
+		<div
+			style="margin: 0px auto; position: absolute; left: 700px; width: 200px; top: 200px;">
+			<form>
+				<label for="strength">Strength of Test Suite</label> <input
+					type="text" class="form-control bfh-number" id="strength"
+					data-min="1" value="2"> <br /> <label for="generator">Generator</label>
+				<!--<label class="custom-control custom-radio">
+		  <input id="radio1" name="generator" type="radio" class="custom-control-input" checked>
+		  <span class="custom-control-indicator"></span>
+		  <span class="custom-control-description">ACTS</span>
+		</label>
+		<label class="custom-control custom-radio">
+		  <input id="radio2" name="generator" type="radio" class="custom-control-input">
+		  <span class="custom-control-indicator"></span>
+		  <span class="custom-control-description">CASA</span>
+		</label>-->
+				<div class="custom-controls-stacked" id="generator">
+					<label class="custom-control custom-radio"> <input
+						id="radioStacked3" name="generator" type="radio"
+						class="custom-control-input" checked value="acts"> <span
+						class="custom-control-indicator"></span> <span
+						class="custom-control-description">ACTS</span>
+					</label> <label class="custom-control custom-radio"> <input
+						id="radioStacked4" name="generator" type="radio"
+						class="custom-control-input" value="casa"> <span
+						class="custom-control-indicator"></span> <span
+						class="custom-control-description">CASA</span>
+					</label> <label class="custom-control custom-radio"> <input
+						id="radioStacked5" name="generator" type="radio"
+						class="custom-control-input" value="pmedici"> <span
+						class="custom-control-indicator"></span> <span
+						class="custom-control-description">pMEDICI</span>
+					</label>
+				</div>
+
+				<label class="custom-control custom-checkbox"> <input
+					type="checkbox" class="custom-control-input" id="ignoreConstraints">
+					<span class="custom-control-indicator"></span> <span
+					class="custom-control-description">Ignore Constraints</span>
+				</label> <br /> <br />
+
+				<!-- Modal's toggle button has data that's used to determine what content to use -->
+				<!--  <button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target=".modal" data-paragraphs="10">Generate Test Suite</button> -->
+
+				<!-- Button doesn't open a dialog -->
+				<button type="button" class="btn btn-lg btn-success"
+					data-paragraphs="10" id="btnGenerate">Generate Test Suite</button>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
