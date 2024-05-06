@@ -30,6 +30,7 @@
 		<module>ctwedge.repository</module>
 		<module>ctwedge.tests</module>
 		<module>ctwedge.ui.tests</module>
+		<module>ctwedge.benchmarks</module>
 		<module>ctwedge.generators/ctwedge.generator.acts</module>
 		<module>ctwedge.generators/ctwedge.generator.casa</module>
 		<module>ctwedge.generators/ctwedge.generator.pict</module>

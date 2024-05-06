@@ -121,40 +121,40 @@ public class ACTSTest {
 		System.out.println(Utility.getTestSuite(contentBuilder.toString(), acts, 2, false, null));
 	}
 
-	@Test
-	public void testExample3() throws Exception {
-		// String filePath =
-		// "D:\\AgHome\\progettidaSVNGIT\\pMedici\\pMEDICI-z3\\examples\\ctcomp\\MCA_3.ctw";
-		String filePath = "D:\\AgHome\\progettidaSVNGIT\\pMedici\\pMEDICI-z3\\examples\\ctcomp\\ADD_BOOLC_4.ctw";
-
-		CitModel model = ICTWedgeModelProcessor.getModel(filePath);
-		ACTSTranslator trans = new ACTSTranslator();
-		SUT SUT = trans.buildSUT(model, false, 2);
-		System.out.println(SUT);
+//	@Test
+//	public void testExample3() throws Exception {
+//		// String filePath =
+//		// "D:\\AgHome\\progettidaSVNGIT\\pMedici\\pMEDICI-z3\\examples\\ctcomp\\MCA_3.ctw";
+//		String filePath = "D:\\AgHome\\progettidaSVNGIT\\pMedici\\pMEDICI-z3\\examples\\ctcomp\\ADD_BOOLC_4.ctw";
+//
+//		CitModel model = ICTWedgeModelProcessor.getModel(filePath);
+//		ACTSTranslator trans = new ACTSTranslator();
+//		SUT SUT = trans.buildSUT(model, false, 2);
+//		System.out.println(SUT);
 //		Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8);
 //		stream.forEach(s -> contentBuilder.append(s).append("\n"));
 //		stream.close();
 //		System.out.println(Utility.getTestSuite(contentBuilder.toString(), acts,2,false, null));
-	}
+//	}
 
-	@Test
-	public void translateCT() {
-		// Convert the file in ACTS
-		String filePath = "C:\\Users\\Andrea_PC\\Desktop\\FM\\FM_4.ctw";
-		CitModel model = ICTWedgeModelProcessor.getModel(filePath);
-		ACTSTranslator trans = new ACTSTranslator();
-		trans.convertModel(model, true, 2, "C:\\Users\\Andrea_PC\\Desktop\\FM\\");
-	}
+//	@Test
+//	public void translateCT() {
+//		// Convert the file in ACTS
+//		String filePath = "C:\\Users\\Andrea_PC\\Desktop\\FM\\FM_4.ctw";
+//		CitModel model = ICTWedgeModelProcessor.getModel(filePath);
+//		ACTSTranslator trans = new ACTSTranslator();
+//		trans.convertModel(model, true, 2, "C:\\Users\\Andrea_PC\\Desktop\\FM\\");
+//	}
 	
-	@Test
-	public void testExampleCT() throws Exception {
-		StringBuilder contentBuilder = new StringBuilder();
-		String filePath = "F:\\Dati-Andrea\\GitHub\\ct-tools\\CIT_Benchmark_Generator\\Benchmarks_CITCompetition_2023\\CTWedge\\HIGHLY_CONSTRAINED_2.ctw";
-		Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8);
-		stream.forEach(s -> contentBuilder.append(s).append("\n"));
-		stream.close();
-		System.out.println(Utility.getTestSuite(contentBuilder.toString(), acts, 2, false, null));
-	}
+//	@Test
+//	public void testExampleCT() throws Exception {
+//		StringBuilder contentBuilder = new StringBuilder();
+//		String filePath = "F:\\Dati-Andrea\\GitHub\\ct-tools\\CIT_Benchmark_Generator\\Benchmarks_CITCompetition_2023\\CTWedge\\HIGHLY_CONSTRAINED_2.ctw";
+//		Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8);
+//		stream.forEach(s -> contentBuilder.append(s).append("\n"));
+//		stream.close();
+//		System.out.println(Utility.getTestSuite(contentBuilder.toString(), acts, 2, false, null));
+//	}
 
 
 }
