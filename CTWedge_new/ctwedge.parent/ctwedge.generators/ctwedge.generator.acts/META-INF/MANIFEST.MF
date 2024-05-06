@@ -13,7 +13,6 @@ Export-Package: ctwedge.generator.acts;
    ctwedge.util.ext,
    edu.uta.cse.fireeye.common"
 Require-Bundle: org.junit,
- ctwedge.util,
  ctwedge,
  org.eclipse.emf.ecore,
  org.eclipse.xtext.ecore

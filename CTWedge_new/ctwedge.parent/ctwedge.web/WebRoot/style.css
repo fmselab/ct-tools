@@ -27,7 +27,7 @@ a:hover {
 .header {
 	display: block;
 	position: fixed;
-	background-color: #60b0f4; // #e8e8e8;
+	background-color: #60b0f4;
 	text-align: center;
 	font-style: bold;
 	font-family: Verdana, Arial;
