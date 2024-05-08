@@ -23,6 +23,7 @@ import ctwedge.generator.acts.ACTSTranslator;
 import ctwedge.generator.casa.CASAConstraintException;
 import ctwedge.generator.pmedici.*;
 import ctwedge.generator.casa.CASATestGenerator;
+import ctwedge.util.NotConvertableModel;
 import ctwedge.util.ParameterSize;
 import ctwedge.util.ext.ICTWedgeTestGenerator;
 import ctwedge.util.ext.Utility;
@@ -93,7 +94,7 @@ public class Generator extends HttpServlet {
 					// find the right generator
 					ICTWedgeTestGenerator gen;
 					if (generator.equalsIgnoreCase("casa"))
-						gen = new CASATestGenerator();
+						gen = new CASATestGenerator(context.getRealPath("/"));
 					else if (generator.equalsIgnoreCase("acts"))
 						gen = new ACTSTranslator();
 					else
