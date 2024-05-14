@@ -21,8 +21,6 @@ import ctwedge.util.ParameterElementsGetterAsStrings;
 import ctwedge.util.Test;
 import ctwedge.util.TestSuite;
 import ctwedge.util.ext.Utility;
-import pMedici.experiments.pMEDICIExperimenter;
-import pMedici.experiments.pMEDICIPlusMTExperimenter;
 import pMedici.importer.CSVImporter;
 import pMedici.safeelements.SafeQueue;
 import pMedici.threads.TestBuilder;
@@ -301,7 +299,7 @@ public class PMedici implements Callable<Integer> {
 				String testParamValue;
 				// If the test seed is not complete in that parameter, skip the parameter and
 				// move to the next one
-				if (oldTest.get(param.getName()).equals("*"))
+				if (oldTest.get(param.getName()) == null || oldTest.get(param.getName()).equals("*"))
 					continue;
 
 				// If the parameter of the new model is in the old test suite,

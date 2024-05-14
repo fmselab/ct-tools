@@ -1,0 +1,3 @@
+Banking1.ctw	Generated tuples for 2-wise with cardinality 102	Cardinalita di partenza 324	Cardinalita finale 212	size dopo controllo copribilita 102	
+Banking2.ctw	Generated tuples for 2-wise with cardinality 476	Cardinalita di partenza 65536	Cardinalita finale 40960	size dopo controllo copribilita 473	
+benchmark_1.ctw	Generated tuples for 2-wise with cardinality 24350	Cardinalita di partenza 9.40061e+32	Cardinalita finale 1.51331e+30	size dopo controllo copribilita 23876	

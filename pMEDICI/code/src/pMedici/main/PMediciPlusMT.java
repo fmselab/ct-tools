@@ -11,7 +11,6 @@ import org.colomoto.mddlib.MDDManager;
 
 import ctwedge.ctWedge.CitModel;
 import ctwedge.util.ext.Utility;
-import pMedici.experiments.pMEDICIPlusMTExperimenter;
 import pMedici.importer.CSVImporter;
 import pMedici.safeelements.SafeQueue;
 import pMedici.threads.TestBuilder;
