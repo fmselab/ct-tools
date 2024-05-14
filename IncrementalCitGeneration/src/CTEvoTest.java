@@ -29,7 +29,6 @@ public class CTEvoTest {
 		Random random = new Random();
 		CSVExporter t = new CSVExporter();
 
-		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
@@ -74,7 +73,6 @@ public class CTEvoTest {
 		Random random = new Random();
 		CSVExporter t = new CSVExporter();
 
-		ACTSTranslator.PRINT = false;
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
