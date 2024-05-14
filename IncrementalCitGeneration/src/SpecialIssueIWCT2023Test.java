@@ -27,6 +27,8 @@ import ctwedge.generator.pict.PICTGenerator;
 import ctwedge.util.TestSuite;
 import ctwedge.util.ext.Utility;
 import ctwedge.util.smt.SMTTestSuiteValidator;
+import kali.main.KALI;
+import kali.threads.TestBuilder;
 import pMedici.main.PMedici;
 import pMedici.util.Order;
 import pMedici.util.TestContext;
@@ -78,10 +80,11 @@ public class SpecialIssueIWCT2023Test {
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
 
-				// Generate test suite with ACTS
+				// Generate test suite with KALI
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, null);
+					//ts1 = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, null);
+					ts1 = getKALITestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH);
 					printStats(ts1, 0, STRENGTH, output_file, null);
 					Thread.sleep(200);
 				} catch (Error e) {
@@ -167,6 +170,40 @@ public class SpecialIssueIWCT2023Test {
 			future.cancel(true);
 		}
 		return ts1;
+	}
+	
+	/**
+	 * Returns a test suite generated with KALI
+	 * 
+	 * @param model    the CIT Model
+	 * @param strength the strength
+	 * @return a test suite generated with KALI
+	 */
+	private TestSuite getKALITestSuite(CitModel model, int strength) {
+		TestSuite tsTemp;
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<TestSuite> task = new Callable<TestSuite>() {
+			public TestSuite call() throws Exception {
+				KALI kali = new KALI();
+				kali.setVerbose(true);
+				TestBuilder.IN_TEST = true;
+				TestSuite ts1 = kali.testGeneration(strength, "",model);
+				ts1.setGeneratorName("KALI");
+				return ts1;
+			}
+		};
+		Future<TestSuite> future = executor.submit(task);
+		try {
+			tsTemp = future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException | InterruptedException | ExecutionException ex) {
+			tsTemp = new TestSuite(model, null);
+			tsTemp.setGeneratorName("KALI");
+			tsTemp.setGeneratorTime(-1);
+		} finally {
+			// May or may not desire this
+			future.cancel(true);
+		}
+		return tsTemp;
 	}
 
 	/**
@@ -535,10 +572,11 @@ public class SpecialIssueIWCT2023Test {
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
 
-				// Generate test suite with strength t=2 with ACTS
+				// Generate test suite with strength t=2 with KALI
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, null);
+					ts1 = getKALITestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH);
+					//ts1 = getACTSTestSuite(Utility.loadModelFromPath(f.getAbsolutePath()), STRENGTH, null);
 					printStats(ts1, 0, STRENGTH, output_file, null);
 				} catch (Error | Exception e) {
 					continue;
@@ -607,10 +645,11 @@ public class SpecialIssueIWCT2023Test {
 			// Repeat the experiments N_REP times
 			for (int i = 0; i < N_REP; i++) {
 
-				// Generate test suite with ACTS
+				// Generate test suite with KALI
 				TestSuite ts1 = null;
 				try {
-					ts1 = getACTSTestSuite(modelACTS, STRENGTH, null);
+					//ts1 = getACTSTestSuite(modelACTS, STRENGTH, null);
+					ts1 = getKALITestSuite(modelACTS, STRENGTH);
 					printStats(ts1, 0, STRENGTH, output_file, null);
 				} catch (Error e) {
 					System.err.println(e.getMessage());

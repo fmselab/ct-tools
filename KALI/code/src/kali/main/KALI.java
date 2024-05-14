@@ -125,9 +125,7 @@ public class KALI {
 		return testGeneration(strength, fileName, m);
 	}
 
-	
-	TestSuite testGeneration(Integer strength, String fileName, CitModel m)
-			throws InterruptedException, IOException {
+	public TestSuite testGeneration(Integer strength, String fileName, CitModel m) throws InterruptedException, IOException {
 		// Get current time
 		long start = System.currentTimeMillis();
 
@@ -218,7 +216,7 @@ public class KALI {
 			bw.close();
 		}
 		// Create and return the test suite
-	 String tsAsCSV = header.substring(0, header.length() - 1) + "\n";
+		String tsAsCSV = header.substring(0, header.length() - 1) + "\n";
 		for (String t : tests) {
 			tsAsCSV += t + "\n";
 		}
@@ -235,7 +233,7 @@ public class KALI {
 		Vector<TestContext> tcList = new Vector<TestContext>();
 		// If seeds have been used, append them to the test context list
 		tcList.addAll(tcSeedsList);
-		
+
 		int nParams = m.getParameters().size();
 		ArrayList<Thread> testBuilderThreads = new ArrayList<Thread>();
 		for (int i = 0; i < nThreads; i++) {
@@ -305,6 +303,10 @@ public class KALI {
 		}
 
 		return tcList;
+	}
+	
+	public void setVerbose(Boolean verbose) {
+		this.verbose = verbose;
 	}
 
 }
