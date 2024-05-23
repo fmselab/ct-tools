@@ -74,7 +74,7 @@ public class SpecialIssueIWCT2023Test {
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw") || !f.getName().contains("UNIFORM_"))
+			if (!f.getAbsolutePath().endsWith(".ctw") || !f.getAbsolutePath().contains("BOOLC_"))
 				continue;
 
 			// Repeat the experiments N_REP times
@@ -530,7 +530,7 @@ public class SpecialIssueIWCT2023Test {
 			// Ordering strategy
 			PMedici.order = o;
 
-			if (percentage != 0) {
+			if (percentage != 100) {
 				// --------------------------------
 				// INCREMENTAL APPROACH - pMEDICI +
 				// --------------------------------
@@ -546,7 +546,7 @@ public class SpecialIssueIWCT2023Test {
 				// Generate the test suite from scratch with pMEDICI
 				tsTemp = getPMediciTestSuite(f, tempTsActs, STRENGTH);
 				tsTemp = mergeTs(tsTemp, tempTsActs);
-				printStats(tsTemp, 0, STRENGTH, output_file, o);
+				printStats(tsTemp, 100, STRENGTH, output_file, o);
 				Thread.sleep(200);
 			}
 		}
