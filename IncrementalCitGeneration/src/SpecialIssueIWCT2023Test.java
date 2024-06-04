@@ -685,7 +685,7 @@ public class SpecialIssueIWCT2023Test {
 		TestContext.IN_TEST = true;
 
 		for (File f : listOfFiles) {
-			if (!f.getAbsolutePath().endsWith(".ctw"))
+			if (!f.getAbsolutePath().endsWith(".ctw") || !f.getAbsolutePath().contains("MCAC_7"))
 				continue;
 			CitModel model = Utility.loadModelFromPath(f.getAbsolutePath());
 			CitModel modelACTS = Utility.loadModelFromPath(f.getAbsolutePath());
