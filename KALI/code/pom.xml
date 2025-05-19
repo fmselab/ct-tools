@@ -106,7 +106,13 @@
 		<dependency>
 			<groupId>org.sosy-lab</groupId>
 			<artifactId>java-smt</artifactId>
-			<version>4.0.3</version>
+			<version>4.0.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>ctwedge</groupId>

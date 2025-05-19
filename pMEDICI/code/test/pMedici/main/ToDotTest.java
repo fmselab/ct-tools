@@ -1,7 +1,5 @@
 package pMedici.main;
 
-import static org.junit.Assert.*;
-
 import org.colomoto.mddlib.MDDManager;
 import org.junit.Test;
 

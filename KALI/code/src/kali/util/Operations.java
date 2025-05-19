@@ -326,7 +326,7 @@ public class Operations {
 				compatiblePairs++;
 			totTuple++;
 		}
-		return (double)compatiblePairs/totTuple;
+		return ((double)compatiblePairs)/totTuple;
 	}
 
 }

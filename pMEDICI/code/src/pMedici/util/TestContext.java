@@ -9,7 +9,6 @@ import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
 
 import ctwedge.ctWedge.CitModel;
-import ctwedge.util.ParameterSize;
 
 public class TestContext {
 
